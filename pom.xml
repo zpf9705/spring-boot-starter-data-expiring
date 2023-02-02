@@ -24,7 +24,7 @@
 
     <developers>
         <developer>
-            <id>boku-spring-boot-starter-data-ec</id>
+            <id>spring-boot-starter-data-expiring</id>
             <name>zhangpengfei</name>
             <email>929160069@qq.com</email>
         </developer>
