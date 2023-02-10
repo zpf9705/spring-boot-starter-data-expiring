@@ -18,7 +18,7 @@
         This component is based on expiring - map and encapsulation ,
         Is a framework for memory ,
         Can use some caching operations ,
-        But does not support programs to restart persistence recovery ,
+        Support programs to restart persistence recovery ,
         Thank you for using.
     </description>
 
