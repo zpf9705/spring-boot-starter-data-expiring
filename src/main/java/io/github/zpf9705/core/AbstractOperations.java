@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- * This abstract class is mainly described {@link net.jodah.expiringmap.ExpiringMap} - apis
+ *     This abstract class is mainly described {@link net.jodah.expiringmap.ExpiringMap} - apis
  * </p>
  *
  *

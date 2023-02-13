@@ -89,14 +89,14 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
 
     /**
      * @description: setting factory bean name
-     * @param factoryBeanName
+     * @param factoryBeanName ioc bean name
      */
     public void setFactoryBeanName(String factoryBeanName) {
         this.factoryBeanName = factoryBeanName;
     }
 
     /**
-     * @param factoryBeanName
+     * @param factoryBeanName ioc bean name
      * @description: In the name of the bean in the constructor
      */
     public ExpireTemplate(String factoryBeanName) {
@@ -153,7 +153,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
-     * @param templateKeyType
+     * @param templateKeyType key Serializer
      * @description: Set the template key ExpiringSerializer
      */
     public void setKeySerializer(ExpiringSerializer<K> templateKeyType) {
@@ -163,7 +163,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
-     * @param templateValueType
+     * @param templateValueType value Serializer
      * @description: Set the template value ExpiringSerializer
      */
     public void setValueSerializer(ExpiringSerializer<V> templateValueType) {

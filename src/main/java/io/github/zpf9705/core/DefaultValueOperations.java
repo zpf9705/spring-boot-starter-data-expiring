@@ -7,8 +7,9 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- *
- * Here provides a default implementation of {@link net.jodah.expiringmap.ExpiringMap}
+ * <p>
+ *      Here provides a default implementation of {@link net.jodah.expiringmap.ExpiringMap}
+ * </p>
  *
  * @author zpf
  * @since 1.1.0

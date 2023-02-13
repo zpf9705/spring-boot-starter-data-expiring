@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 
 /**
  * <p>
- * Expiring - map persistence mechanism
+ *   Expiring - map persistence mechanism
  * <p>
  *
  * @author zpf

@@ -2,9 +2,11 @@ package io.github.zpf9705.core;
 
 import net.jodah.expiringmap.ExpiringMap;
 
+
 /**
- *
- *  interface for call back
+ * <p>
+ *   interface for call back
+ * <p>
  *
  * @author zpf
  * @since 1.1.0

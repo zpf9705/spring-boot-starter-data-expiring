@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- * Here described the expiring relevant API to perform the Map
+ *    Here described the expiring relevant API to perform the Map
  * </p>
  * <p>
  * about {@link ExpiringMap}
