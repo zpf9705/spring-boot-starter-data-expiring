@@ -4,11 +4,11 @@ import java.util.Map;
 
 /**
  * <p>
- * {@link ExpireTemplate} String,String
- * provider {@link ValueOperations}  String,String
- * @description: key == {@link String}
- * @description: value == {@link String}
- * and you can {@link Clearable} to {@link Map#clear()}
+ *    {@link ExpireTemplate} String,String
+ *   provider {@link ValueOperations}  String,String
+ *   ... key of Serializer == {@link String}
+ *   ... value of Serializer== {@link String}
+ *   and you can {@link Clearable} to {@link Map#clear()}
  * </p>
  *
  * @author zpf

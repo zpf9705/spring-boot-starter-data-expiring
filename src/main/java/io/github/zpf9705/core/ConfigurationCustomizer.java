@@ -13,6 +13,7 @@ public interface ConfigurationCustomizer {
 
     /**
      * setting method for {@link ExpireMapCacheProperties} Configuration
+     * @param properties {@link ExpireMapCacheProperties}
      */
     void customize(ExpireMapCacheProperties properties);
 }

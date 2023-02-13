@@ -83,7 +83,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     private final ValueOperations<K, V> valueOperations = new DefaultValueOperations<>(this);
 
     /**
-     * NoArgsConstructor > postConstruct > afterPropertiesSet > Bean annotation
+     * NoArgsConstructor  postConstruct  afterPropertiesSet  Bean annotation
      */
     public ExpireTemplate() {
     }
