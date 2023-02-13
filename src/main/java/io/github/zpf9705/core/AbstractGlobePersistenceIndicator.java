@@ -41,7 +41,6 @@ public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
         if (exist0(fileName)) {
             c = del(fileName);
         }
-        //true 确实为文件不存在
         return c;
     }
 
