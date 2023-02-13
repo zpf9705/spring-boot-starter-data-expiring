@@ -5,8 +5,6 @@ import cn.hutool.aop.proxy.SpringCglibProxyFactory;
 import cn.hutool.core.util.ReflectUtil;
 import com.google.common.collect.Lists;
 import io.github.expiring.core.*;
-import io.github.zpf.expiring.core.*;
-import io.github.zpf1997.expiring.core.*;
 import net.jodah.expiringmap.ExpirationListener;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
