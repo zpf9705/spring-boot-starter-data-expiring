@@ -43,9 +43,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:https://github.com/beijingdaxuevip666/spring-boot-starter-data-expiring.git</connection>
-        <developerConnection>scm:git:https://github.com/beijingdaxuevip666/spring-boot-starter-data-expiring.git</developerConnection>
-        <url>https://github.com/beijingdaxuevip666/spring-boot-starter-data-expiring</url>
+        <connection>scm:git:https://github.com/zpf9705/spring-boot-starter-data-expiring.git</connection>
+        <developerConnection>scm:git:https://github.com/zpf9705/spring-boot-starter-data-expiring.git</developerConnection>
+        <url>https://github.com/zpf9705/spring-boot-starter-data-expiring</url>
     </scm>
 
 
