@@ -12,7 +12,7 @@ package io.github.zpf9705.core;
 public interface ConfigurationCustomizer {
 
     /**
-     * @implNote 配置方法
+     * setting method for {@link ExpireMapCacheProperties} Configuration
      */
     void customize(ExpireMapCacheProperties properties);
 }

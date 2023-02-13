@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 /**
  * <p>
- *  Template for ioc integration springboot of ExpiringMap
+ * Template for ioc integration springboot of ExpiringMap
  * </p>
  * <p>
  * In order to better fit springboot {@link org.springframework.boot.autoconfigure.SpringBootApplication}
@@ -45,7 +45,7 @@ import java.util.function.Supplier;
  * expirationListener:同步过期提醒
  * asyncExpirationListener:异步过期提醒
  * entryLoader:懒加载,调用get方法时若key不存在创建默认value
- *    .......
+ * .......
  * </p>
  *
  * @author zpf
@@ -83,12 +83,13 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     private final ValueOperations<K, V> valueOperations = new DefaultValueOperations<>(this);
 
     /**
-     * NoArgsConstructor > postConstruct > afterPropertiesSet > @Bean
+     * NoArgsConstructor > postConstruct > afterPropertiesSet > Bean annotation
      */
-    public ExpireTemplate() {}
+    public ExpireTemplate() {
+    }
 
     /**
-     * @description: setting factory bean name
+     * setting factory bean name
      * @param factoryBeanName ioc bean name
      */
     public void setFactoryBeanName(String factoryBeanName) {
@@ -96,8 +97,8 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
+     * In the name of the bean in the constructor
      * @param factoryBeanName ioc bean name
-     * @description: In the name of the bean in the constructor
      */
     public ExpireTemplate(String factoryBeanName) {
         Assert.isTrue(StringUtils.isNotBlank(factoryBeanName), "factoryBeanName no be null");
@@ -105,9 +106,9 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
+     * Given the map one of the biggest capacity
      * @param maxSize The maximum capacity
-     * @return {@link ExpiringMap}
-     * @description: Given the map one of the biggest capacity
+     * @return {@link ExpireTemplate}
      */
     public ExpireTemplate<K, V> acquireMaxSize(Integer maxSize) {
         Assert.isTrue(this.maxSize == null,
@@ -117,9 +118,9 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
+     * Given the map of a default cache expiration time
      * @param defaultExpireTime The default cache expiration time
-     * @return {@link ExpiringMap}
-     * @description: Given the map of a default cache expiration time
+     * @return {@link ExpireTemplate}
      */
     public ExpireTemplate<K, V> acquireDefaultExpireTime(Long defaultExpireTime) {
         Assert.isTrue(this.defaultExpireTime == null,
@@ -129,9 +130,9 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
+     * Given the map of a default cache expiration time units
      * @param defaultExpireTimeUnit The default cache expiration time units
-     * @return {@link ExpiringMap}
-     * @description: Given the map of a default cache expiration time units
+     * @return {@link ExpireTemplate}
      */
     public ExpireTemplate<K, V> acquireDefaultExpireTimeTime(TimeUnit defaultExpireTimeUnit) {
         Assert.isTrue(this.defaultExpireTimeUnit == null,
@@ -141,9 +142,9 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
+     * Given the map of a default cache expiration expired strategy
      * @param expirationPolicy The default cache expiration expired strategy
-     * @return {@link ExpiringMap}
-     * @description: Given the map of a default cache expiration expired strategy
+     * @return {@link ExpireTemplate}
      */
     public ExpireTemplate<K, V> acquireDefaultExpirationPolicy(ExpirationPolicy expirationPolicy) {
         Assert.isTrue(this.expirationPolicy == null,
@@ -153,8 +154,8 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
+     * Set the template key ExpiringSerializer
      * @param templateKeyType key Serializer
-     * @description: Set the template key ExpiringSerializer
      */
     public void setKeySerializer(ExpiringSerializer<K> templateKeyType) {
         Assert.isTrue(this.kExpiringSerializer == null,
@@ -163,8 +164,8 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
+     * Set the template value ExpiringSerializer
      * @param templateValueType value Serializer
-     * @description: Set the template value ExpiringSerializer
      */
     public void setValueSerializer(ExpiringSerializer<V> templateValueType) {
         Assert.isTrue(this.vExpiringSerializer == null,
@@ -173,7 +174,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
-     * @description: Build a cache map
+     *  Build a cache map
      */
     public void build() {
         Assert.isTrue(StringUtils.isNotBlank(factoryBeanName), "factoryBeanName no be null");
@@ -200,7 +201,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
-     * @description: Check whether the cache map initializes the initialization to avoid repetition
+     *  Check whether the cache map initializes the initialization to avoid repetition
      */
     public void checkExpiringMapNoInit() {
         if (this.expiringMap != null) {
@@ -212,8 +213,8 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
+     * Increase the expired listeners
      * @param expirationListener {@link ExpirationListener}
-     * @description: Increase the expired listeners
      * @see ExpirationListener
      */
     public void addExpiredListener(ExpirationListener<K, V> expirationListener) {
@@ -227,8 +228,8 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
-     * @return {@linkplain ExpiringMap}
-     * @description: Access to the cache map
+     * Access to the cache map
+     * @return {@link ExpiringMap}
      */
     @Override
     public ExpiringMap<K, V> opsForExpire() {
@@ -236,8 +237,8 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
+     * Access to the key value operator
      * @return {@linkplain ValueOperations}
-     * @description: Access to the key value operator
      */
     @Override
     public ValueOperations<K, V> opsForValue() {

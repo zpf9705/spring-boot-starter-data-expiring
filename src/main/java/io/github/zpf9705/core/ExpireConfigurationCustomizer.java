@@ -14,7 +14,8 @@ import net.jodah.expiringmap.ExpirationListener;
 public interface ExpireConfigurationCustomizer<K, V> {
 
     /**
-     * @implNote 配置方法
+     * setting method for {@link ExpireTemplate} Configuration
+     * @param template {@link ExpireTemplate}
      */
     void customize(ExpireTemplate<K, V> template);
 }

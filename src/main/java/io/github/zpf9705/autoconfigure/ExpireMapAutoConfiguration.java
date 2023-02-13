@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * this configuration apply to spring boot 2.5.6
  * The automatic assembly provides the cache configuration , main example
  * ......
- * <string,string> and <string,object>
+ * String,String and String,Object
  * template {@link ExpireTemplate} {@link StringExpiredTemplate}
  * and you can use simple util interface {@link ValueOperations}
  * <p>

@@ -3,11 +3,13 @@ package io.github.zpf9705.core;
 import java.util.Map;
 
 /**
- * {@link ExpireTemplate} <string,string>
- * provider {@link ValueOperations}  <string,string>
- * @rule key == {@link String}
- * @rule value == {@link String}
+ * <p>
+ * {@link ExpireTemplate} String,String
+ * provider {@link ValueOperations}  String,String
+ * @description: key == {@link String}
+ * @description: value == {@link String}
  * and you can {@link Clearable} to {@link Map#clear()}
+ * </p>
  *
  * @author zpf
  * @since 1.1.0
@@ -27,6 +29,7 @@ public class StringExpiredTemplate extends ExpireTemplate<String, String> {
 
     /**
      * @see ExpireTemplate#ExpireTemplate(String)
+     * @param factoryBeanName ioc bean name
      */
     public StringExpiredTemplate(String factoryBeanName) {
         super(factoryBeanName);

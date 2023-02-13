@@ -19,6 +19,7 @@ public class ExpireContextHolder implements Clearable {
 
     /**
      * save value of context
+     * @param value set current thread value
      */
     public static void temporary(Object value) {
         if (value == null) {
@@ -29,12 +30,14 @@ public class ExpireContextHolder implements Clearable {
 
     /**
      * get value of context
+     * @param runnable current execute runnable
+     * @return current save value
      */
     public static Object gain(Runnable runnable) {
         Object acquire;
         try {
             runnable.run();
-        } finally {
+        } catch (Throwable e){/*no logic*/} finally {
             acquire = KS_HOLDER.get();
             if (acquire != null) {
                 KS_HOLDER.remove();

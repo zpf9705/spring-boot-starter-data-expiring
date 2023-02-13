@@ -12,7 +12,7 @@ import java.util.Map;
 public interface Clearable {
 
     /**
-     * @implNote this.xxx = null
+     * this.xxx = null
      * @see Map#clear()
      * @see List#clear()
      * @see Map.Entry#clear()
