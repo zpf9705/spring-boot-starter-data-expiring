@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 
 /**
  * <p>
- *   Expiring - map persistence mechanism
+ * Expiring - map persistence mechanism
  * <p>
  *
  * @author zpf
@@ -51,6 +51,10 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
     private static final String PREFIX_BEFORE = ".aof";
 
     private static final String AT = "@";
+
+    private static final String PROJECT_PATH = "user.dir";
+
+    private static final String DEFAULT_EXPIRE_PATH = "/expire";
 
     private Persistence<K, V> persistence;
 
@@ -101,18 +105,28 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
     public static void resolveCacheProperties() {
         cacheProperties = Application.context.getBean(ExpireMapCacheProperties.class);
         OPEN_PERSISTENCE = cacheProperties.getPersistence().getOpenPersistence();
-        checkDirectory();
+        //if you open persistence will auto create directory
+        if (OPEN_PERSISTENCE){
+            checkDirectory();
+        }
     }
 
     public static void checkDirectory() {
         String persistencePath = cacheProperties.getPersistence().getPersistencePath();
-        if (StringUtils.isNotBlank(cacheProperties.getPersistence().getPersistencePath())) {
+        if (StringUtils.isNotBlank(persistencePath)) {
             //Determine whether to native folders and whether the folder
             if (!isDirectory(persistencePath)) {
                 File directory = mkdir(persistencePath);
                 if (!directory.exists()) {
                     checkError(persistencePath);
                 }
+            }
+        } else {
+            String projectPath = System.getProperty(PROJECT_PATH);
+            if (StringUtils.isNotBlank(projectPath)) {
+                mkdir(projectPath + DEFAULT_EXPIRE_PATH);
+                //write to properties
+                cacheProperties.getPersistence().setPersistencePath(projectPath);
             }
         }
     }

@@ -64,8 +64,11 @@ public class ExpireMapCacheProperties {
 
         /**
          * Persistent path
+         * attention : If you offer the persistent path ,
+         * Will automatically on your path to create persistent file ,
+         * If not we will create in the root of your project directory
          */
-        private String persistencePath = "/home";
+        private String persistencePath;
 
         /**
          * No persistence time the most value (that is less than all of this time are not given persistent)
