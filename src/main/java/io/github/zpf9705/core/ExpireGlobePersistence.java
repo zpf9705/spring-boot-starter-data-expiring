@@ -126,7 +126,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
             if (StringUtils.isNotBlank(projectPath)) {
                 mkdir(projectPath + DEFAULT_EXPIRE_PATH);
                 //write to properties
-                cacheProperties.getPersistence().setPersistencePath(projectPath);
+                cacheProperties.getPersistence().setPersistencePath(projectPath + "/");
             }
         }
     }
