@@ -94,7 +94,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         try {
             resolveCacheProperties();
         } catch (Exception e) {
-            io.github.zpf9705.core.Console.logger.error("load CacheProperties error {}", e.getMessage());
+            Console.logger.error("load CacheProperties error {}", e.getMessage());
         }
     }
 
@@ -342,7 +342,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
             try {
                 deserializeO(path);
             } catch (Throwable e) {
-                io.github.zpf9705.core.Console.logger.error(
+                Console.logger.error(
                         "Restore cache prepare error : {}", e.getMessage()
                 );
             }
@@ -362,7 +362,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
             try {
                 deserialize0(v);
             } catch (Throwable e) {
-                io.github.zpf9705.core.Console.logger.error(
+                Console.logger.error(
                         "Restore cache file {} error : {}", v.getName(), e.getMessage()
                 );
             }
