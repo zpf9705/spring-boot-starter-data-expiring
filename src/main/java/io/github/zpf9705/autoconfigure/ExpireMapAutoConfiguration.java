@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -140,11 +139,13 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
     public Object bindingExpirationListener() {
         //obtain listing packages path
         String listeningPackages = expireMapCacheProperties.getListeningPackages();
-        if (StringUtils.isBlank(listeningPackages))
-            throw new BeanInitializationException(
+        if (StringUtils.isBlank(listeningPackages)){
+            Console.logger.info(
                     "no provider listening scan path ," +
                             "so ec no can provider binding Expiration Listener !"
             );
+            return "bind no";
+        }
         //reflection find packages
         Reflections reflections = new Reflections(
                 new ConfigurationBuilder().forPackages(listeningPackages)
@@ -152,11 +153,13 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
         //reflection find ExpirationListener impl
         Set<Class<? extends ExpirationListener>> subTypesOf =
                 reflections.getSubTypesOf(ExpirationListener.class);
-        if (CollectionUtils.isEmpty(subTypesOf))
-            throw new BeanInitializationException(
+        if (CollectionUtils.isEmpty(subTypesOf)){
+            Console.logger.info(
                     "no provider implementation ExpirationListener class ," +
                             "so ec no can provider binding Expiration Listener !"
             );
+            return "bind no";
+        }
         final Predicate<Method> filter = (s) -> "expired".equals(s.getName());
         for (Class<? extends ExpirationListener> aClass : subTypesOf) {
             if (Modifier.isAbstract(aClass.getModifiers())) {
