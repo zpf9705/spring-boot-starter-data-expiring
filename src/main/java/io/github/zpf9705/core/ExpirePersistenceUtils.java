@@ -74,8 +74,8 @@ public final class ExpirePersistenceUtils {
         try {
             runnable.run();
         } catch (Throwable e) {
-            Console.logger.error("expire persistence method [{}] op failed msg [{}]", method, e.getMessage());
-            e.printStackTrace(System.err);
+            Console.logger.error("expire persistence method [{}] op failed msg [{}]",
+                    method, e.getMessage());
         }
     }
 }
