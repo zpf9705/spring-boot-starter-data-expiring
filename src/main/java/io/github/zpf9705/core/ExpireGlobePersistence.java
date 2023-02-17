@@ -122,12 +122,13 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
                 }
             }
         } else {
-            String projectPath = System.getProperty(PROJECT_PATH);
-            if (StringUtils.isNotBlank(projectPath)) {
-                mkdir(projectPath + DEFAULT_EXPIRE_PATH);
-                //write to properties
-                cacheProperties.getPersistence().setPersistencePath(projectPath + "/");
-            }
+            // To create the current project directory
+            String folder = SystemUtils.createRelativePathSpecifyFolderName(
+                    DEFAULT_EXPIRE_PATH);
+            Assert.hasText(folder,
+                    "Persistence directory mkdir failed ");
+            //Back to the configuration file
+            cacheProperties.getPersistence().setPersistencePath(folder);
         }
     }
 
