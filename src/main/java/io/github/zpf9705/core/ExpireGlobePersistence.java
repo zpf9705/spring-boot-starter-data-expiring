@@ -52,8 +52,6 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
 
     private static final String AT = "@";
 
-    private static final String PROJECT_PATH = "user.dir";
-
     private static final String DEFAULT_EXPIRE_PATH = "/expire";
 
     private Persistence<K, V> persistence;
