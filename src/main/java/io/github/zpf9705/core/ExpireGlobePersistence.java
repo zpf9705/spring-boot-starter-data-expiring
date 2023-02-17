@@ -441,7 +441,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
                     "] before or equals now");
         }
         Entry<K, V> entry = persistence.getEntry();
-        //Remaining time is less than the standard not trigger persistence persistence
+        //Remaining time is less than the standard not trigger persistence
         template.putVal(entry.getKey(), entry.getValue(),
                 condition(now, persistence.getExpire(), entry.getTimeUnit()),
                 entry.getTimeUnit());
