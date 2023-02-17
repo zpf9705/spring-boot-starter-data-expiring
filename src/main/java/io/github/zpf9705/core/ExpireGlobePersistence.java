@@ -366,9 +366,11 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
 
     @Override
     public void deserializeO(String path) {
-        if (StringUtils.isBlank(path)){
-            //yml no found setting path get static path
+        if (StringUtils.isBlank(path) || !isDirectory(path)) {
             path = cacheProperties.getPersistence().getPersistencePath();
+            if (StringUtils.isBlank(path)){
+                path = SystemUtils.currentProjectPath + DEFAULT_EXPIRE_PATH;
+            }
         }
         Assert.notNull(path, "Path no be null");
         Assert.isTrue(isDirectory(path),

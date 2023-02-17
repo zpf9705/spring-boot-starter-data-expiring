@@ -16,11 +16,11 @@ import java.util.Map;
  */
 public final class SystemUtils {
 
-    private static final String PROJECT_PATH = "user.dir";
+    public static final String PROJECT_PATH = "user.dir";
 
-    private static final String SLASH = "/";
+    public static final String SLASH = "/";
 
-    private static final String currentProjectPath;
+    public static final String currentProjectPath;
 
     static {
         currentProjectPath = System.getProperty(PROJECT_PATH);
