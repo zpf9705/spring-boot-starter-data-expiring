@@ -365,6 +365,10 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
 
     @Override
     public void deserializeO(String path) {
+        if (StringUtils.isBlank(path)){
+            //yml no found setting path get static path
+            path = cacheProperties.getPersistence().getPersistencePath();
+        }
         Assert.notNull(path, "Path no be null");
         Assert.isTrue(isDirectory(path),
                 "This path [" + path + "] belong file no a directory");
