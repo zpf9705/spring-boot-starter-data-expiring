@@ -8,22 +8,31 @@ import java.util.Map;
 
 /**
  * <p>
- *     system utils
+ *    system utils
  * </p>
  *
  * @author zpf
- * @since 1.1.0
+ * @since 1.1.4
  */
 public final class SystemUtils {
 
-    public static final String PROJECT_PATH = "user.dir";
+    private static final String PROJECT_PATH = "user.dir";
 
-    public static final String SLASH = "/";
+    private static final String SLASH = "/";
 
-    public static final String currentProjectPath;
+    private static final String currentProjectPath;
 
     static {
         currentProjectPath = System.getProperty(PROJECT_PATH);
+    }
+
+    /**
+     * get current project path
+     *
+     * @return path
+     */
+    public static String getCurrentProjectPath() {
+        return currentProjectPath;
     }
 
     /**
@@ -35,7 +44,7 @@ public final class SystemUtils {
     public static File createRelativePathSpecifyFolder(String specifyFolder) {
         if (StringUtils.isBlank(specifyFolder)) return null;
         String path;
-        if (currentProjectPath.endsWith(SLASH)) {
+        if (currentProjectPath.endsWith(SLASH) || specifyFolder.startsWith(SLASH)) {
             path = currentProjectPath + specifyFolder;
         } else {
             path = currentProjectPath + SLASH + specifyFolder;

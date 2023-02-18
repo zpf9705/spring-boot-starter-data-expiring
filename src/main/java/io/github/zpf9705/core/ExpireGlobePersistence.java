@@ -119,14 +119,6 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
                     checkError(persistencePath);
                 }
             }
-        } else {
-            // To create the current project directory
-            String folder = SystemUtils.createRelativePathSpecifyFolderName(
-                    DEFAULT_EXPIRE_PATH);
-            Assert.hasText(folder,
-                    "Persistence directory mkdir failed ");
-            //Back to the configuration file
-            cacheProperties.getPersistence().setPersistencePath(folder);
         }
     }
 
@@ -364,13 +356,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
 
     @Override
     public void deserializeO(String path) {
-        if (StringUtils.isBlank(path) || !isDirectory(path)) {
-            path = cacheProperties.getPersistence().getPersistencePath();
-            if (StringUtils.isBlank(path)){
-                path = SystemUtils.currentProjectPath + DEFAULT_EXPIRE_PATH;
-            }
-        }
-        Assert.notNull(path, "Path no be null");
+        Assert.hasText(path, "Path no be blank");
         Assert.isTrue(isDirectory(path),
                 "This path [" + path + "] belong file no a directory");
         List<File> files = loopFiles(path,
