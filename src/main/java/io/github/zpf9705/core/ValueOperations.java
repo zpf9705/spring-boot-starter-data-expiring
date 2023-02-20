@@ -3,7 +3,9 @@ package io.github.zpf9705.core;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Simple using interface for {@link ExpireTemplate}
+ * <p>
+ *    Simple using interface for {@link ExpireTemplate}
+ * <p>
  *
  * @author zpf
  * @since 1.1.0
@@ -35,6 +37,7 @@ public interface ValueOperations<K, V> {
      *
      * @param entries The key and the value of the combination group {@link Entry}
      */
+    @SuppressWarnings("unchecked")
     void setAll(Entry<K, V>... entries);
 
     /**

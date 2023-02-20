@@ -1,14 +1,8 @@
 package io.github.zpf9705.core;
 
-import java.util.Map;
-
 /**
  * <p>
- *    {@link ExpireTemplate} String,String
- *   provider {@link ValueOperations}  String,String
- *   ... key of Serializer == {@link String}
- *   ... value of Serializer== {@link String}
- *   and you can {@link Clearable} to {@link Map#clear()}
+ *     Provide fixed generic String String {@link ExpireTemplate}  is  here
  * </p>
  *
  * @author zpf

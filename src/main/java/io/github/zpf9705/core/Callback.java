@@ -5,7 +5,7 @@ import net.jodah.expiringmap.ExpiringMap;
 
 /**
  * <p>
- *   interface for call back
+ * interface for call back
  * <p>
  *
  * @author zpf
@@ -13,5 +13,11 @@ import net.jodah.expiringmap.ExpiringMap;
  */
 public interface Callback<K, V> {
 
+    /**
+     * Perform expiring - map callback methods
+     *
+     * @param expiringMap {@link ExpiringMap}
+     * @return The execution result
+     */
     Object doInExpire(ExpiringMap<K, V> expiringMap);
 }

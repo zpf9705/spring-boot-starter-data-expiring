@@ -12,16 +12,22 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- *    Here described the expiring relevant API to perform the Map
+ * Is {@link io.github.zpf9705.core.ExpireAccessor} the implementation class here ,
+ * To achieve the some about {@link ExpiringMap} apis ,
+ * And to specify the API provides the value of persistence
  * </p>
- * <p>
- * about {@link ExpiringMap}
+ *
+ * @see io.github.zpf9705.core.ExpireAccessor
+ * @see ExpirePersistenceUtils
  *
  * @author zpf
  * @since 1.1.0
  */
 public abstract class AbstractExpireAccessor<K, V> implements ExpireAccessor<K, V> {
 
+    /*
+     * final obj lock
+     * */
     private final Object lock = new Object();
 
     @Override
@@ -99,7 +105,7 @@ public abstract class AbstractExpireAccessor<K, V> implements ExpireAccessor<K, 
     @Override
     public V remove(@NonNull ExpiringMap<K, V> expiringMap, @NonNull K key) {
         V removeValue = expiringMap.remove(key);
-        Assert.notNull(removeValue,"remove return is null !");
+        Assert.notNull(removeValue, "remove return is null !");
         ExpirePersistenceUtils.removePersistence(key, removeValue);
         return removeValue;
     }
@@ -126,10 +132,10 @@ public abstract class AbstractExpireAccessor<K, V> implements ExpireAccessor<K, 
     }
 
     @Override
-    public Boolean putIfAbsentOfDuration(@NonNull ExpiringMap<K, V> expiringMap,
-                                         @NonNull K key, @NonNull V value,
-                                         @NonNull Long duration, @NonNull TimeUnit timeUnit,
-                                         @NonNull String factoryBeanName) {
+    public Boolean putIfAbsentOfDuration(ExpiringMap<K, V> expiringMap,
+                                         K key, V value,
+                                         Long duration, TimeUnit timeUnit,
+                                         String factoryBeanName) {
         synchronized (lock) {
             if (hasKey(expiringMap, key)) {
                 return false;
