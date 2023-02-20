@@ -2,8 +2,8 @@ package io.github.zpf9705.core;
 
 /**
  * <p>
- *     The key value unified serializable interface
- *    {@link java.io.Serializable}
+ * The key value unified serializable interface
+ * {@link java.io.Serializable}
  * </p>
  *
  * @author zpf
@@ -11,9 +11,26 @@ package io.github.zpf9705.core;
  **/
 public interface ExpiringSerializer<T> {
 
+    /**
+     * serialize obj
+     *
+     * @param t target
+     * @return byte arrays
+     */
     byte[] serialize(T t);
 
+    /**
+     * deserialize obj
+     *
+     * @param bytes byte arrays
+     * @return target
+     */
     T deserialize(byte[] bytes);
 
+    /**
+     * get class type
+     *
+     * @return target class
+     */
     Class<T> serializerType();
 }

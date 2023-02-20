@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- *    Global persistence Unified method interface
+ *   Global persistence Unified method interface
  * <p>
  *
  * @author zpf
@@ -13,19 +13,56 @@ import java.util.concurrent.TimeUnit;
  */
 public interface GlobePersistence<K, V> {
 
+    /**
+     * To determine whether a file exists
+     *
+     * @return Returns true or false
+     */
     boolean persistenceExist();
 
+    /**
+     * set expiration persistent file to the hard disk
+     *
+     * @param duration the expiration duration
+     * @param timeUnit the expiration duration timeUnit
+     */
     void setExpirationPersistence(Long duration, TimeUnit timeUnit);
 
+    /**
+     * reset Expiration cache Persistence
+     */
     void resetExpirationPersistence();
 
+    /**
+     * replace current value within new value
+     *
+     * @param newValue new value
+     */
     void replacePersistence(V newValue);
 
+    /**
+     * del current Persistence
+     */
     void removePersistence();
 
+    /**
+     * Determine whether under expired
+     *
+     * @return Returns true or false
+     */
     boolean expireOfCache();
 
+    /**
+     * get current key/value group
+     *
+     * @return {@link Entry}
+     */
     Entry<K, V> getEntry();
 
+    /**
+     * get current Persistence
+     *
+     * @return {@link io.github.zpf9705.core.ExpireGlobePersistence.Persistence}
+     */
     ExpireGlobePersistence.Persistence<K, V> getPersistence();
 }

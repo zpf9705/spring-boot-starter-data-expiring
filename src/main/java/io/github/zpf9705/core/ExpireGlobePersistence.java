@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 
 /**
  * <p>
- * Expiring - map persistence mechanism
+ *   Expiring - map persistence mechanism
  * <p>
  *
  * @author zpf
@@ -51,8 +51,6 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
     private static final String PREFIX_BEFORE = ".aof";
 
     private static final String AT = "@";
-
-    private static final String DEFAULT_EXPIRE_PATH = "/expire";
 
     private Persistence<K, V> persistence;
 

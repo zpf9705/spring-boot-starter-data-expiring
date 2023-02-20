@@ -3,12 +3,10 @@ package io.github.zpf9705.core;
 import org.springframework.core.NamedThreadLocal;
 
 /**
- *
- *  save value in a litter time of context
- *
- * @see ThreadLocal {@link NamedThreadLocal}
+ * save value in a litter time of context
  *
  * @author zpf
+ * @see ThreadLocal {@link NamedThreadLocal}
  * @since 1.1.0
  */
 public class ExpireContextHolder implements Clearable {
@@ -19,6 +17,7 @@ public class ExpireContextHolder implements Clearable {
 
     /**
      * save value of context
+     *
      * @param value set current thread value
      */
     public static void temporary(Object value) {
@@ -30,6 +29,7 @@ public class ExpireContextHolder implements Clearable {
 
     /**
      * get value of context
+     *
      * @param runnable current execute runnable
      * @return current save value
      */
@@ -37,7 +37,7 @@ public class ExpireContextHolder implements Clearable {
         Object acquire;
         try {
             runnable.run();
-        } catch (Throwable e){/*no logic*/} finally {
+        } catch (Throwable e) {/*no logic*/} finally {
             acquire = KS_HOLDER.get();
             if (acquire != null) {
                 KS_HOLDER.remove();

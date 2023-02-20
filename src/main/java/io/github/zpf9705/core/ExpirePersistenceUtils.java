@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- *      Expiring - map persistence tool
+ * Expiring - map persistence tool
  * <p>
  *
  * @author zpf
@@ -70,6 +70,12 @@ public final class ExpirePersistenceUtils {
         }, "removePersistence");
     }
 
+    /**
+     * Run the method and capture the exception
+     *
+     * @param runnable method runnable
+     * @param method   method name
+     */
     public static void run(Runnable runnable, String method) {
         try {
             runnable.run();
