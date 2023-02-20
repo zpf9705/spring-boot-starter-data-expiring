@@ -5,10 +5,17 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * <p>
- *    system utils
+ * 【System utils】
+ * Here you can get relevant variables of the system
+ * Also can obtain relevant configuration of engineering {@link ExpireMapCacheProperties}
+ * But you need setting your configuration in system property
+ * .....
+ * System.setProperty(...) {@link System#setProperty(String, String)}
+ * And get it {@link System#getProperty(String)}
  * </p>
  *
  * @author zpf
@@ -16,14 +23,54 @@ import java.util.Map;
  */
 public final class SystemUtils {
 
-    private static final String PROJECT_PATH = "user.dir";
+    /**
+     * The current working directory of the user
+     */
+    public static final String PROJECT_PATH = "user.dir";
+
+    /**
+     * The current main working directory of the user
+     * @since 1.1.5
+     */
+    public static final String PROJECT_HOME= "user.home";
 
     private static final String SLASH = "/";
 
     private static final String currentProjectPath;
 
     static {
+        /*
+        * Static access to relevant variables of the system
+        * */
         currentProjectPath = System.getProperty(PROJECT_PATH);
+    }
+
+    /**
+     * set system key and value constant or configuration or cache value
+     *
+     * @param key   key
+     * @param value value
+     * @since 1.1.5
+     */
+    public static void setProperty(String key, String value) {
+        if (key == null || value == null){
+            return;
+        }
+        System.setProperty(key, value);
+    }
+
+    /**
+     * get system key and value constant or configuration or cache value
+     *
+     * @param key   key
+     * @return value
+     * @since 1.1.5
+     */
+    public static String getProperty(String key) {
+        if (key == null){
+            return null;
+        }
+        return System.getProperty(key);
     }
 
     /**
