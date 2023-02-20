@@ -123,6 +123,7 @@ public interface ExpireOperations<K, V> extends Serializable {
      * Replacement of the specified key value
      *
      * @param key The specified key
+     * @param value The specified new value
      * @return Returns the old value is replaced
      */
     V replace(K key, V value);

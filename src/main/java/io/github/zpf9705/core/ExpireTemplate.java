@@ -389,6 +389,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      * @param o                     supplier
      * @param ofTypeClass           type class
      * @param composeSolveException Whether solve exception
+     * @param <O> You can specify the paradigm
      * @return exchange obj
      */
     public <O> O ofType(Supplier<Object> o, Class<O> ofTypeClass, boolean composeSolveException) {
