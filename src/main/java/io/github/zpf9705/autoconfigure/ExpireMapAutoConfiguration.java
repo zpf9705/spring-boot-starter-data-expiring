@@ -229,7 +229,7 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
     @ConditionalOnProperty(prefix = "expire.cache.globe-config.persistence", name = "open-persistence",
             havingValue = "true")
     @ConditionalOnBean(value = {ValueOperations.class}, name = {"application-ec"})
-    public String globePersistenceRegain(@Value("${expire.cache.globe-config.persistence.persistence-path:-0}")
+    public String globePersistenceRegain(@Value("${expire.cache.globe-config.persistence.persistence-path:default}")
                                          String path) {
         ExpireGlobePersistence.INSTANCE.deserialize(path);
         return "globe Persistence regain ok";

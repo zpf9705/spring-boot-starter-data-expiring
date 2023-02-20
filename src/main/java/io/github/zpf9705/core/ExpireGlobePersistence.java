@@ -23,6 +23,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +35,7 @@ import java.util.function.Supplier;
 
 /**
  * <p>
- *   Expiring - map persistence mechanism
+ * Expiring - map persistence mechanism
  * <p>
  *
  * @author zpf
@@ -51,6 +52,8 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
     private static final String PREFIX_BEFORE = ".aof";
 
     private static final String AT = "@";
+
+    private static final String DEFAULT_WRITE_PATH_SIGN = "default";
 
     private Persistence<K, V> persistence;
 
@@ -102,7 +105,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         cacheProperties = Application.context.getBean(ExpireMapCacheProperties.class);
         OPEN_PERSISTENCE = cacheProperties.getPersistence().getOpenPersistence();
         //if you open persistence will auto create directory
-        if (OPEN_PERSISTENCE){
+        if (OPEN_PERSISTENCE) {
             checkDirectory();
         }
     }
@@ -354,6 +357,9 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
 
     @Override
     public void deserializeO(String path) {
+        if (StringUtils.isBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
+            path = cacheProperties.getPersistence().getPersistencePath();
+        }
         Assert.hasText(path, "Path no be blank");
         Assert.isTrue(isDirectory(path),
                 "This path [" + path + "] belong file no a directory");
