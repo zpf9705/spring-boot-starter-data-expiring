@@ -90,6 +90,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
 
     /**
      * setting factory bean name
+     *
      * @param factoryBeanName ioc bean name
      */
     public void setFactoryBeanName(String factoryBeanName) {
@@ -98,6 +99,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
 
     /**
      * In the name of the bean in the constructor
+     *
      * @param factoryBeanName ioc bean name
      */
     public ExpireTemplate(String factoryBeanName) {
@@ -107,6 +109,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
 
     /**
      * Given the map one of the biggest capacity
+     *
      * @param maxSize The maximum capacity
      * @return {@link ExpireTemplate}
      */
@@ -119,6 +122,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
 
     /**
      * Given the map of a default cache expiration time
+     *
      * @param defaultExpireTime The default cache expiration time
      * @return {@link ExpireTemplate}
      */
@@ -131,6 +135,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
 
     /**
      * Given the map of a default cache expiration time units
+     *
      * @param defaultExpireTimeUnit The default cache expiration time units
      * @return {@link ExpireTemplate}
      */
@@ -143,6 +148,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
 
     /**
      * Given the map of a default cache expiration expired strategy
+     *
      * @param expirationPolicy The default cache expiration expired strategy
      * @return {@link ExpireTemplate}
      */
@@ -155,6 +161,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
 
     /**
      * Set the template key ExpiringSerializer
+     *
      * @param templateKeyType key Serializer
      */
     public void setKeySerializer(ExpiringSerializer<K> templateKeyType) {
@@ -165,6 +172,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
 
     /**
      * Set the template value ExpiringSerializer
+     *
      * @param templateValueType value Serializer
      */
     public void setValueSerializer(ExpiringSerializer<V> templateValueType) {
@@ -174,7 +182,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
-     *  Build a cache map
+     * Build a cache map
      */
     public void build() {
         Assert.isTrue(StringUtils.isNotBlank(factoryBeanName), "factoryBeanName no be null");
@@ -201,7 +209,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     }
 
     /**
-     *  Check whether the cache map initializes the initialization to avoid repetition
+     * Check whether the cache map initializes the initialization to avoid repetition
      */
     public void checkExpiringMapNoInit() {
         if (this.expiringMap != null) {
@@ -214,6 +222,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
 
     /**
      * Increase the expired listeners
+     *
      * @param expirationListener {@link ExpirationListener}
      * @see ExpirationListener
      */
@@ -229,6 +238,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
 
     /**
      * Access to the cache map
+     *
      * @return {@link ExpiringMap}
      */
     @Override
@@ -238,6 +248,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
 
     /**
      * Access to the key value operator
+     *
      * @return {@linkplain ValueOperations}
      */
     @Override
@@ -355,6 +366,12 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
         this.expiringMap.clear();
     }
 
+    /**
+     * execute callback
+     *
+     * @param action           {@link Callback}
+     * @param composeException Whether solve exception
+     */
     public void execute(Callback<K, V> action, boolean composeException) {
         Assert.notNull(action, "expireCallback can no be null !");
         Object o = null;
@@ -366,6 +383,14 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
         ExpireContextHolder.temporary(o);
     }
 
+    /**
+     * exchange special class type
+     *
+     * @param o                     supplier
+     * @param ofTypeClass           type class
+     * @param composeSolveException Whether solve exception
+     * @return exchange obj
+     */
     public <O> O ofType(Supplier<Object> o, Class<O> ofTypeClass, boolean composeSolveException) {
         Object source = o.get();
         //NOTE : source will be null but ofTypeClass is null return null
@@ -383,6 +408,12 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
         return target;
     }
 
+    /**
+     * solver exception way
+     *
+     * @param e                exception
+     * @param composeException whether solve exception
+     */
     public void solverException(Throwable e, boolean composeException) {
         Assert.notNull(e, "Throwable can no be null !");
         //CONSOLE EXPORT EXCEPTION
@@ -392,6 +423,11 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
         }
     }
 
+    /**
+     * maybe convert to StringExpiredTemplate
+     *
+     * @return {@link StringExpiredTemplate}
+     */
     public StringExpiredTemplate toStringTemplate() {
         StringExpiredTemplate template = null;
         try {
