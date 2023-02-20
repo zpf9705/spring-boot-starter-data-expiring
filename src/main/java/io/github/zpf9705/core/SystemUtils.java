@@ -48,8 +48,8 @@ public final class SystemUtils {
     /**
      * set system key and value constant or configuration or cache value
      *
-     * @param key   key
-     * @param value value
+     * @param key   set a value as a key
+     * @param value set a value as a key of value
      * @since 1.1.5
      */
     public static void setProperty(String key, String value) {
@@ -62,8 +62,8 @@ public final class SystemUtils {
     /**
      * get system key and value constant or configuration or cache value
      *
-     * @param key   key
-     * @return value
+     * @param key  value of key
+     * @return You call parameter value of key value
      * @since 1.1.5
      */
     public static String getProperty(String key) {
