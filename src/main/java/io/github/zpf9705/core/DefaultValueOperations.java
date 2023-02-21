@@ -2,6 +2,7 @@ package io.github.zpf9705.core;
 
 import cn.hutool.core.util.ArrayUtil;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -64,6 +65,11 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
 
     public V delete(K key) {
         return this.syncDelete(key);
+    }
+
+    @Override
+    public Map<K, V> deleteType(K key) {
+        return this.syncDeleteType(key);
     }
 
     @Override

@@ -2,6 +2,7 @@ package io.github.zpf9705.core;
 
 import lombok.AllArgsConstructor;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -117,6 +118,17 @@ public abstract class AbstractOperations<K, V> {
      */
     public V syncDelete(K key) {
         return expireTemplate.remove(key);
+    }
+
+    /**
+     * Will according to give the key to query the beginning and end ,
+     * contains the rules of key/value pair to remove and return the delete key/value pair
+     *
+     * @param key The specified key
+     * @return Be removed in the similar key of key/value pair
+     */
+    public Map<K, V> syncDeleteType(K key) {
+        return expireTemplate.removeType(key);
     }
 
     /**

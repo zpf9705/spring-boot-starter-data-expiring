@@ -3,11 +3,12 @@ package io.github.zpf9705.core;
 import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.lang.NonNull;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- *    Defined here about the packaging {@link ExpiringMap} apis method
+ * Defined here about the packaging {@link ExpiringMap} apis method
  * <p>
  *
  * @author zpf
@@ -24,7 +25,7 @@ public interface ExpireAccessor<K, V> {
      * @param factoryBeanName The name of the cache template defined in the spring container bean
      * @return Returns The old value
      */
-    V putVal(@NonNull ExpiringMap<K, V> expiringMap, @NonNull K key, @NonNull V value, @NonNull String factoryBeanName);
+    V putVal(ExpiringMap<K, V> expiringMap, K key, V value, String factoryBeanName);
 
     /**
      * To put a memory contains the key and the value of the cache
@@ -116,6 +117,16 @@ public interface ExpireAccessor<K, V> {
      * @return The return value from a deleted value
      */
     V remove(ExpiringMap<K, V> expiringMap, K key);
+
+    /**
+     * Will according to give the key to query the beginning and end ,
+     * contains the rules of key/value pair to remove and return the delete key/value pair
+     *
+     * @param expiringMap {@link ExpiringMap}
+     * @param key         The specified key
+     * @return Be removed in the similar key of key/value pair
+     */
+    Map<K, V> removeType(ExpiringMap<K, V> expiringMap, K key);
 
     /**
      * Replacement of the specified key value

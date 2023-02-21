@@ -1,5 +1,6 @@
 package io.github.zpf9705.core;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -95,6 +96,15 @@ public interface ValueOperations<K, V> {
      * @return The return value from a deleted value
      */
     V delete(K key);
+
+    /**
+     * Will according to give the key to query the beginning and end ,
+     * contains the rules of key/value pair to remove and return the delete key/value pair
+     *
+     * @param key The specified key
+     * @return Be removed in the similar key of key/value pair
+     */
+    Map<K,V> deleteType(K key);
 
     /**
      * Clear all cache key/value pair

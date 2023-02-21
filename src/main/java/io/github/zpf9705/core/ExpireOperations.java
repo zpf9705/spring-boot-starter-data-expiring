@@ -4,6 +4,7 @@ package io.github.zpf9705.core;
 import net.jodah.expiringmap.ExpiringMap;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -111,6 +112,15 @@ public interface ExpireOperations<K, V> extends Serializable {
      * @return The return value from a deleted value
      */
     V remove(K key);
+
+    /**
+     * Will according to give the key to query the beginning and end ,
+     * contains the rules of key/value pair to remove and return the delete key/value pair
+     *
+     * @param key The specified key
+     * @return Be removed in the similar key of key/value pair
+     */
+    Map<K, V> removeType(K key);
 
     /**
      * To delete all cache

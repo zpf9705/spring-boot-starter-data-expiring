@@ -10,6 +10,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -321,6 +322,13 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     public V remove(K key) {
         return ofType(() -> this.execute(e -> this.remove(e, key)),
                 vExpiringSerializer.serializerType(), true);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Map<K, V> removeType(K key) {
+        return ofType(() -> this.execute(e -> this.removeType(e, key)),
+                Map.class, true);
     }
 
     @Override

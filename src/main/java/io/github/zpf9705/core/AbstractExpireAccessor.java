@@ -6,8 +6,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 /**
@@ -108,6 +112,35 @@ public abstract class AbstractExpireAccessor<K, V> implements ExpireAccessor<K, 
         Assert.notNull(removeValue, "remove return is null !");
         ExpirePersistenceUtils.removePersistence(key, removeValue);
         return removeValue;
+    }
+
+    @Override
+    public Map<K, V> removeType(ExpiringMap<K, V> expiringMap, K key) {
+        Map<K, V> map = new HashMap<>();
+        if (hasKey(expiringMap, key)) {
+            map.put(key, getVal(expiringMap, key));
+            remove(expiringMap, key);
+        } else {
+            Set<K> keys = expiringMap.keySet();
+            final Predicate<K> pk = k -> {
+                String bKey = k.toString();
+                String sKey = key.toString();
+                //start / end / contain
+                return bKey.startsWith(sKey) ||
+                        bKey.endsWith(sKey) ||
+                        bKey.contains(sKey);
+            };
+            if (keys.stream().anyMatch(pk)) {
+                List<K> oKeys = keys.stream()
+                        .filter(pk)
+                        .collect(Collectors.toList());
+                oKeys.forEach(k -> {
+                    map.put(k, getVal(expiringMap, k));
+                    remove(expiringMap, k);
+                });
+            }
+        }
+        return map;
     }
 
     @Override
