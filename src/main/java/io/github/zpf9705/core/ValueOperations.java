@@ -103,6 +103,7 @@ public interface ValueOperations<K, V> {
      *
      * @param key The specified key
      * @return Be removed in the similar key of key/value pair
+     * @since 2.0.0
      */
     Map<K,V> deleteType(K key);
 

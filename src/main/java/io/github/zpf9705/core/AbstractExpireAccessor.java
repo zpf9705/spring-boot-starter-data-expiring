@@ -106,7 +106,6 @@ public abstract class AbstractExpireAccessor<K, V> implements ExpireAccessor<K, 
     @Override
     public V remove(ExpiringMap<K, V> expiringMap, K key) {
         V removeValue = expiringMap.remove(key);
-        Assert.notNull(removeValue, "remove return is null !");
         ExpirePersistenceUtils.removePersistence(key, removeValue);
         return removeValue;
     }
@@ -143,7 +142,6 @@ public abstract class AbstractExpireAccessor<K, V> implements ExpireAccessor<K, 
     @Override
     public V replace(ExpiringMap<K, V> expiringMap, K key, V newValue) {
         V oldValue = expiringMap.replace(key, newValue);
-        Assert.notNull(oldValue, "replaced oldValue  no  be null");
         ExpirePersistenceUtils.replacePersistence(key, oldValue, newValue);
         return oldValue;
     }
