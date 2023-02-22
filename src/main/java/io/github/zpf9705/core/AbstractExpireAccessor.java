@@ -1,7 +1,6 @@
 package io.github.zpf9705.core;
 
 import net.jodah.expiringmap.ExpiringMap;
-import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -35,16 +34,15 @@ public abstract class AbstractExpireAccessor<K, V> implements ExpireAccessor<K, 
     private final Object lock = new Object();
 
     @Override
-    public V putVal(@NonNull ExpiringMap<K, V> expiringMap, @NonNull K key, @NonNull V value,
-                    @NonNull String factoryBeanName) {
+    public V putVal(ExpiringMap<K, V> expiringMap, K key, V value, String factoryBeanName) {
         V put = expiringMap.put(key, value);
         ExpirePersistenceUtils.putPersistence(key, value, null, null, factoryBeanName);
         return put;
     }
 
     @Override
-    public V putValOfDuration(@NonNull ExpiringMap<K, V> expiringMap, @NonNull K key, @NonNull V value,
-                              @NonNull Long duration, @NonNull TimeUnit timeUnit, @NonNull String factoryBeanName) {
+    public V putValOfDuration(ExpiringMap<K, V> expiringMap, K key, V value, Long duration,
+                              TimeUnit timeUnit, String factoryBeanName) {
         V put = expiringMap.put(key, value, duration, timeUnit);
         ExpirePersistenceUtils.putPersistence(key, value, duration, timeUnit, factoryBeanName);
         return put;
@@ -52,8 +50,7 @@ public abstract class AbstractExpireAccessor<K, V> implements ExpireAccessor<K, 
 
     @SuppressWarnings("unchecked")
     @Override
-    public Boolean putAll(@NonNull ExpiringMap<K, V> expiringMap, @NonNull String factoryBeanName,
-                          @NonNull Entry<K, V>... entries) {
+    public Boolean putAll(ExpiringMap<K, V> expiringMap, String factoryBeanName, Entry<K, V>... entries) {
         Map<K, V> entryMap = new HashMap<>();
         for (Entry<K, V> entry : entries) {
             if (!entry.ofDuration()) {
@@ -73,41 +70,41 @@ public abstract class AbstractExpireAccessor<K, V> implements ExpireAccessor<K, 
     }
 
     @Override
-    public V getVal(@NonNull ExpiringMap<K, V> expiringMap, @NonNull K key) {
+    public V getVal(ExpiringMap<K, V> expiringMap, K key) {
         return expiringMap.get(key);
     }
 
     @Override
-    public Long getExpectedExpiration(@NonNull ExpiringMap<K, V> expiringMap, @NonNull K key) {
+    public Long getExpectedExpiration(ExpiringMap<K, V> expiringMap, K key) {
         return expiringMap.getExpectedExpiration(key);
     }
 
-    public Long getExpiration(@NonNull ExpiringMap<K, V> expiringMap, @NonNull K key) {
+    public Long getExpiration(ExpiringMap<K, V> expiringMap, K key) {
         return expiringMap.getExpiration(key);
     }
 
     @Override
-    public K setExpiration(@NonNull ExpiringMap<K, V> expiringMap, @NonNull K key,
-                           @NonNull Long duration, @NonNull TimeUnit timeUnit) {
+    public K setExpiration(ExpiringMap<K, V> expiringMap, K key,
+                           Long duration, TimeUnit timeUnit) {
         expiringMap.setExpiration(key, duration, timeUnit);
         ExpirePersistenceUtils.setEPersistence(key, getVal(expiringMap, key), duration, timeUnit);
         return key;
     }
 
     @Override
-    public K resetExpiration(@NonNull ExpiringMap<K, V> expiringMap, @NonNull K key) {
+    public K resetExpiration(ExpiringMap<K, V> expiringMap, K key) {
         expiringMap.resetExpiration(key);
         ExpirePersistenceUtils.restPersistence(key, getVal(expiringMap, key));
         return key;
     }
 
     @Override
-    public Boolean hasKey(@NonNull ExpiringMap<K, V> expiringMap, @NonNull K key) {
+    public Boolean hasKey(ExpiringMap<K, V> expiringMap, K key) {
         return expiringMap.containsKey(key);
     }
 
     @Override
-    public V remove(@NonNull ExpiringMap<K, V> expiringMap, @NonNull K key) {
+    public V remove(ExpiringMap<K, V> expiringMap, K key) {
         V removeValue = expiringMap.remove(key);
         Assert.notNull(removeValue, "remove return is null !");
         ExpirePersistenceUtils.removePersistence(key, removeValue);
@@ -144,7 +141,7 @@ public abstract class AbstractExpireAccessor<K, V> implements ExpireAccessor<K, 
     }
 
     @Override
-    public V replace(@NonNull ExpiringMap<K, V> expiringMap, @NonNull K key, @NonNull V newValue) {
+    public V replace(ExpiringMap<K, V> expiringMap, K key, V newValue) {
         V oldValue = expiringMap.replace(key, newValue);
         Assert.notNull(oldValue, "replaced oldValue  no  be null");
         ExpirePersistenceUtils.replacePersistence(key, oldValue, newValue);
@@ -152,8 +149,8 @@ public abstract class AbstractExpireAccessor<K, V> implements ExpireAccessor<K, 
     }
 
     @Override
-    public Boolean putIfAbsent(@NonNull ExpiringMap<K, V> expiringMap, @NonNull K key, @NonNull V value,
-                               @NonNull String factoryBeanName) {
+    public Boolean putIfAbsent(ExpiringMap<K, V> expiringMap, K key, V value,
+                               String factoryBeanName) {
         V v = expiringMap.putIfAbsent(key, value);
         //null is put success but no null put failed
         if (v == null) {
