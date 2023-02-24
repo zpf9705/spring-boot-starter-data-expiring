@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 
 /**
  * <p>
- *    Delete persistence expired callback
+ *    Delete persistence expired callback {@link ExpireTemplate#remove(Object)}
  * <p>
  *
  * @see SimpleAspect
