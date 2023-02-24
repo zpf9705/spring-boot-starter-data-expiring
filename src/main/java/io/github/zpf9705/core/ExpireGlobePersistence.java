@@ -2,6 +2,7 @@ package io.github.zpf9705.core;
 
 import ch.qos.logback.core.util.CloseUtil;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
@@ -35,7 +36,13 @@ import java.util.function.Supplier;
 
 /**
  * <p>
- * Expiring - map persistence mechanism
+ *   Expiring - map persistence mechanism ,
+ *   Here provides a cache persistent serialization and reverse sequence ,
+ *   ...
+ *   For each cache cache object premise is to meet the cache configuration {@link ExpireMapCacheProperties} standard ,
+ *   You can change its configurations to achieve the purpose of you want to cache ,
+ *   If through normal expiration will automatically persisted in the callback file removal ,
+ *   ... {@link PersistenceExpiringCallback}
  * <p>
  *
  * @author zpf
@@ -101,6 +108,9 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         }
     }
 
+    /**
+     * load static cacheProperties
+     */
     public static void resolveCacheProperties() {
         cacheProperties = Application.context.getBean(ExpireMapCacheProperties.class);
         OPEN_PERSISTENCE = cacheProperties.getPersistence().getOpenPersistence();
@@ -110,6 +120,9 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         }
     }
 
+    /**
+     * check provider persistence path
+     */
     public static void checkDirectory() {
         String persistencePath = cacheProperties.getPersistence().getPersistencePath();
         if (StringUtils.isNotBlank(persistencePath)) {
@@ -123,6 +136,11 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         }
     }
 
+    /**
+     * if no found persistence path will check error path and give logger
+     *
+     * @param persistencePath persistence path
+     */
     private static void checkError(String persistencePath) {
         String[] pathArray = persistencePath.split("/");
         Assert.isTrue(ArrayUtil.isNotEmpty(pathArray),
@@ -138,6 +156,15 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         }
     }
 
+    /**
+     * Through the entry {@link Entry} and container bean name to construct a persistent object
+     *
+     * @param entry           {@link Entry}
+     * @param factoryBeanName factory in container of spring boot bean name
+     * @param <K>             key type
+     * @param <V>             value type
+     * @return {@link ExpireGlobePersistence}
+     */
     public static <K, V> ExpireGlobePersistence<K, V> of(Entry<K, V> entry, String factoryBeanName) {
         Assert.notNull(entry, "Entry no be null");
         Assert.isTrue(StringUtils.isNotBlank(factoryBeanName), "factoryBeanName no be blank");
@@ -159,6 +186,14 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         return persistence;
     }
 
+    /**
+     * To build a persistent object by persistent core classes {@link Persistence}
+     *
+     * @param persistence {@link Persistence}
+     * @param <K>         key type
+     * @param <V>         value type
+     * @return {@link ExpireGlobePersistence}
+     */
     public static <K, V> ExpireGlobePersistence<K, V> of(Persistence<K, V> persistence) {
         Assert.notNull(persistence, "Persistence no be null");
         Entry<K, V> entry = persistence.entry;
@@ -167,6 +202,13 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         return new ExpireGlobePersistence<>(() -> persistence, writePath);
     }
 
+    /**
+     * Check whether accord with standard of cache persistence
+     *
+     * @param entry {@link Entry}
+     * @param <K>   key type
+     * @param <V>   value type
+     */
     private static <V, K> void checkOf(Entry<K, V> entry) {
         Assert.isTrue(OPEN_PERSISTENCE, "No open expiring persistence");
         Assert.notNull(entry, "Entry no be null");
@@ -186,6 +228,15 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
                 " can be persisted so key [" + entry.getKey() + "] value [" + entry.getValue() + "] no persisted ");
     }
 
+    /**
+     * Directly through the key/value pair from the cache take persistent objects in the map
+     *
+     * @param key   key
+     * @param value value
+     * @param <K>   key type
+     * @param <V>   value type
+     * @return {@link ExpireGlobePersistence}
+     */
     public static <K, V> ExpireGlobePersistence<K, V> of(@NonNull K key, @NonNull V value) {
         Assert.isTrue(OPEN_PERSISTENCE, "No open expiring persistence");
         ExpireGlobePersistence<K, V> expireGlobePersistence = CACHE_MAP.get(rawHash(key, value));
@@ -196,20 +247,54 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         return expireGlobePersistence;
     }
 
+    /**
+     * Write the server file path combination
+     *
+     * @param key key
+     * @param <K> key type
+     * @return final write path
+     */
     public static <K> String rawWritePath(@NonNull K key) {
         Assert.notNull(key, "Key no be null ");
-        return cacheProperties.getPersistence().getPersistencePath() + key + PREFIX_BEFORE;
+        return cacheProperties.getPersistence().getPersistencePath()
+                //md5 sign to prevent the file name is too long
+                + DigestUtil.md5Hex(key.toString())
+                + PREFIX_BEFORE;
     }
 
+    /**
+     * Calculate the hash mark of key/value
+     *
+     * @param key   key
+     * @param value value
+     * @param <K>   key type
+     * @param <V>   value type
+     * @return hash mark
+     */
     public static <K, V> String rawHash(@NonNull K key, @NonNull V value) {
         return DEALT + rawHash(key) + rawHash(value);
     }
 
+    /**
+     * Calculate the hash mark
+     *
+     * @param t   obj
+     * @param <T> obj type
+     * @return hash mark
+     */
     public static <T> String rawHash(@NonNull T t) {
         Assert.notNull(t, "T no be null");
         return t.hashCode() + t.getClass().getName();
     }
 
+    /**
+     * Get a cache template by the bean's name in the container
+     *
+     * @param factoryBeanName factory in container of spring boot bean name
+     * @param <K>             key type
+     * @param <V>             value type
+     * @return {@link ExpireTemplate}
+     */
     public static <K, V> ExpireTemplate<K, V> accessToTheCacheTemplate(String factoryBeanName) {
         ExpireTemplate<K, V> expireTemplate = null;
         try {
