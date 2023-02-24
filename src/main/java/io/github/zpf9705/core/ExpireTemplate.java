@@ -224,12 +224,12 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     /**
      * Increase the expired listeners
      *
-     * @param expirationListener {@link ExpirationListener}
-     * @see ExpirationListener
+     * @param loadListener {@link ExpirationListener}
+     * @see ExpiringLoadListener
      */
-    public void addExpiredListener(ExpirationListener<K, V> expirationListener) {
+    public void addExpiredListener(ExpiringLoadListener<K, V> loadListener) {
         if (this.expiringMap != null) {
-            expiringMap.addExpirationListener(expirationListener);
+            expiringMap.addExpirationListener(loadListener);
         } else {
             throw new BeanInitializationException(
                     "expiringMap have no init"
