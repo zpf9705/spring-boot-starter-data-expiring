@@ -1,10 +1,12 @@
 package io.github.zpf9705.core;
 
+import net.jodah.expiringmap.ExpirationListener;
+
 /**
  *
  * The implementation of this interface can help you with dynamic new overdue listener configuration code level
  *
- * @see ExpireTemplate#addExpiredListener(ExpiringLoadListener)
+ * @see ExpireTemplate#addExpiredListener(ExpirationListener)
  *
  * @author zpf
  * @since 1.1.0

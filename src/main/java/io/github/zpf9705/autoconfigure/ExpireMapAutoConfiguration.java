@@ -5,6 +5,7 @@ import cn.hutool.aop.proxy.SpringCglibProxyFactory;
 import cn.hutool.core.util.ReflectUtil;
 import com.google.common.collect.Lists;
 import io.github.zpf9705.core.*;
+import net.jodah.expiringmap.ExpirationListener;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
@@ -50,8 +51,6 @@ import java.util.stream.Collectors;
  * ......
  * {@link ExpireConfigurationCustomizer} can be added dynamically expired listeners
  * you only implementation {@link net.jodah.expiringmap.ExpirationListener}
- *    or {@link ExpiringLoadListener}
- *        ...
  * and pay attention to the generic template
  * </p>
  * <p>
@@ -152,8 +151,8 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
                 new ConfigurationBuilder().forPackages(listeningPackages)
         );
         //reflection find ExpiringLoadListener impl
-        Set<Class<? extends ExpiringLoadListener>> subTypesOf =
-                reflections.getSubTypesOf(ExpiringLoadListener.class);
+        Set<Class<? extends ExpirationListener>> subTypesOf =
+                reflections.getSubTypesOf(ExpirationListener.class);
         if (CollectionUtils.isEmpty(subTypesOf)){
             Console.logger.info(
                     "no provider implementation ExpiringLoadListener class ," +
@@ -162,7 +161,7 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
             return "bind no";
         }
         final Predicate<Method> filter = (s) -> "expired".equals(s.getName());
-        for (Class<? extends ExpiringLoadListener> aClass : subTypesOf) {
+        for (Class<? extends ExpirationListener> aClass : subTypesOf) {
             if (Modifier.isAbstract(aClass.getModifiers())) {
                 continue;
             }
@@ -205,12 +204,12 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
                 }
                 if (template.getKeySerializer().serializerType() == parameterTypes[0]
                         && template.getValueSerializer().serializerType() == parameterTypes[1]) {
-                    ExpiringLoadListener listener =
+                    ExpirationListener listener =
                             new SpringCglibProxyFactory().proxy(ReflectUtil.newInstance(aClass),
                                     PersistenceExpiringCallback.class);
                     if (listener != null) {
                         template.addExpiredListener(listener);
-                        Console.logger.debug("template bean [{}] bind listener [{}] success",
+                        Console.logger.info("Template bean [{}] bind listener [{}] success",
                                 beanName,
                                 aClass.getName());
                     }
