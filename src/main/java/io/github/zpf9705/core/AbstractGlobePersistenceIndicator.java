@@ -8,9 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * <p>
- * Here provides a cache serialization deserialization life cycle
- * <p>
+ * Here provides a cache persistent {@link ExpireGlobePersistence} all process
  *
  * @author zpf
  * @since 1.1.0

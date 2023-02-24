@@ -4,9 +4,7 @@ import net.jodah.expiringmap.ExpiringMap;
 
 
 /**
- * <p>
- * interface for call back
- * <p>
+ * The cache method performs callback interface to facilitate the invocation process monitoring method
  *
  * @author zpf
  * @since 1.1.0

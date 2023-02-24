@@ -7,9 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>
- *     You can use this annotation to specify the corresponding template bean add monitor date
- * </p>
+ * You can use this annotation to specify the corresponding template bean add monitor date
  *
  * @author zpf
  * @since 1.1.0
@@ -22,9 +20,9 @@ public @interface ExpiringListener {
      * Here by providing the bean name to find corresponding
      * The corresponding listener binding to the corresponding cache on the template
      *
+     * @return bean name
      * @see ExpireTemplate
      * @see org.springframework.context.ApplicationContext#getBean(String)
-     * @return bean name
      */
     String expirationForBean() default "";
 }

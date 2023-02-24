@@ -3,10 +3,9 @@ package io.github.zpf9705.core;
 import org.springframework.core.NamedThreadLocal;
 
 /**
- * save value in a litter time of context
+ * The cache callback register context
  *
  * @author zpf
- * @see ThreadLocal {@link NamedThreadLocal}
  * @since 1.1.0
  */
 public class ExpireContextHolder implements Clearable {

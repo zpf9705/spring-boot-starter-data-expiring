@@ -3,9 +3,7 @@ package io.github.zpf9705.core;
 import net.jodah.expiringmap.ExpirationListener;
 
 /**
- * <p>
- *    default Expiring Load Listener of key{@link String} and value {@link String}
- * <p>
+ * default Expiring Load Listener of key{@link String} and value {@link String}
  *
  * @author zpf
  * @since 2.0.1

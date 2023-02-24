@@ -5,9 +5,10 @@ import org.springframework.util.Assert;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <p>
- * Expiring - map persistence tool
- * <p>
+ * Cache persistence tool
+ * <ul>
+ *     {@link ExpireGlobePersistence}
+ * </ul>
  *
  * @author zpf
  * @since 1.1.0

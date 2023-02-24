@@ -6,11 +6,8 @@ import cn.hutool.core.util.ArrayUtil;
 import java.lang.reflect.Method;
 
 /**
- * <p>
- *    Delete persistence expired callback {@link ExpireTemplate#remove(Object)}
- * <p>
- *
- * @see SimpleAspect
+ * Call cache deletion method after the callback class, for persistent files deleted
+ * Using {@link cn.hutool.Hutool} encapsulation of spring-based tool to realize the unity of the proxy object callback
  *
  * @author zpf
  * @since 1.1.0

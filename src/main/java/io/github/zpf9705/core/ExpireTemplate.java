@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 
 /**
  * <p>
- * Template for ioc integration springboot of ExpiringMap
+ *     Template for ioc integration springboot of ExpiringMap
  * </p>
  * <p>
  * In order to better fit springboot {@link org.springframework.boot.autoconfigure.SpringBootApplication}

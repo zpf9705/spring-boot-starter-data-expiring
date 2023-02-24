@@ -1,9 +1,7 @@
 package io.github.zpf9705.core;
 
 /**
- * <p>
- *     Type string serialization class {@link ExpiringSerializerAdapter}
- * </p>
+ * Type string serialization class implementation of {@link ExpiringSerializerAdapter}
  *
  * @author zpf
  * @since 1.1.0

@@ -8,9 +8,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <p>
  * Template pattern specification interface operation
- * </p>
  *
  * @author zpf
  * @since 1.1.0
@@ -132,7 +130,7 @@ public interface ExpireOperations<K, V> extends Serializable {
     /**
      * Replacement of the specified key value
      *
-     * @param key The specified key
+     * @param key   The specified key
      * @param value The specified new value
      * @return Returns the old value is replaced
      */

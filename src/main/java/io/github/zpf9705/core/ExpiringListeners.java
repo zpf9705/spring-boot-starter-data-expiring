@@ -7,12 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>
- * When set a date, then find the bean in the annotation corresponding value to inform the corresponding
- * key and the value
- * </p>
- * @see net.jodah.expiringmap.ExpirationListener
- *
+ * Is {@link ExpiringListener} group of annotation mode, can realize the mass of a single template pattern
  *
  * @author zpf
  * @since 1.1.0

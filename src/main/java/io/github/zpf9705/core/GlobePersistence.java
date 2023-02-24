@@ -4,9 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * <p>
- *   Global persistence Unified method interface
- * <p>
+ * Cache persistence methods defined interfaces
  *
  * @author zpf
  * @since 1.1.0

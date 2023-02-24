@@ -4,9 +4,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <p>
- *    Simple using interface for {@link ExpireTemplate}
- * <p>
+ * Cache tool suggested operation interface
  *
  * @author zpf
  * @since 1.1.0
@@ -105,7 +103,7 @@ public interface ValueOperations<K, V> {
      * @return Be removed in the similar key of key/value pair
      * @since 2.0.0
      */
-    Map<K,V> deleteType(K key);
+    Map<K, V> deleteType(K key);
 
     /**
      * Clear all cache key/value pair

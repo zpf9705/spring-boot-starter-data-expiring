@@ -1,10 +1,7 @@
 package io.github.zpf9705.core;
 
 /**
- * <p>
- * The key value unified serializable interface
- * {@link java.io.Serializable}
- * </p>
+ * The key/value unified serializable interface
  *
  * @author zpf
  * @since 1.1.0

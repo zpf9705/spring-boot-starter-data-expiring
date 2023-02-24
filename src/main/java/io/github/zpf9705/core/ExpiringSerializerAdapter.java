@@ -5,9 +5,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.SerializationUtils;
 
 /**
- * <p>
- *     many types of key  and value serialization adapter
- * </p>
+ * Key/value pairs serialized adapter , Direct implementation {@link ExpiringSerializer}
  *
  * @author zpf
  * @since 1.1.0

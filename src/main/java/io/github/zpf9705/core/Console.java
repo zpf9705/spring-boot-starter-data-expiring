@@ -4,9 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>
- *   Log output
- * <p>
+ * Use date records for this item
  *
  * @author zpf
  * @since 1.1.0

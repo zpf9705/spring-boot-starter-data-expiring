@@ -8,15 +8,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 /**
- * <p>
- * 【System utils】
- * Here you can get relevant variables of the system
- * Also can obtain relevant configuration of engineering {@link ExpireMapCacheProperties}
- * But you need setting your configuration in system property
- * .....
- * System.setProperty(...) {@link System#setProperty(String, String)}
- * And get it {@link System#getProperty(String)}
- * </p>
+ * Here is some tips on some of the API support system of Java classes
  *
  * @author zpf
  * @since 1.1.4
@@ -30,9 +22,10 @@ public final class SystemUtils {
 
     /**
      * The current main working directory of the user
+     *
      * @since 1.1.5
      */
-    public static final String PROJECT_HOME= "user.home";
+    public static final String PROJECT_HOME = "user.home";
 
     private static final String SLASH = "/";
 
@@ -40,8 +33,8 @@ public final class SystemUtils {
 
     static {
         /*
-        * Static access to relevant variables of the system
-        * */
+         * Static access to relevant variables of the system
+         * */
         currentProjectPath = System.getProperty(PROJECT_PATH);
     }
 
@@ -53,7 +46,7 @@ public final class SystemUtils {
      * @since 1.1.5
      */
     public static void setProperty(String key, String value) {
-        if (key == null || value == null){
+        if (key == null || value == null) {
             return;
         }
         System.setProperty(key, value);
@@ -62,12 +55,12 @@ public final class SystemUtils {
     /**
      * get system key and value constant or configuration or cache value
      *
-     * @param key  value of key
+     * @param key value of key
      * @return You call parameter value of key value
      * @since 1.1.5
      */
     public static String getProperty(String key) {
-        if (key == null){
+        if (key == null) {
             return null;
         }
         return System.getProperty(key);

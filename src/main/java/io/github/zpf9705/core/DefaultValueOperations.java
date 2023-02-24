@@ -8,9 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * <p>
- *      Here provides a default implementation of {@link net.jodah.expiringmap.ExpiringMap}
- * </p>
+ * Default cheap cache api operator implementation class {@link ValueOperations}
  *
  * @author zpf
  * @since 1.1.0

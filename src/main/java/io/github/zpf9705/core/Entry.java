@@ -7,10 +7,7 @@ import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <p>
- *    cache entry for expiring map
- * </p>
- *
+ * Persistent cache category
  *
  * @author zpf
  * @since 1.1.0
@@ -41,8 +38,8 @@ public class Entry<K, V> implements Serializable {
     }
 
     public void refreshOfExpire(Long duration, TimeUnit timeUnit) {
-        Assert.notNull(duration,"duration no be null");
-        Assert.notNull(timeUnit,"timeUnit no be null");
+        Assert.notNull(duration, "duration no be null");
+        Assert.notNull(timeUnit, "timeUnit no be null");
         this.duration = duration;
         this.timeUnit = timeUnit;
     }

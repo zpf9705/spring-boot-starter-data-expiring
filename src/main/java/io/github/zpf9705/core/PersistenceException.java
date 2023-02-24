@@ -2,9 +2,7 @@ package io.github.zpf9705.core;
 
 
 /**
- * <p>
- *   Persistent abnormal
- * <p>
+ * Cache persistent abnormal
  *
  * @author zpf
  * @since 1.1.0

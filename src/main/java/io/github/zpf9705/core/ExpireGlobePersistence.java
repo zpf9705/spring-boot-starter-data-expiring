@@ -35,15 +35,8 @@ import java.util.function.Supplier;
 
 
 /**
- * <p>
- *   Expiring - map persistence mechanism ,
- *   Here provides a cache persistent serialization and reverse sequence ,
- *   ...
- *   For each cache cache object premise is to meet the cache configuration {@link ExpireMapCacheProperties} standard ,
- *   You can change its configurations to achieve the purpose of you want to cache ,
- *   If through normal expiration will automatically persisted in the callback file removal ,
- *   ... {@link PersistenceExpiringCallback}
- * <p>
+ * Global cache persistent objects. Here, a cache object is provided for each key-value pair. When the cache fails,
+ * the relevant information will be read from the cache persistent object for subsequent persistent operations
  *
  * @author zpf
  * @since 1.1.0

@@ -6,9 +6,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <p>
- * This abstract class is mainly described {@link net.jodah.expiringmap.ExpiringMap} - apis
- * </p>
+ * This abstract class is mainly described {@link ExpireTemplate} Some behavioral methods
  *
  * @author zpf
  * @since 1.1.0

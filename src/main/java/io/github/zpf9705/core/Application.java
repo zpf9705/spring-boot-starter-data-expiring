@@ -6,9 +6,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
 
 /**
- * <p>
- *   spring application for Bean Factory
- * <p>
+ * When to note {@link ExpiringListener} binding to the appropriate template model from the ioc container
  *
  * @author zpf
  * @since 1.1.0

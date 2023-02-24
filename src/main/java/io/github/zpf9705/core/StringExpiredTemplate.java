@@ -1,9 +1,7 @@
 package io.github.zpf9705.core;
 
 /**
- * <p>
- *     Provide fixed generic String String {@link ExpireTemplate}  is  here
- * </p>
+ * Is to cache a default template mode key values for all of type String of derived classes
  *
  * @author zpf
  * @since 1.1.0
@@ -22,8 +20,8 @@ public class StringExpiredTemplate extends ExpireTemplate<String, String> {
     }
 
     /**
-     * @see ExpireTemplate#ExpireTemplate(String)
      * @param factoryBeanName ioc bean name
+     * @see ExpireTemplate#ExpireTemplate(String)
      */
     public StringExpiredTemplate(String factoryBeanName) {
         super(factoryBeanName);
