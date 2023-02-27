@@ -408,7 +408,8 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
         }
         O target = null;
         try {
-            target = Single.just(o.get())
+            // update repeat call value to threadLocal
+            target = Single.just(source)
                     .ofType(ofTypeClass)
                     .blockingGet();
         } catch (Throwable e) {
