@@ -73,7 +73,7 @@ public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
      *
      * @param path Persistence path
      */
-    public abstract void deserializeO(String path);
+    public abstract void deserializeO(String path) throws PersistenceException;
 
     /**
      * Restore memory within a file
@@ -81,7 +81,7 @@ public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
      * @param file Persistence file
      * @throws PersistenceException Persistence ex
      */
-    public abstract void deserialize0(File file);
+    public abstract void deserialize0(File file) throws PersistenceException;
 
     /**
      * Restore memory of read file buff
@@ -89,7 +89,7 @@ public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
      * @param buffer file read buff
      * @throws PersistenceException Persistence ex
      */
-    public abstract void deserialize0(StringBuilder buffer);
+    public abstract void deserialize0(StringBuilder buffer) throws PersistenceException;
 
     /**
      * Restore memory of expireTemplate regain this info
@@ -100,7 +100,8 @@ public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
      * @throws PersistenceException Persistence ex
      */
     public abstract void deserialize0(ExpireTemplate<K, V> template,
-                                      ExpireGlobePersistence.Persistence<K, V> persistence, String writePath);
+                                      ExpireGlobePersistence.Persistence<K, V> persistence, String writePath)
+            throws PersistenceException;
 
     /**
      * Restore the cache time remaining
@@ -111,5 +112,5 @@ public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
      * @return The rest of the corresponding amount per unit time
      * @throws PersistenceException Persistence ex
      */
-    public abstract Long condition(LocalDateTime now, LocalDateTime expire, TimeUnit unit);
+    public abstract Long condition(LocalDateTime now, LocalDateTime expire, TimeUnit unit) throws PersistenceException;
 }

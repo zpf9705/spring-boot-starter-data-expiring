@@ -13,7 +13,7 @@ import java.util.TimeZone;
  * @author zpf
  * @since 1.1.4
  */
-public final class SystemUtils {
+public abstract class SystemUtils {
 
     /**
      * The current working directory of the user

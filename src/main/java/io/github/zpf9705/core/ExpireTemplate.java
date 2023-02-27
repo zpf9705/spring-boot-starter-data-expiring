@@ -1,23 +1,18 @@
 package io.github.zpf9705.core;
 
-import cn.hutool.core.exceptions.ExceptionUtil;
 import io.reactivex.rxjava3.core.Single;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.util.Assert;
-
 import java.io.Serializable;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
  * <p>
- *     Template for ioc integration springboot of ExpiringMap
+ * Template for ioc integration springboot of ExpiringMap
  * </p>
  * <p>
  * In order to better fit springboot {@link org.springframework.boot.autoconfigure.SpringBootApplication}
@@ -105,7 +100,8 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      * @param factoryBeanName ioc bean name
      */
     public ExpireTemplate(String factoryBeanName) {
-        Assert.isTrue(StringUtils.isNotBlank(factoryBeanName), "factoryBeanName no be null");
+        AssertUtils.Operation.isTrue(StringUtils.isNotBlank(factoryBeanName),
+                "factoryBeanName no be null");
         this.factoryBeanName = factoryBeanName;
     }
 
@@ -116,7 +112,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      * @return {@link ExpireTemplate}
      */
     public ExpireTemplate<K, V> acquireMaxSize(Integer maxSize) {
-        Assert.isTrue(this.maxSize == null,
+        AssertUtils.Operation.isTrue(this.maxSize == null,
                 "maxSize existing configuration values, please do not cover");
         this.maxSize = maxSize;
         return this;
@@ -129,7 +125,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      * @return {@link ExpireTemplate}
      */
     public ExpireTemplate<K, V> acquireDefaultExpireTime(Long defaultExpireTime) {
-        Assert.isTrue(this.defaultExpireTime == null,
+        AssertUtils.Operation.isTrue(this.defaultExpireTime == null,
                 "defaultExpireTime existing configuration values, please do not cover");
         this.defaultExpireTime = defaultExpireTime;
         return this;
@@ -142,7 +138,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      * @return {@link ExpireTemplate}
      */
     public ExpireTemplate<K, V> acquireDefaultExpireTimeTime(TimeUnit defaultExpireTimeUnit) {
-        Assert.isTrue(this.defaultExpireTimeUnit == null,
+        AssertUtils.Operation.isTrue(this.defaultExpireTimeUnit == null,
                 "defaultExpireTimeUnit existing configuration values, please do not cover");
         this.defaultExpireTimeUnit = defaultExpireTimeUnit;
         return this;
@@ -155,7 +151,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      * @return {@link ExpireTemplate}
      */
     public ExpireTemplate<K, V> acquireDefaultExpirationPolicy(ExpirationPolicy expirationPolicy) {
-        Assert.isTrue(this.expirationPolicy == null,
+        AssertUtils.Operation.isTrue(this.expirationPolicy == null,
                 "expirationPolicy existing configuration values, please do not cover");
         this.expirationPolicy = expirationPolicy;
         return this;
@@ -167,7 +163,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      * @param templateKeyType key Serializer
      */
     public void setKeySerializer(ExpiringSerializer<K> templateKeyType) {
-        Assert.isTrue(this.kExpiringSerializer == null,
+        AssertUtils.Operation.isTrue(this.kExpiringSerializer == null,
                 "kExpiringSerializer existing configuration values, please do not cover");
         this.kExpiringSerializer = templateKeyType;
     }
@@ -178,7 +174,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      * @param templateValueType value Serializer
      */
     public void setValueSerializer(ExpiringSerializer<V> templateValueType) {
-        Assert.isTrue(this.vExpiringSerializer == null,
+        AssertUtils.Operation.isTrue(this.vExpiringSerializer == null,
                 "vExpiringSerializer existing configuration values, please do not cover");
         this.vExpiringSerializer = templateValueType;
     }
@@ -187,9 +183,12 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      * Build a cache map
      */
     public void build() {
-        Assert.isTrue(StringUtils.isNotBlank(factoryBeanName), "factoryBeanName no be null");
-        Assert.notNull(kExpiringSerializer, "key Serializer no be null please setKeySerializer");
-        Assert.notNull(vExpiringSerializer, "value Serializer no be null please setValueSerializer");
+        AssertUtils.Operation.isTrue(StringUtils.isNotBlank(this.factoryBeanName),
+                "factoryBeanName no be null");
+        AssertUtils.Operation.notNull(this.kExpiringSerializer,
+                "key Serializer no be null please setKeySerializer");
+        AssertUtils.Operation.notNull(this.vExpiringSerializer,
+                "value Serializer no be null please setValueSerializer");
         if (this.maxSize == null || this.maxSize == 0) {
             this.maxSize = DEFAULT_MAX_SIZE;
         }
@@ -215,24 +214,24 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      */
     public void checkExpiringMapNoInit() {
         if (this.expiringMap != null) {
-            throw new BeanInitializationException(
-                    "If you initialize the expiring Map ahead of time ," +
-                            "Please don't repeat use field assignment method ！"
-            );
+            throw new OperationsException(
+                            "If you initialize the expiring Map ahead of time ," +
+                                    "Please don't repeat use field assignment method ！"
+                    );
         }
     }
 
     /**
      * Increase the expired listeners
      *
-     * @param expirationListener  {@link ExpirationListener}
+     * @param expirationListener {@link ExpirationListener}
      * @see ExpirationListener
      */
     public void addExpiredListener(ExpirationListener<K, V> expirationListener) {
         if (this.expiringMap != null) {
             expiringMap.addExpirationListener(expirationListener);
         } else {
-            throw new BeanInitializationException(
+            throw new OperationsException(
                     "expiringMap have no init"
             );
         }
@@ -382,7 +381,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      * @param composeException Whether solve exception
      */
     public void execute(Callback<K, V> action, boolean composeException) {
-        Assert.notNull(action, "expireCallback can no be null !");
+        AssertUtils.Operation.notNull(action, "expireCallback can no be null !");
         Object o = null;
         try {
             o = action.doInExpire(this.expiringMap);
@@ -398,7 +397,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      * @param o                     supplier
      * @param ofTypeClass           type class
      * @param composeSolveException Whether solve exception
-     * @param <O> You can specify the paradigm
+     * @param <O>                   You can specify the paradigm
      * @return exchange obj
      */
     public <O> O ofType(Supplier<Object> o, Class<O> ofTypeClass, boolean composeSolveException) {
@@ -409,7 +408,10 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
         }
         O target = null;
         try {
-            // update repeat call value to threadLocal
+            /*
+             * update repeat call value to threadLocal
+             * @since 2.1.1-complete
+             */
             target = Single.just(source)
                     .ofType(ofTypeClass)
                     .blockingGet();
@@ -425,8 +427,8 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      * @param e                exception
      * @param composeException whether solve exception
      */
-    public void solverException(Throwable e, boolean composeException) {
-        Assert.notNull(e, "Throwable can no be null !");
+    public void solverException(Throwable e, boolean composeException) throws OperationsException {
+        AssertUtils.Operation.notNull(e, "Throwable can no be null !");
         //CONSOLE EXPORT EXCEPTION
         Console.logger.info("expiring execute happened error {}", e.getMessage());
         if (composeException) {

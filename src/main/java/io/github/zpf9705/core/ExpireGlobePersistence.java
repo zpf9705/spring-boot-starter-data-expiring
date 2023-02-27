@@ -11,10 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.lang.NonNull;
-import org.springframework.util.Assert;
-
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -79,17 +76,17 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
 
     @SuppressWarnings("unused")
     public ExpireGlobePersistence(Persistence<K, V> persistence, String writePath) {
-        Assert.notNull(writePath, "writePath no be null");
+        AssertUtils.Persistence.notNull(writePath, "writePath no be null");
         this.writePath = writePath;
-        Assert.notNull(persistence, "Persistence no be null !");
+        AssertUtils.Persistence.notNull(persistence, "Persistence no be null !");
         this.persistence = persistence;
     }
 
     public ExpireGlobePersistence(Supplier<Persistence<K, V>> persistence, String writePath) {
-        Assert.notNull(writePath, "writePath no be null");
+        AssertUtils.Persistence.notNull(writePath, "writePath no be null");
         this.writePath = writePath;
         Persistence<K, V> p = persistence.get();
-        Assert.notNull(p, "Persistence no be null !");
+        AssertUtils.Persistence.notNull(p, "Persistence no be null !");
         this.persistence = p;
     }
 
@@ -136,7 +133,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
      */
     private static void checkError(String persistencePath) {
         String[] pathArray = persistencePath.split("/");
-        Assert.isTrue(ArrayUtil.isNotEmpty(pathArray),
+        AssertUtils.Persistence.isTrue(ArrayUtil.isNotEmpty(pathArray),
                 "[" + persistencePath + "] no a path");
         String line = "";
         for (String path : pathArray) {
@@ -144,7 +141,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
                 continue;
             }
             line += "/" + path;
-            Assert.isTrue(isDirectory(line),
+            AssertUtils.Persistence.isTrue(isDirectory(line),
                     "[" + line + "] no a Directory for your file system");
         }
     }
@@ -159,8 +156,8 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
      * @return {@link ExpireGlobePersistence}
      */
     public static <K, V> ExpireGlobePersistence<K, V> of(Entry<K, V> entry, String factoryBeanName) {
-        Assert.notNull(entry, "Entry no be null");
-        Assert.isTrue(StringUtils.isNotBlank(factoryBeanName), "factoryBeanName no be blank");
+        AssertUtils.Persistence.notNull(entry, "Entry no be null");
+        AssertUtils.Persistence.hasText(factoryBeanName, "factoryBeanName no be blank");
         checkOf(entry);
         String rawHash = rawHash(entry.getKey(), entry.getValue());
         String writePath = rawWritePath(entry.getKey());
@@ -188,7 +185,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
      * @return {@link ExpireGlobePersistence}
      */
     public static <K, V> ExpireGlobePersistence<K, V> of(Persistence<K, V> persistence) {
-        Assert.notNull(persistence, "Persistence no be null");
+        AssertUtils.Persistence.notNull(persistence, "Persistence no be null");
         Entry<K, V> entry = persistence.entry;
         //To recalculate the path
         String writePath = rawWritePath(entry.getKey());
@@ -203,8 +200,8 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
      * @param <V>   value type
      */
     private static <V, K> void checkOf(Entry<K, V> entry) {
-        Assert.isTrue(OPEN_PERSISTENCE, "No open expiring persistence");
-        Assert.notNull(entry, "Entry no be null");
+        AssertUtils.Persistence.isTrue(OPEN_PERSISTENCE, "No open expiring persistence");
+        AssertUtils.Persistence.notNull(entry, "Entry no be null");
         //empty just pass
         if (entry.getDuration() == null || entry.getTimeUnit() == null) {
             return;
@@ -215,7 +212,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
                 .equals(cacheProperties.getPersistence().getNoPersistenceOfExpireTimeUnit()))) {
             return;
         }
-        throw new IllegalArgumentException("Only more than or == " +
+        throw new PersistenceException("Only more than or == " +
                 cacheProperties.getPersistence().getNoPersistenceOfExpireTime() + " " +
                 cacheProperties.getPersistence().getNoPersistenceOfExpireTimeUnit() +
                 " can be persisted so key [" + entry.getKey() + "] value [" + entry.getValue() + "] no persisted ");
@@ -231,10 +228,10 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
      * @return {@link ExpireGlobePersistence}
      */
     public static <K, V> ExpireGlobePersistence<K, V> of(@NonNull K key, @NonNull V value) {
-        Assert.isTrue(OPEN_PERSISTENCE, "No open expiring persistence");
+        AssertUtils.Persistence.isTrue(OPEN_PERSISTENCE, "No open expiring persistence");
         ExpireGlobePersistence<K, V> expireGlobePersistence = CACHE_MAP.get(rawHash(key, value));
         if (expireGlobePersistence == null) {
-            throw new BeanDefinitionStoreException("Key: " + key + " Value: " + value + " raw hash no found " +
+            throw new PersistenceException("Key: " + key + " Value: " + value + " raw hash no found " +
                     "expireGlobePersistence");
         }
         return expireGlobePersistence;
@@ -248,7 +245,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
      * @return final write path
      */
     public static <K> String rawWritePath(@NonNull K key) {
-        Assert.notNull(key, "Key no be null ");
+        AssertUtils.Persistence.notNull(key, "Key no be null ");
         return cacheProperties.getPersistence().getPersistencePath()
                 //md5 sign to prevent the file name is too long
                 + DigestUtil.md5Hex(key.toString())
@@ -276,7 +273,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
      * @return hash mark
      */
     public static <T> String rawHash(@NonNull T t) {
-        Assert.notNull(t, "T no be null");
+        AssertUtils.Persistence.notNull(t, "T no be null");
         return t.hashCode() + t.getClass().getName();
     }
 
@@ -292,15 +289,15 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         ExpireTemplate<K, V> expireTemplate = null;
         try {
             Object bean = Application.context.getBean(factoryBeanName);
-            Assert.notNull(bean,
+            AssertUtils.Persistence.notNull(bean,
                     "expireTemplate [" + ExpireTemplate.class.getName() + "] no found in ioc");
 
             if (bean instanceof ExpireTemplate) {
                 expireTemplate = (ExpireTemplate<K, V>) bean;
             }
-            Assert.notNull(expireTemplate, "Bean no instanceof ExpireTemplate");
+            AssertUtils.Persistence.notNull(expireTemplate, "Bean no instanceof ExpireTemplate");
         } catch (Exception e) {
-            throw new IllegalArgumentException("accessToTheCacheTemplate error [" + e.getMessage() + "]");
+            throw new PersistenceException("accessToTheCacheTemplate error [" + e.getMessage() + "]");
         }
         return expireTemplate;
     }
@@ -330,12 +327,12 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
 
     @Override
     public void setExpirationPersistence(Long duration, TimeUnit timeUnit) {
-        Assert.notNull(duration, "Duration no be null");
-        Assert.notNull(timeUnit, "TimeUnit no be null");
+        AssertUtils.Persistence.notNull(duration, "Duration no be null");
+        AssertUtils.Persistence.notNull(timeUnit, "TimeUnit no be null");
         Persistence<K, V> p = this.persistence;
         Entry<K, V> entry = p.getEntry();
         //Verify expiration
-        Assert.isTrue(expireOfCache(),
+        AssertUtils.Persistence.isTrue(expireOfCache(),
                 "Already expire key [" + entry.getKey() + "] value [" + entry.getValue() + "]");
         writeLock.lock();
         try {
@@ -354,7 +351,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
     public void resetExpirationPersistence() {
         Persistence<K, V> per = this.persistence;
         //验证是否过期
-        Assert.isTrue(expireOfCache(),
+        AssertUtils.Persistence.isTrue(expireOfCache(),
                 "Already expire key [" + per.getEntry().getKey() + "] value [" +
                         per.getEntry().getValue() + "]");
         writeLock.lock();
@@ -370,11 +367,11 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
 
     @Override
     public void replacePersistence(V newValue) {
-        Assert.notNull(newValue, "NewValue no be null");
+        AssertUtils.Persistence.notNull(newValue, "NewValue no be null");
         Persistence<K, V> per = this.persistence;
         Entry<K, V> entry = per.getEntry();
         //Verify expiration
-        Assert.isTrue(expireOfCache(),
+        AssertUtils.Persistence.isTrue(expireOfCache(),
                 "Already expire key [" + per.entry.getKey() + "] value [" + per.entry.getValue() + "]");
         writeLock.lock();
         try {
@@ -438,12 +435,12 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         if (StringUtils.isBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
             path = cacheProperties.getPersistence().getPersistencePath();
         }
-        Assert.hasText(path, "Path no be blank");
-        Assert.isTrue(isDirectory(path),
+        AssertUtils.Persistence.hasText(path, "Path no be blank");
+        AssertUtils.Persistence.isTrue(isDirectory(path),
                 "This path [" + path + "] belong file no a directory");
         List<File> files = loopFiles(path,
                 v -> v.isFile() && v.getName().endsWith(PREFIX_BEFORE));
-        Assert.notEmpty(files, "This path [" + path + "] no found files");
+        AssertUtils.Persistence.notEmpty(files, "This path [" + path + "] no found files");
         //Loop back
         files.forEach(v -> {
             try {
@@ -459,7 +456,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
 
     @Override
     public void deserialize0(File file) {
-        Assert.notNull(file, "File no be null");
+        AssertUtils.Persistence.notNull(file, "File no be null");
         InputStream in = null;
         BufferedReader read = null;
         StringBuilder buffer = new StringBuilder();
@@ -489,10 +486,10 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
 
     @Override
     public void deserialize0(StringBuilder buffer) {
-        Assert.notNull(buffer, "Buffer no be null");
+        AssertUtils.Persistence.notNull(buffer, "Buffer no be null");
         String json = buffer.toString();
         //check json
-        Assert.isTrue(JSON.isValid(json), "Buffer data [" + json + "] no a valid json");
+        AssertUtils.Persistence.isTrue(JSON.isValid(json), "Buffer data [" + json + "] no a valid json");
         //parse json
         Persistence<K, V> persistence;
         try {
@@ -507,7 +504,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         String rawHash = rawHash(entry.getKey(), entry.getValue());
         //No cache in the cache
         ExpireGlobePersistence<K, V> of = CACHE_MAP.computeIfAbsent(rawHash, v -> of(persistence));
-        Assert.notNull(of, "ExpireGlobePersistence no be null");
+        AssertUtils.Persistence.notNull(of, "ExpireGlobePersistence no be null");
         //record [op bean]
         ExpireTemplate<K, V> template = accessToTheCacheTemplate(persistence.getFactoryBeanName());
         deserialize0(template, persistence, of.getWritePath());
@@ -515,9 +512,9 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
 
     @Override
     public void deserialize0(ExpireTemplate<K, V> template, Persistence<K, V> persistence, String writePath) {
-        Assert.notNull(template, "ExpireTemplate no be null");
-        Assert.notNull(persistence, "Persistence no be null");
-        Assert.notNull(writePath, "WritePath no be null");
+        AssertUtils.Persistence.notNull(template, "ExpireTemplate no be null");
+        AssertUtils.Persistence.notNull(persistence, "Persistence no be null");
+        AssertUtils.Persistence.notNull(writePath, "WritePath no be null");
         LocalDateTime now = LocalDateTime.now();
         //When the time is equal to or judged failure after now in record time
         if (persistence.getExpire() == null || now.isEqual(persistence.getExpire()) ||
@@ -539,9 +536,9 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
 
     @Override
     public Long condition(LocalDateTime now, LocalDateTime expire, TimeUnit unit) {
-        Assert.notNull(now, "Now no be null");
-        Assert.notNull(expire, "Expire no be null");
-        Assert.notNull(unit, "Unit no be null");
+        AssertUtils.Persistence.notNull(now, "Now no be null");
+        AssertUtils.Persistence.notNull(expire, "Expire no be null");
+        AssertUtils.Persistence.notNull(unit, "Unit no be null");
         Duration between = Duration.between(now, expire);
         long value;
         switch (unit) {
@@ -581,8 +578,8 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         }
 
         public static <K, V> Persistence<K, V> of(@NonNull Entry<K, V> entry) {
-            Assert.notNull(entry.getKey(), "Key no be null");
-            Assert.notNull(entry.getValue(), "Value no be null");
+            AssertUtils.Persistence.notNull(entry.getKey(), "Key no be null");
+            AssertUtils.Persistence.notNull(entry.getValue(), "Value no be null");
             if (entry.getDuration() == null) {
                 entry.setDuration(cacheProperties.getDefaultExpireTime());
             }
@@ -593,15 +590,15 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         }
 
         public Persistence<K, V> expireOn(String factoryBeanName) {
-            Assert.isTrue(StringUtils.isNotBlank(factoryBeanName), "factoryBeanName no be blank");
+            AssertUtils.Persistence.isTrue(StringUtils.isNotBlank(factoryBeanName), "factoryBeanName no be blank");
             K key = this.entry.getKey();
             //get template
             ExpireTemplate<K, V> template = accessToTheCacheTemplate(factoryBeanName);
-            Assert.isTrue(template.hasKey(key),
+            AssertUtils.Persistence.isTrue(template.hasKey(key),
                     "Key [" + this.entry.getKey() + "] no exist in cache");
             //For the rest of the due millisecond value
             Long expectedExpiration = template.getExpectedExpiration(key);
-            Assert.isTrue(expectedExpiration != null && expectedExpiration != 0,
+            AssertUtils.Persistence.isTrue(expectedExpiration != null && expectedExpiration != 0,
                     "Expected Expiration null or be zero");
             //give expire
             this.expire = LocalDateTime.now().plus(expectedExpiration, ChronoUnit.MILLIS);

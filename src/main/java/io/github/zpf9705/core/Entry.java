@@ -1,8 +1,6 @@
 package io.github.zpf9705.core;
 
 import lombok.Data;
-import org.springframework.util.Assert;
-
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
@@ -38,8 +36,8 @@ public class Entry<K, V> implements Serializable {
     }
 
     public void refreshOfExpire(Long duration, TimeUnit timeUnit) {
-        Assert.notNull(duration, "duration no be null");
-        Assert.notNull(timeUnit, "timeUnit no be null");
+        AssertUtils.Persistence.notNull(duration, "duration no be null");
+        AssertUtils.Persistence.notNull(timeUnit, "timeUnit no be null");
         this.duration = duration;
         this.timeUnit = timeUnit;
     }

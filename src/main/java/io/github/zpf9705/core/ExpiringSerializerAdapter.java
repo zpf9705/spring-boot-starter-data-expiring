@@ -1,7 +1,6 @@
 package io.github.zpf9705.core;
 
 import cn.hutool.core.bean.BeanUtil;
-import org.springframework.util.Assert;
 import org.springframework.util.SerializationUtils;
 
 /**
@@ -21,7 +20,7 @@ public class ExpiringSerializerAdapter<T> implements ExpiringSerializer<T> {
     @Override
     public byte[] serialize(T t) {
         byte[] serialize = SerializationUtils.serialize(t);
-        Assert.notNull(serialize,
+        AssertUtils.Operation.notNull(serialize,
                 "serialize failed ! t serialize is not null " + t);
         return serialize;
     }
