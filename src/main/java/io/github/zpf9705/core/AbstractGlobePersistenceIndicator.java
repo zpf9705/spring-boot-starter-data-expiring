@@ -81,7 +81,7 @@ public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
      * @param file Persistence file
      * @throws PersistenceException Persistence ex
      */
-    public abstract void deserialize0(File file) throws PersistenceException;
+    public abstract void deserialize0(File file);
 
     /**
      * Restore memory of read file buff
@@ -89,7 +89,7 @@ public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
      * @param buffer file read buff
      * @throws PersistenceException Persistence ex
      */
-    public abstract void deserialize0(StringBuilder buffer) throws PersistenceException;
+    public abstract void deserialize0(StringBuilder buffer);
 
     /**
      * Restore memory of expireTemplate regain this info
@@ -100,8 +100,7 @@ public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
      * @throws PersistenceException Persistence ex
      */
     public abstract void deserialize0(ExpireTemplate<K, V> template,
-                                      ExpireGlobePersistence.Persistence<K, V> persistence, String writePath)
-            throws PersistenceException;
+                                      ExpireGlobePersistence.Persistence<K, V> persistence, String writePath);
 
     /**
      * Restore the cache time remaining
@@ -112,6 +111,5 @@ public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
      * @return The rest of the corresponding amount per unit time
      * @throws PersistenceException Persistence ex
      */
-    public abstract Long condition(LocalDateTime now, LocalDateTime expire, TimeUnit unit)
-            throws PersistenceException;
+    public abstract Long condition(LocalDateTime now, LocalDateTime expire, TimeUnit unit);
 }

@@ -449,15 +449,16 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
             try {
                 deserialize0(v);
             } catch (Throwable e) {
-                Console.logger.error(
+                Console.logger.info(
                         "Restore cache file {} error : {}", v.getName(), e.getMessage()
                 );
+                Console.logger.error(e.getMessage(), e);
             }
         });
     }
 
     @Override
-    public void deserialize0(File file) throws PersistenceException {
+    public void deserialize0(File file) {
         Assert.notNull(file, "File no be null");
         InputStream in = null;
         BufferedReader read = null;
@@ -487,7 +488,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
     }
 
     @Override
-    public void deserialize0(StringBuilder buffer) throws PersistenceException {
+    public void deserialize0(StringBuilder buffer) {
         Assert.notNull(buffer, "Buffer no be null");
         String json = buffer.toString();
         //check json
@@ -513,8 +514,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
     }
 
     @Override
-    public void deserialize0(ExpireTemplate<K, V> template, Persistence<K, V> persistence, String writePath)
-            throws PersistenceException {
+    public void deserialize0(ExpireTemplate<K, V> template, Persistence<K, V> persistence, String writePath) {
         Assert.notNull(template, "ExpireTemplate no be null");
         Assert.notNull(persistence, "Persistence no be null");
         Assert.notNull(writePath, "WritePath no be null");
@@ -538,7 +538,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
     }
 
     @Override
-    public Long condition(LocalDateTime now, LocalDateTime expire, TimeUnit unit) throws PersistenceException {
+    public Long condition(LocalDateTime now, LocalDateTime expire, TimeUnit unit) {
         Assert.notNull(now, "Now no be null");
         Assert.notNull(expire, "Expire no be null");
         Assert.notNull(unit, "Unit no be null");

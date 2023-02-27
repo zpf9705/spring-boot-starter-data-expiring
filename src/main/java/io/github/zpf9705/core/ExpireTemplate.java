@@ -10,6 +10,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -429,7 +430,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
         //CONSOLE EXPORT EXCEPTION
         Console.logger.info("expiring execute happened error {}", e.getMessage());
         if (composeException) {
-            ExceptionUtil.wrapAndThrow(e);
+            throw new OperationsException(e);
         }
     }
 
