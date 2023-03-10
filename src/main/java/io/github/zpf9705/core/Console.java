@@ -37,6 +37,7 @@ public abstract class Console {
      *
      * @param target logger target
      * @param ex     exception for it
+     * @param format format statement
      * @since 2.1.2-complete
      */
     public static void exceptionOfDebugOrWare(String target, Throwable ex, String format) {
