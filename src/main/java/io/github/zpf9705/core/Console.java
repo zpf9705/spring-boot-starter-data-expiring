@@ -33,7 +33,7 @@ public abstract class Console {
     }
 
     /**
-     * Print a warn or debug information
+     * Print warn or debug information
      *
      * @param target logger target
      * @param ex     exception for it
