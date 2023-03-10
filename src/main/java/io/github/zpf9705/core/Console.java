@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Console {
 
-    public static Logger logger;
+    private static Logger logger;
 
     /**
      * Access to the log print
