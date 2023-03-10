@@ -1,5 +1,6 @@
 package io.github.zpf9705.core;
 
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -11,8 +12,19 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 1.1.0
  */
-public final class ExpirePersistenceUtils {
+public abstract class ExpirePersistenceUtils {
 
+    /**
+     * Key/value pair for persistence will need a static solution
+     *
+     * @param key             persistence key
+     * @param value           persistence value
+     * @param duration        persistence key of duration
+     * @param timeUnit        persistence key of timeUnit
+     * @param factoryBeanName cache template for ioc
+     * @param <K>             persistence key data type
+     * @param <V>             persistence value data type
+     */
     public static <K, V> void putPersistence(K key, V value, Long duration, TimeUnit timeUnit,
                                              String factoryBeanName) {
         run(() -> {
@@ -26,6 +38,15 @@ public final class ExpirePersistenceUtils {
         }, "putPersistence");
     }
 
+    /**
+     * Replace the corresponding key value the value of a persistent alternatives
+     *
+     * @param key      persistence key
+     * @param value    persistence value
+     * @param newValue persistence replace value
+     * @param <K>      persistence key data type
+     * @param <V>      persistence value data type
+     */
     public static <K, V> void replacePersistence(K key, V value, V newValue) {
         run(() -> {
             AssertUtils.Persistence.notNull(key, "key no be null");
@@ -37,6 +58,16 @@ public final class ExpirePersistenceUtils {
         }, "replacePersistence");
     }
 
+    /**
+     * Exist to have persistent files to a custom initialization time
+     *
+     * @param key      persistence key
+     * @param value    persistence value
+     * @param duration persistence key of duration
+     * @param timeUnit persistence key of timeUnit
+     * @param <K>      persistence key data type
+     * @param <V>      persistence value data type
+     */
     public static <K, V> void setEPersistence(K key, V value, Long duration, TimeUnit timeUnit) {
         run(() -> {
             AssertUtils.Persistence.notNull(key, "key no be null");
@@ -49,6 +80,15 @@ public final class ExpirePersistenceUtils {
         }, "setEPersistence");
     }
 
+    /**
+     * The persistent file already exists for the expiration time limit reset,
+     * reset the standard depends on the default system planning
+     *
+     * @param key   persistence key
+     * @param value persistence value
+     * @param <K>   persistence key data type
+     * @param <V>   persistence value data type
+     */
     public static <K, V> void restPersistence(K key, V value) {
         run(() -> {
             AssertUtils.Persistence.notNull(key, "key no be null");
@@ -59,6 +99,14 @@ public final class ExpirePersistenceUtils {
         }, "restPersistence");
     }
 
+    /**
+     * After delete system cache value, remove the corresponding persistence file
+     *
+     * @param key   persistence key
+     * @param value persistence value
+     * @param <K>   persistence key data type
+     * @param <V>   persistence value data type
+     */
     public static <K, V> void removePersistence(K key, V value) {
         run(() -> {
             AssertUtils.Persistence.notNull(key, "key no be null");
@@ -79,8 +127,8 @@ public final class ExpirePersistenceUtils {
         try {
             runnable.run();
         } catch (Throwable e) {
-            Console.logger.error("expire persistence method [{}] op failed msg [{}]",
-                    method, e.getMessage());
+            Console.exceptionOfDebugOrWare(method, e,
+                    "Run the cache Persistence method [{}] An exception occurs [{}]");
         }
     }
 }

@@ -94,7 +94,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         try {
             resolveCacheProperties();
         } catch (Exception e) {
-            Console.logger.error("load CacheProperties error {}", e.getMessage());
+            Console.getLogger().error("load CacheProperties error {}", e.getMessage());
         }
     }
 
@@ -133,7 +133,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
      */
     private static void checkError(String persistencePath) {
         String[] pathArray = persistencePath.split("/");
-        AssertUtils.Persistence.isTrue(ArrayUtil.isNotEmpty(pathArray),
+        AssertUtils.Persistence.notEmpty(pathArray,
                 "[" + persistencePath + "] no a path");
         String line = "";
         for (String path : pathArray) {
@@ -423,8 +423,9 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
             try {
                 deserializeO(path);
             } catch (Throwable e) {
-                Console.logger.error(
-                        "Restore cache prepare error : {}", e.getMessage()
+                Console.exceptionOfDebugOrWare(
+                        "deserialize", e,
+                        "deserialize {} Restore cache prepare error : {}"
                 );
             }
         });
@@ -446,10 +447,10 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
             try {
                 deserialize0(v);
             } catch (Throwable e) {
-                Console.logger.info(
-                        "Restore cache file {} error : {}", v.getName(), e.getMessage()
+                Console.exceptionOfDebugOrWare(
+                        v.getName(), e,
+                        "Restore cache file {} error : {}"
                 );
-                Console.logger.error(e.getMessage(), e);
             }
         });
     }
@@ -530,7 +531,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
                 condition(now, persistence.getExpire(), entry.getTimeUnit()),
                 entry.getTimeUnit());
         //Print successfully restore cached information
-        Console.logger.info("Current key {} value {} Has returned to the project of cache",
+        Console.getLogger().info("Current key {} value {} Has returned to the project of cache",
                 entry.getKey(), entry.getKey());
     }
 
@@ -590,7 +591,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         }
 
         public Persistence<K, V> expireOn(String factoryBeanName) {
-            AssertUtils.Persistence.isTrue(StringUtils.isNotBlank(factoryBeanName), "factoryBeanName no be blank");
+            AssertUtils.Persistence.hasText(factoryBeanName, "factoryBeanName no be blank");
             K key = this.entry.getKey();
             //get template
             ExpireTemplate<K, V> template = accessToTheCacheTemplate(factoryBeanName);

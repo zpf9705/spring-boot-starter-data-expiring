@@ -25,7 +25,7 @@ public class PersistenceExpiringCallback extends SimpleAspect {
     @Override
     public boolean afterException(Object target, Method method, Object[] args, Throwable e) {
         if (ArrayUtil.isNotEmpty(args) && args.length >= 2) {
-            Console.logger.error(
+            Console.getLogger().error(
                     "key {} operation error [{}]",
                     args[0],
                     e.getMessage()

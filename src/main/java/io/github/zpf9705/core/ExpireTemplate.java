@@ -430,7 +430,7 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     public void solverException(Throwable e, boolean composeException) throws OperationsException {
         AssertUtils.Operation.notNull(e, "Throwable can no be null !");
         //CONSOLE EXPORT EXCEPTION
-        Console.logger.info("expiring execute happened error {}", e.getMessage());
+        Console.getLogger().info("expiring execute happened error {}", e.getMessage());
         if (composeException) {
             throw new OperationsException(e);
         }

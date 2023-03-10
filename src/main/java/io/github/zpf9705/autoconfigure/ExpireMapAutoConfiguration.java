@@ -140,7 +140,7 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
         //obtain listing packages path
         String listeningPackages = expireMapCacheProperties.getListeningPackages();
         if (StringUtils.isBlank(listeningPackages)){
-            Console.logger.info(
+            Console.getLogger().info(
                     "no provider listening scan path ," +
                             "so ec no can provider binding Expiration Listener !"
             );
@@ -154,7 +154,7 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
         Set<Class<? extends ExpirationListener>> subTypesOf =
                 reflections.getSubTypesOf(ExpirationListener.class);
         if (CollectionUtils.isEmpty(subTypesOf)){
-            Console.logger.info(
+            Console.getLogger().info(
                     "no provider implementation ExpiringLoadListener class ," +
                             "so ec no can provider binding Expiration Listener !"
             );
@@ -209,7 +209,7 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
                                     PersistenceExpiringCallback.class);
                     if (listener != null) {
                         template.addExpiredListener(listener);
-                        Console.logger.info("Template bean [{}] bind listener [{}] success",
+                        Console.getLogger().info("Template bean [{}] bind listener [{}] success",
                                 beanName,
                                 aClass.getName());
                     }
