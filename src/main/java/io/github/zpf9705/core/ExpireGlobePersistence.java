@@ -540,20 +540,19 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         AssertUtils.Persistence.notNull(now, "Now no be null");
         AssertUtils.Persistence.notNull(expire, "Expire no be null");
         AssertUtils.Persistence.notNull(unit, "Unit no be null");
-        Duration between = Duration.between(now, expire);
         long value;
         switch (unit) {
             case SECONDS:
-                value = between.getSeconds();
+                value = Duration.between(now, expire).getSeconds();
                 break;
             case MINUTES:
-                value = between.get(ChronoUnit.MINUTES);
+                value = ChronoUnit.MINUTES.between(now, expire);
                 break;
             case HOURS:
-                value = between.get(ChronoUnit.HOURS);
+                value = ChronoUnit.HOURS.between(now, expire);
                 break;
             case DAYS:
-                value = between.get(ChronoUnit.DAYS);
+                value = ChronoUnit.DAYS.between(now, expire);
                 break;
             default:
                 throw new PersistenceException(
