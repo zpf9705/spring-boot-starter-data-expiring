@@ -5,6 +5,7 @@ import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -92,6 +93,15 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
      */
     public void setFactoryBeanName(String factoryBeanName) {
         this.factoryBeanName = factoryBeanName;
+    }
+
+    /**
+     * get factory bean name
+     *
+     * @return ioc bean name
+     */
+    public String getFactoryBeanName() {
+        return this.factoryBeanName;
     }
 
     /**
@@ -215,9 +225,9 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
     public void checkExpiringMapNoInit() {
         if (this.expiringMap != null) {
             throw new OperationsException(
-                            "If you initialize the expiring Map ahead of time ," +
-                                    "Please don't repeat use field assignment method ！"
-                    );
+                    "If you initialize the expiring Map ahead of time ," +
+                            "Please don't repeat use field assignment method ！"
+            );
         }
     }
 
@@ -358,12 +368,12 @@ public class ExpireTemplate<K, V> extends AbstractExpireAccessor<K, V> implement
 
     @Override
     public ExpiringSerializer<K> getKeySerializer() {
-        return kExpiringSerializer;
+        return this.kExpiringSerializer;
     }
 
     @Override
     public ExpiringSerializer<V> getValueSerializer() {
-        return vExpiringSerializer;
+        return this.vExpiringSerializer;
     }
 
     @Override
