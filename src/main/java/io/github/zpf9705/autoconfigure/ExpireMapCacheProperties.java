@@ -1,5 +1,6 @@
-package io.github.zpf9705.core;
+package io.github.zpf9705.autoconfigure;
 
+import io.github.zpf9705.util.SystemUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.jodah.expiringmap.ExpirationPolicy;
@@ -55,7 +56,7 @@ public class ExpireMapCacheProperties {
 
     @Getter
     @Setter
-    static class Persistence{
+    public static class Persistence{
 
         /**
          * Whether to open the persistence

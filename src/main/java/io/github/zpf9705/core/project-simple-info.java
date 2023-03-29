@@ -8,17 +8,17 @@
  * @see io.github.zpf9705.core.DefaultValueOperations
  * @see io.github.zpf9705.core.AbstractExpireAccessor
  * ========================Overdue listener===================================
- * {@link io.github.zpf9705.core.ExpiringListener#expirationForBean()} In the name of the template bean listener
- * {@link io.github.zpf9705.core.ExpiringListeners#value()} Radio listening
+ * {@link io.github.zpf9705.listener.ExpiringListener#expirationForBean()} In the name of the template bean listener
+ * {@link io.github.zpf9705.listener.ExpiringListeners#value()} Radio listening
  * =======================The persistent cache data to the hard disk============================
- * {@link io.github.zpf9705.core.ExpireMapCacheProperties}
+ * {@link io.github.zpf9705.autoconfigure.ExpireMapCacheProperties}
  *  Persistence openPersistence means Whether to open the persistence
  *  Persistence persistencePath means Persistent path
  *  Persistence noPersistenceOfExpireTime means Persistence time
  *  Persistence noPersistenceOfExpireTimeUnit means Provisions of the unit
- * {@link io.github.zpf9705.core.AbstractGlobePersistenceIndicator} define persistent behavior
- * {@link io.github.zpf9705.core.ExpireGlobePersistence} the persistence method
- * {@link io.github.zpf9705.core.GlobePersistence}  define the persistence
+ * {@link io.github.zpf9705.persistence.AbstractGlobePersistenceIndicator} define persistent behavior
+ * {@link io.github.zpf9705.persistence.ExpireGlobePersistence} the persistence method
+ * {@link io.github.zpf9705.persistence.GlobePersistence}  define the persistence
  * {@link io.github.zpf9705.core.PersistenceExpiringCallback}  after listening to perform rear remove persistent file
  */
 package io.github.zpf9705.core;

@@ -1,5 +1,6 @@
 package io.github.zpf9705.core;
 
+import io.github.zpf9705.persistence.Entry;
 import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;

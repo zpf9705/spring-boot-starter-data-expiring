@@ -1,4 +1,4 @@
-package io.github.zpf9705.core;
+package io.github.zpf9705.expection;
 
 /**
  * Cache operations abnormal

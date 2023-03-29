@@ -4,7 +4,14 @@ package io.github.zpf9705.autoconfigure;
 import cn.hutool.aop.proxy.SpringCglibProxyFactory;
 import cn.hutool.core.util.ReflectUtil;
 import com.google.common.collect.Lists;
+import io.github.zpf9705.banner.ExpireStartUpBanner;
 import io.github.zpf9705.core.*;
+import io.github.zpf9705.listener.ExpiringListener;
+import io.github.zpf9705.listener.ExpiringListeners;
+import io.github.zpf9705.logger.Console;
+import io.github.zpf9705.persistence.ExpireGlobePersistence;
+import io.github.zpf9705.serializer.ExpiringSerializerAdapter;
+import io.github.zpf9705.serializer.GenericStringExpiringSerializer;
 import net.jodah.expiringmap.ExpirationListener;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
@@ -22,8 +29,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.system.JavaVersion;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
@@ -36,26 +45,25 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * @see org.springframework.boot.autoconfigure.EnableAutoConfiguration
- * @see org.springframework.beans.factory.BeanFactory
- * @see org.springframework.beans.factory.InitializingBean
- * <p>
- * this configuration apply to spring boot 2.5.6
- * The automatic assembly provides the cache configuration , main example
- * ......
- * String,String and String,Object
- * template {@link ExpireTemplate} {@link StringExpiredTemplate}
- * and you can use simple util interface {@link ValueOperations}
- * <p>
- * {@link ConfigurationCustomizer} can implement code configuration level
- * ......
- * {@link ExpireConfigurationCustomizer} can be added dynamically expired listeners
- * you only implementation {@link net.jodah.expiringmap.ExpirationListener}
- * and pay attention to the generic template
- * </p>
- * <p>
- * after you see this introduce
- * To achieve your business
+ * This auto configuration apply to spring boot
+ * The automatic assembly provides the cache configuration depends on the class and the realization of the annotation
+ * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
+ * {@link org.springframework.beans.factory.InitializingBean}
+ * {@link org.springframework.beans.factory.BeanFactory}
+ * {@link EnvironmentAware}
+ * {@link ApplicationContextAware}
+ * {@link Environment}
+ * {@link ApplicationContext}
+ * Here has been configured with key/value pair {@code String , String } {@code  String , Object} Template model
+ * You can go to see the specific class {@link ExpireTemplate} {@link StringExpiredTemplate}
+ * At the same time they also good to operation interface type {@link ValueOperations}
+ * At the same time you can use {@link ConfigurationCustomizer} to provide personalized configuration expiring map
+ * But can be by {@link ExpireConfigurationCustomizer} {@link ObjectProvider} use an array collection mode faces interface configuration mode
+ * At the same time provides a cache expiration monitoring function , you can see {@link ExpiringListener}
+ * or {@link ExpiringListeners} and you only implementation {@link net.jodah.expiringmap.ExpirationListener}
+ * The corresponding annotation on the class, can help you find the corresponding generic template,
+ * do it after the expiration of correction in a timely manner
+ * After you see this introduce to achieve your business
  *
  * @author zpf
  * @since 1.1.0
@@ -63,7 +71,7 @@ import java.util.stream.Collectors;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnJava(JavaVersion.EIGHT)
 @EnableConfigurationProperties(ExpireMapCacheProperties.class)
-public class ExpireMapAutoConfiguration implements InitializingBean, ApplicationContextAware {
+public class ExpireMapAutoConfiguration implements InitializingBean, ApplicationContextAware, EnvironmentAware {
 
     private final ExpireMapCacheProperties expireMapCacheProperties;
 
@@ -74,6 +82,8 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
     private final List<ExpireConfigurationCustomizer<String, String>> expireConfigurationCustomizersSS;
 
     private ApplicationContext applicationContext;
+
+    private Environment environment;
 
     public ExpireMapAutoConfiguration(ExpireMapCacheProperties expireMapCacheProperties,
                                       ObjectProvider<List<ConfigurationCustomizer>> customizerS,
@@ -87,6 +97,10 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
 
     @Override
     public void afterPropertiesSet() {
+        /*
+         * print expire - map version and banner info
+         */
+        ExpireStartUpBanner.bannerPrinter(environment, ExpireMapAutoConfiguration.class);
         if (!CollectionUtils.isEmpty(configurationCustomizers)) {
             configurationCustomizers.forEach(v -> v.customize(this.expireMapCacheProperties));
         }
@@ -95,6 +109,11 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void setEnvironment(@NonNull Environment environment) {
+        this.environment = environment;
     }
 
     @Bean(name = "keySValueOExpireTemplate")
@@ -139,7 +158,7 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
     public Object bindingExpirationListener() {
         //obtain listing packages path
         String listeningPackages = expireMapCacheProperties.getListeningPackages();
-        if (StringUtils.isBlank(listeningPackages)){
+        if (StringUtils.isBlank(listeningPackages)) {
             Console.getLogger().info(
                     "no provider listening scan path ," +
                             "so ec no can provider binding Expiration Listener !"
@@ -153,7 +172,7 @@ public class ExpireMapAutoConfiguration implements InitializingBean, Application
         //reflection find ExpiringLoadListener impl
         Set<Class<? extends ExpirationListener>> subTypesOf =
                 reflections.getSubTypesOf(ExpirationListener.class);
-        if (CollectionUtils.isEmpty(subTypesOf)){
+        if (CollectionUtils.isEmpty(subTypesOf)) {
             Console.getLogger().info(
                     "no provider implementation ExpiringLoadListener class ," +
                             "so ec no can provider binding Expiration Listener !"

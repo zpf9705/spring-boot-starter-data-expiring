@@ -21,9 +21,17 @@ public class ExpireContextHolder implements Clearable {
      */
     public static void temporary(Object value) {
         if (value == null) {
-            return;
+            rest();
+        } else {
+            KS_HOLDER.set(value);
         }
-        KS_HOLDER.set(value);
+    }
+
+    /**
+     * rest value of context
+     */
+    public static void rest() {
+        KS_HOLDER.remove();
     }
 
     /**
@@ -39,7 +47,7 @@ public class ExpireContextHolder implements Clearable {
         } catch (Throwable e) {/*no logic*/} finally {
             acquire = KS_HOLDER.get();
             if (acquire != null) {
-                KS_HOLDER.remove();
+                rest();
             }
         }
         return acquire;

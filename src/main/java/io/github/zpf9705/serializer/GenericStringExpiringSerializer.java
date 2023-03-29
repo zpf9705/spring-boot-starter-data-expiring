@@ -1,4 +1,4 @@
-package io.github.zpf9705.core;
+package io.github.zpf9705.serializer;
 
 /**
  * Type string serialization class implementation of {@link ExpiringSerializerAdapter}

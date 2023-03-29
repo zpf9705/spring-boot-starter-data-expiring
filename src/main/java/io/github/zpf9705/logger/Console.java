@@ -1,4 +1,4 @@
-package io.github.zpf9705.core;
+package io.github.zpf9705.logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

@@ -1,5 +1,7 @@
 package io.github.zpf9705.core;
 
+import io.github.zpf9705.serializer.GenericStringExpiringSerializer;
+
 /**
  * Is to cache a default template mode key values for all of type String of derived classes
  *

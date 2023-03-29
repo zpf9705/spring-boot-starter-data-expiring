@@ -1,6 +1,7 @@
-package io.github.zpf9705.core;
+package io.github.zpf9705.serializer;
 
 import cn.hutool.core.bean.BeanUtil;
+import io.github.zpf9705.util.AssertUtils;
 import org.springframework.util.SerializationUtils;
 
 /**

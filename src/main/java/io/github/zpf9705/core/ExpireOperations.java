@@ -1,6 +1,8 @@
 package io.github.zpf9705.core;
 
 
+import io.github.zpf9705.persistence.Entry;
+import io.github.zpf9705.serializer.ExpiringSerializer;
 import net.jodah.expiringmap.ExpiringMap;
 
 import java.io.Serializable;

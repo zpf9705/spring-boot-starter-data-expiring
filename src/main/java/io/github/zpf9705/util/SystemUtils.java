@@ -1,4 +1,4 @@
-package io.github.zpf9705.core;
+package io.github.zpf9705.util;
 
 import cn.hutool.core.io.FileUtil;
 import org.apache.commons.lang3.StringUtils;

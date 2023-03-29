@@ -1,6 +1,7 @@
 package io.github.zpf9705.core;
 
 import cn.hutool.core.util.ArrayUtil;
+import io.github.zpf9705.persistence.Entry;
 
 import java.util.Map;
 import java.util.Objects;

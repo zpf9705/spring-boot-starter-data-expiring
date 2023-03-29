@@ -1,5 +1,6 @@
-package io.github.zpf9705.core;
+package io.github.zpf9705.persistence;
 
+import io.github.zpf9705.util.AssertUtils;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;

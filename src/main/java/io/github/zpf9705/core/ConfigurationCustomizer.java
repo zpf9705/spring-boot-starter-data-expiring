@@ -1,5 +1,7 @@
 package io.github.zpf9705.core;
 
+import io.github.zpf9705.autoconfigure.ExpireMapCacheProperties;
+
 /**
  * Interface-oriented configuration integration needs to be combined auto Load Configuration
  *           {@link org.springframework.context.annotation.Bean}

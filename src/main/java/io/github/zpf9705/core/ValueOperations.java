@@ -1,5 +1,7 @@
 package io.github.zpf9705.core;
 
+import io.github.zpf9705.persistence.Entry;
+
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 

@@ -2,6 +2,8 @@ package io.github.zpf9705.core;
 
 import cn.hutool.aop.aspects.SimpleAspect;
 import cn.hutool.core.util.ArrayUtil;
+import io.github.zpf9705.logger.Console;
+import io.github.zpf9705.util.ExpirePersistenceUtils;
 
 import java.lang.reflect.Method;
 
@@ -26,7 +28,7 @@ public class PersistenceExpiringCallback extends SimpleAspect {
     public boolean afterException(Object target, Method method, Object[] args, Throwable e) {
         if (ArrayUtil.isNotEmpty(args) && args.length >= 2) {
             Console.getLogger().error(
-                    "key {} operation error [{}]",
+                    "Key {} operation error [{}]",
                     args[0],
                     e.getMessage()
             );

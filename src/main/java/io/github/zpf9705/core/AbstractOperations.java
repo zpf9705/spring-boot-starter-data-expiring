@@ -1,5 +1,7 @@
 package io.github.zpf9705.core;
 
+import io.github.zpf9705.persistence.Entry;
+import io.github.zpf9705.serializer.ExpiringSerializer;
 import lombok.AllArgsConstructor;
 
 import java.util.Map;

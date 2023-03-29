@@ -1,11 +1,16 @@
-package io.github.zpf9705.core;
+package io.github.zpf9705.persistence;
 
 import ch.qos.logback.core.util.CloseUtil;
-import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import io.github.zpf9705.autoconfigure.Application;
+import io.github.zpf9705.autoconfigure.ExpireMapCacheProperties;
+import io.github.zpf9705.core.*;
+import io.github.zpf9705.expection.PersistenceException;
+import io.github.zpf9705.logger.Console;
+import io.github.zpf9705.util.AssertUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -94,7 +99,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
         try {
             resolveCacheProperties();
         } catch (Exception e) {
-            Console.getLogger().error("load CacheProperties error {}", e.getMessage());
+            io.github.zpf9705.logger.Console.getLogger().error("load CacheProperties error {}", e.getMessage());
         }
     }
 
@@ -423,7 +428,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
             try {
                 deserializeO(path);
             } catch (Throwable e) {
-                Console.exceptionOfDebugOrWare(
+                io.github.zpf9705.logger.Console.exceptionOfDebugOrWare(
                         "deserialize", e,
                         "deserialize {} Restore cache prepare error : {}"
                 );
@@ -447,7 +452,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
             try {
                 deserialize0(v);
             } catch (Throwable e) {
-                Console.exceptionOfDebugOrWare(
+                io.github.zpf9705.logger.Console.exceptionOfDebugOrWare(
                         v.getName(), e,
                         "Restore cache file {} error : {}"
                 );
