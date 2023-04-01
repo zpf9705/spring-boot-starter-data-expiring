@@ -2,6 +2,8 @@ package io.github.zpf9705.expiring.command.expiremap;
 
 import io.github.zpf9705.expiring.command.ExpireKeyCommands;
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnection;
+import io.github.zpf9705.expiring.core.PersistenceExec;
+import io.github.zpf9705.expiring.core.PersistenceExecTypeEnum;
 import org.springframework.lang.Nullable;
 
 import java.util.Map;
@@ -27,6 +29,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Nullable
     @Override
+    @PersistenceExec(PersistenceExecTypeEnum.REMOVE)
     public Long delete(byte[]... keys) {
         return this.expireMapConnection.deleteReturnSuccessNum(keys);
     }
@@ -99,6 +102,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      * @see io.github.zpf9705.expiring.command.ExpireKeyCommands#setExpiration(byte[], Long, TimeUnit)
      */
     @Override
+    @PersistenceExec(PersistenceExecTypeEnum.SET_E)
     public void setExpiration(byte[] key, Long duration, TimeUnit timeUnit) {
         this.expireMapConnection.setExpirationDuration(key, duration, timeUnit);
     }
@@ -108,6 +112,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      * @see io.github.zpf9705.expiring.command.ExpireKeyCommands#resetExpiration(byte[])
      */
     @Override
+    @PersistenceExec(PersistenceExecTypeEnum.REST)
     public Boolean resetExpiration(byte[] key) {
         return this.expireMapConnection.resetExpirationWithKey(key);
     }

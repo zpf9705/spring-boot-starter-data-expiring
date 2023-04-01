@@ -28,11 +28,6 @@ import java.util.concurrent.TimeUnit;
 public interface ExpireMapClientConfiguration {
 
     /**
-     * @return {@literal String} spring ioc factory name
-     */
-    String getFactoryName();
-
-    /**
      * @return {@literal Integer} map max save size
      */
     Integer getMaxSize();
@@ -58,13 +53,12 @@ public interface ExpireMapClientConfiguration {
     List<ExpirationListener> getExpirationListeners();
 
     /**
-     * Create a new {@link ExpireMapClientConfigurationBuilder} to build {@link ExpireMapClientConfiguration}
-     * to be used with factoryName
+     * Create a new {@link ExpireMapClientConfigurationBuilder} to build {@link ExpireMapClientConfiguration} to be used
      *
      * @return a new {@link ExpireMapClientConfigurationBuilder} to build {@link ExpireMapClientConfiguration}
      */
-    static ExpireMapClientConfigurationBuilder builder(String factoryName) {
-        return new ExpireMapClientConfigurationBuilder(factoryName);
+    static ExpireMapClientConfigurationBuilder builder() {
+        return new ExpireMapClientConfigurationBuilder();
     }
 
     /**
@@ -82,8 +76,8 @@ public interface ExpireMapClientConfiguration {
      *
      * @return a {@link ExpireMapClientConfiguration} with defaults.
      */
-    static ExpireMapClientConfiguration defaultConfiguration(String factoryName) {
-        return builder(factoryName).build();
+    static ExpireMapClientConfiguration defaultConfiguration() {
+        return builder().build();
     }
 
     /**
@@ -91,8 +85,6 @@ public interface ExpireMapClientConfiguration {
      */
     class ExpireMapClientConfigurationBuilder {
 
-        @NonNull
-        String factoryName;
         @Nullable
         Integer maxSize;
         @Nullable
@@ -107,9 +99,7 @@ public interface ExpireMapClientConfiguration {
         static final ExpirationPolicy DEFAULT_EXPIRATION_POLICY = ExpirationPolicy.ACCESSED;
         final List<ExpirationListener> expirationListeners = new ArrayList<>();
 
-        ExpireMapClientConfigurationBuilder(String factoryName) {
-            this.factoryName = factoryName;
-        }
+        ExpireMapClientConfigurationBuilder() {}
 
         /**
          * Given the map one of the biggest capacity
@@ -193,7 +183,6 @@ public interface ExpireMapClientConfiguration {
                 this.expirationPolicy = DEFAULT_EXPIRATION_POLICY;
             }
             return new DefaultExpireMapClientConfiguration(
-                    this.factoryName,
                     this.maxSize,
                     this.defaultExpireTime,
                     this.defaultExpireTimeUnit,

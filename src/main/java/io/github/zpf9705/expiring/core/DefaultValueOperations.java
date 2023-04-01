@@ -1,6 +1,7 @@
 package io.github.zpf9705.expiring.core;
 
 import io.github.zpf9705.expiring.connection.ExpireConnection;
+
 import java.util.concurrent.TimeUnit;
 
 
@@ -29,7 +30,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
                 connection.set(rawKey, rawValue);
                 return null;
             }
-        },false);
+        }, false);
     }
 
     /*
@@ -45,7 +46,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
                 connection.setE(rawKey, rawValue, duration, unit);
                 return null;
             }
-        },false);
+        }, false);
     }
 
     /*
@@ -56,7 +57,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
     public Boolean setIfAbsent(K key, V value) {
         byte[] rawKey = this.rawKey(key);
         byte[] rawValue = this.rawValue(value);
-        return this.execute((connection) -> connection.setNX(rawKey, rawValue),true);
+        return this.execute((connection, f) -> connection.setNX(rawKey, rawValue), true);
     }
 
     /*
@@ -68,7 +69,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
 
         byte[] rawKey = this.rawKey(key);
         byte[] rawValue = this.rawValue(value);
-        return this.execute((connection) -> connection.setEX(rawKey, rawValue, duration, unit),true);
+        return this.execute((connection, f) -> connection.setEX(rawKey, rawValue, duration, unit), true);
     }
 
     /*
@@ -82,7 +83,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
             protected byte[] inExpire(byte[] rawKey, ExpireConnection connection) {
                 return connection.get(rawKey);
             }
-        },true);
+        }, true);
     }
 
     /*
@@ -98,6 +99,6 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
             protected byte[] inExpire(byte[] rawKey, ExpireConnection connection) {
                 return connection.getAndSet(rawKey, rawValue);
             }
-        },true);
+        }, true);
     }
 }

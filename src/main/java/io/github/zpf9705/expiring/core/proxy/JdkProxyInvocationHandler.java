@@ -11,15 +11,19 @@ import java.lang.reflect.Method;
  * @author zpf
  * @since 3.0.0
  */
-public abstract class JdkProxyInvocationHandler<A extends Annotation> implements
+public abstract class JdkProxyInvocationHandler<T extends JdkBeanDefinition, A extends Annotation> implements
         ProxyAnnotationAware<A>,
         InvocationHandler,
         Serializable {
 
+    private static final long serialVersionUID = 12312323L;
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        //source target object
+        final T target = getTarget();
         //exec proxy method
-        Object invokeResult = method.invoke(args);
+        Object invokeResult = method.invoke(target, args);
         Class<A> proxyAnnotation = getProxyAnnotation();
         //if null return direct invokeResult
         if (proxyAnnotation == null) {
@@ -35,6 +39,13 @@ public abstract class JdkProxyInvocationHandler<A extends Annotation> implements
 
     @Override
     public abstract Class<A> getProxyAnnotation();
+
+    /**
+     * Get target object
+     *
+     * @return target object
+     */
+    public abstract T getTarget();
 
     /**
      * Agent performs follow-up unified method

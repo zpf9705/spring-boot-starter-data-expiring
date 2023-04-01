@@ -1,6 +1,7 @@
 package io.github.zpf9705.expiring.core;
 
-import io.github.zpf9705.expiring.core.proxy.DefaultJdkProxyInvocationHandler;
+import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnection;
+import io.github.zpf9705.expiring.core.proxy.JdkProxyInvocationTrace;
 
 /**
  * Cache operation follow-up persistent class content method of unified processing method
@@ -8,11 +9,15 @@ import io.github.zpf9705.expiring.core.proxy.DefaultJdkProxyInvocationHandler;
  * @author zpf
  * @since 3.0.0
  */
-public class ExpirePersistenceAfterHandle extends DefaultJdkProxyInvocationHandler {
+public class ExpirePersistenceAfterHandle extends JdkProxyInvocationTrace<ExpireMapConnection, PersistenceExec> {
+
+    public ExpirePersistenceAfterHandle(ExpireMapConnection target, Class<PersistenceExec> annotationClass) {
+        super(target, annotationClass);
+    }
 
     @Override
     public Class<PersistenceExec> getProxyAnnotation() {
-        return super.getProxyAnnotation();
+        return PersistenceExec.class;
     }
 
     @Override

@@ -6,12 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>
- *
- * <p>
+ * Persistent implementation way annotation
  *
  * @author zpf
- * @since jdk.spi.version-2022.11.18 - [2023-04-01 15:12]
+ * @since 3.0.0
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

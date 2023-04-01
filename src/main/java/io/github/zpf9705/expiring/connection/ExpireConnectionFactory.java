@@ -17,7 +17,4 @@ public interface ExpireConnectionFactory {
      */
     @NonNull
     ExpireConnection getConnection();
-
-    @NonNull
-    String getTemplateBeanFactoryName();
 }

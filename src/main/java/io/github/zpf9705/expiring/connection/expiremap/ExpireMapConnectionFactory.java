@@ -2,6 +2,8 @@ package io.github.zpf9705.expiring.connection.expiremap;
 
 import io.github.zpf9705.expiring.connection.ExpireConnection;
 import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
+import io.github.zpf9705.expiring.core.ExpirePersistenceAfterHandle;
+import io.github.zpf9705.expiring.core.PersistenceExec;
 import io.github.zpf9705.expiring.core.proxy.JdkProxy;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
@@ -28,12 +30,6 @@ public class ExpireMapConnectionFactory implements ExpireConnectionFactory {
         return buildExpireMapConnection(this.clientConfiguration);
     }
 
-    @Override
-    @NonNull
-    public String getTemplateBeanFactoryName() {
-        return this.clientConfiguration.getFactoryName();
-    }
-
     /**
      * Setting a Expire Map connection
      *
@@ -54,6 +50,9 @@ public class ExpireMapConnectionFactory implements ExpireConnectionFactory {
                 expiringMap.addExpirationListener(expirationListener);
             }
         }
-        return JdkProxy.create(ExpireMapConnection.class);
+        return JdkProxy.createProxy(
+                new ExpirePersistenceAfterHandle(new ExpireMapConnection(expiringMap),
+                        PersistenceExec.class)
+        );
     }
 }

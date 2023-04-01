@@ -2,6 +2,8 @@ package io.github.zpf9705.expiring.command.expiremap;
 
 import io.github.zpf9705.expiring.command.ExpireStringCommands;
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnection;
+import io.github.zpf9705.expiring.core.PersistenceExec;
+import io.github.zpf9705.expiring.core.PersistenceExecTypeEnum;
 
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +26,7 @@ public class ExpireMapStringCommands implements ExpireStringCommands {
      * io.github.zpf9705.expiring.command.ExpireStringCommands#set(Object, Object)
      */
     @Override
+    @PersistenceExec(PersistenceExecTypeEnum.PUT)
     public Boolean set(byte[] key, byte[] value) {
         return expireMapConnection.put(key, value);
     }
@@ -33,6 +36,7 @@ public class ExpireMapStringCommands implements ExpireStringCommands {
      * io.github.zpf9705.expiring.command.ExpireStringCommands#setE(Object, Object,Long,TimeUnit)
      */
     @Override
+    @PersistenceExec(PersistenceExecTypeEnum.PUT)
     public Boolean setE(byte[] key, byte[] value, Long duration, TimeUnit unit) {
         return expireMapConnection.putDuration(key, value, duration, unit);
     }
@@ -42,6 +46,7 @@ public class ExpireMapStringCommands implements ExpireStringCommands {
      * io.github.zpf9705.expiring.command.ExpireStringCommands#setNX(Object, Object)
      */
     @Override
+    @PersistenceExec(PersistenceExecTypeEnum.PUT)
     public Boolean setNX(byte[] key, byte[] value) {
         return expireMapConnection.putIfAbsent(key, value);
     }
@@ -51,6 +56,7 @@ public class ExpireMapStringCommands implements ExpireStringCommands {
      * io.github.zpf9705.expiring.command.ExpireStringCommands#setEX(Object, Object,Long,TimeUnit)
      */
     @Override
+    @PersistenceExec(PersistenceExecTypeEnum.PUT)
     public Boolean setEX(byte[] key, byte[] value, Long duration, TimeUnit unit) {
         return expireMapConnection.putIfAbsentDuration(key, value, duration, unit);
     }
@@ -69,6 +75,7 @@ public class ExpireMapStringCommands implements ExpireStringCommands {
      * io.github.zpf9705.expiring.command.ExpireStringCommands#getAndSet(Object, Object)
      */
     @Override
+    @PersistenceExec(PersistenceExecTypeEnum.REPLACE)
     public byte[] getAndSet(byte[] key, byte[] newValue) {
         return expireMapConnection.replace(key, newValue);
     }
