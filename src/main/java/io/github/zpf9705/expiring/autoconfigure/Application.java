@@ -1,13 +1,12 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
-import io.github.zpf9705.expiring.listener.ExpiringListener;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
 
 /**
- * When to note {@link ExpiringListener} binding to the appropriate template model from the ioc container
+ * Getting late spring context to cache recovery template generic method calls provide lookup
  *
  * @author zpf
  * @since 1.1.0

@@ -1,5 +1,7 @@
 package io.github.zpf9705.expiring.listener;
 
+import org.springframework.util.SerializationUtils;
+
 import java.io.Serializable;
 
 /**
@@ -16,9 +18,9 @@ public class Message implements Serializable {
 
     private final Object value;
 
-    public Message(Object key, Object value) {
-        this.key = key;
-        this.value = value;
+    public Message(byte[] key, byte[] value) {
+        this.key = SerializationUtils.deserialize(key);
+        this.value = SerializationUtils.deserialize(value);
     }
 
     public Object getKey() {

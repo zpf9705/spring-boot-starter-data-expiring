@@ -8,12 +8,17 @@ import net.jodah.expiringmap.ExpirationListener;
  * @author zpf
  * @since 2.0.1
  */
-public abstract class MessageExpiringListener implements ExpirationListener<Object, Object> {
+public abstract class MessageExpiringListener implements ExpirationListener<byte[], byte[]> {
 
     @Override
-    public void expired(Object key, Object value) {
+    public void expired(byte[] key, byte[] value) {
         onMessage(new Message(key, value));
     }
 
+    /**
+     * Will into a byte array to {@link Message}
+     *
+     * @param message be a {@code message}
+     */
     public abstract void onMessage(Message message);
 }
