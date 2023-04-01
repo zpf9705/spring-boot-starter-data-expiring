@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.command.expiremap;
 
 import io.github.zpf9705.expiring.command.ExpireKeyCommands;
-import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnection;
+import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionSlot;
 import org.springframework.lang.Nullable;
 
 import java.util.Map;
@@ -15,10 +15,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExpireMapKeyCommands implements ExpireKeyCommands {
 
-    private final ExpireMapConnection expireMapConnection;
+    private final ExpireMapConnectionSlot slot;
 
-    public ExpireMapKeyCommands(ExpireMapConnection expireMapConnection) {
-        this.expireMapConnection = expireMapConnection;
+    public ExpireMapKeyCommands(ExpireMapConnectionSlot slot) {
+        this.slot = slot;
     }
 
     /*
@@ -28,7 +28,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
     @Nullable
     @Override
     public Long delete(byte[]... keys) {
-        return this.expireMapConnection.deleteReturnSuccessNum(keys);
+        return this.slot.deleteReturnSuccessNum(keys);
     }
 
     /*
@@ -37,7 +37,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Map<byte[], byte[]> deleteType(byte[] key) {
-        return this.expireMapConnection.deleteSimilarKey(key);
+        return this.slot.deleteSimilarKey(key);
     }
 
     /*
@@ -46,7 +46,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Boolean deleteAll() {
-        return this.expireMapConnection.reboot();
+        return this.slot.reboot();
     }
 
     /*
@@ -55,7 +55,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Boolean hasKey(byte[] key) {
-        return this.expireMapConnection.containsKey(key);
+        return this.slot.containsKey(key);
     }
 
     /*
@@ -64,7 +64,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Long getExpiration(byte[] key) {
-        return this.expireMapConnection.getExpirationWithKey(key);
+        return this.slot.getExpirationWithKey(key);
     }
 
     /*
@@ -73,7 +73,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Long getExpiration(byte[] key, TimeUnit unit) {
-        return this.expireMapConnection.getExpirationWithDuration(key, unit);
+        return this.slot.getExpirationWithDuration(key, unit);
     }
 
     /*
@@ -82,7 +82,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Long getExpectedExpiration(byte[] key) {
-        return this.expireMapConnection.getExpectedExpirationWithKey(key);
+        return this.slot.getExpectedExpirationWithKey(key);
     }
 
     /*
@@ -91,7 +91,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Long getExpectedExpiration(byte[] key, TimeUnit unit) {
-        return this.expireMapConnection.getExpectedExpirationWithUnit(key, unit);
+        return this.slot.getExpectedExpirationWithUnit(key, unit);
     }
 
     /*
@@ -100,7 +100,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public void setExpiration(byte[] key, Long duration, TimeUnit timeUnit) {
-        this.expireMapConnection.setExpirationDuration(key, duration, timeUnit);
+        this.slot.setExpirationDuration(key, duration, timeUnit);
     }
 
     /*
@@ -109,6 +109,6 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Boolean resetExpiration(byte[] key) {
-        return this.expireMapConnection.resetExpirationWithKey(key);
+        return this.slot.resetExpirationWithKey(key);
     }
 }

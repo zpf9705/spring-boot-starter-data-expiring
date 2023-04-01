@@ -3,7 +3,6 @@ package io.github.zpf9705.expiring.connection;
 import io.github.zpf9705.expiring.command.ExpireCommands;
 import io.github.zpf9705.expiring.command.ExpireKeyCommands;
 import io.github.zpf9705.expiring.command.ExpireStringCommands;
-import io.github.zpf9705.expiring.core.proxy.JdkBeanDefinition;
 
 /**
  * To simulate redis client connection abstract way, carry out a redis - spring encapsulation of learning
@@ -12,7 +11,7 @@ import io.github.zpf9705.expiring.core.proxy.JdkBeanDefinition;
  * @author zpf
  * @since 3.0.0
  */
-public interface ExpireConnection extends ExpireCommands, AutoCloseable, JdkBeanDefinition {
+public interface ExpireConnection extends ExpireCommands, AutoCloseable {
 
     /**
      * Get {@link ExpireStringCommands}.

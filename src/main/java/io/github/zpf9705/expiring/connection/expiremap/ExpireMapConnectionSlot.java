@@ -1,7 +1,9 @@
 package io.github.zpf9705.expiring.connection.expiremap;
 
 
+import io.github.zpf9705.expiring.connection.DefaultedExpireConnection;
 import org.springframework.lang.Nullable;
+
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 3.0.0
  */
-public interface ExpireMapConnectionSlot {
+public interface ExpireMapConnectionSlot extends DefaultedExpireConnection {
 
     /*
      * (non-Javadoc)

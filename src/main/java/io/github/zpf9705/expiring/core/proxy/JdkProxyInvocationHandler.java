@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  * @author zpf
  * @since 3.0.0
  */
-public abstract class JdkProxyInvocationHandler<T extends JdkBeanDefinition, A extends Annotation> implements
+public abstract class JdkProxyInvocationHandler<T, A extends Annotation> implements
         ProxyAnnotationAware<A>,
         InvocationHandler,
         Serializable {

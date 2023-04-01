@@ -10,8 +10,7 @@ import java.lang.annotation.Annotation;
  * @author zpf
  * @since 3.0.0
  */
-public class JdkProxyInvocationTrace<T extends JdkBeanDefinition, A extends Annotation>
-        extends JdkProxyInvocationHandler<T, A> {
+public class JdkProxyInvocationTrace<T, A extends Annotation> extends JdkProxyInvocationHandler<T, A> {
 
     private static final long serialVersionUID = 1220499099081639297L;
 

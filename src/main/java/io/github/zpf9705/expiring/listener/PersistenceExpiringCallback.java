@@ -8,7 +8,7 @@ import io.github.zpf9705.expiring.core.ExpirePersistenceUtils;
 import java.lang.reflect.Method;
 
 /**
- * expire map Delete the callback expired for {@link }
+ * Expiration of {@code key} and {@code value} for remove
  *
  * @author zpf
  * @since 1.1.0

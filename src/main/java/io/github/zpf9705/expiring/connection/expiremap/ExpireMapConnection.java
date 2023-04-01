@@ -4,11 +4,11 @@ import io.github.zpf9705.expiring.command.ExpireKeyCommands;
 import io.github.zpf9705.expiring.command.ExpireStringCommands;
 import io.github.zpf9705.expiring.command.expiremap.ExpireMapKeyCommands;
 import io.github.zpf9705.expiring.command.expiremap.ExpireMapStringCommands;
-import io.github.zpf9705.expiring.connection.AbstractExpireConnection;
 import io.github.zpf9705.expiring.core.PersistenceExec;
 import io.github.zpf9705.expiring.core.PersistenceExecTypeEnum;
 import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.lang.Nullable;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 3.0.0
  */
-public class ExpireMapConnection extends AbstractExpireConnection implements ExpireMapConnectionSlot{
+public class ExpireMapConnection implements ExpireMapConnectionSlot {
 
     private final ExpiringMap<byte[], byte[]> expiringMap;
 
@@ -86,7 +86,7 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
     @Override
     @PersistenceExec(PersistenceExecTypeEnum.PUT)
     public Boolean putIfAbsentDuration(byte[] key, byte[] value, Long duration, TimeUnit unit) {
-        if (Boolean.TRUE.equals(this.setNX(key, value))) {
+        if (Boolean.TRUE.equals(this.putIfAbsent(key, value))) {
             this.setExpiration(key, duration, unit);
             return true;
         }
