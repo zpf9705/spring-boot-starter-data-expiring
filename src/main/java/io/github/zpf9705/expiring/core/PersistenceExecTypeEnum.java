@@ -31,5 +31,10 @@ public enum PersistenceExecTypeEnum implements Dispose{
         public void dispose(Object[] args) {
 
         }
+    },REMOVE_ANY{
+        @Override
+        public void dispose(Object[] args) {
+
+        }
     }
 }

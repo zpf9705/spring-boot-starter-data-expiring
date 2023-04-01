@@ -13,6 +13,8 @@ import java.lang.annotation.Annotation;
 public class JdkProxyInvocationTrace<T extends JdkBeanDefinition, A extends Annotation>
         extends JdkProxyInvocationHandler<T, A> {
 
+    private static final long serialVersionUID = 1220499099081639297L;
+
     private final T target;
 
     private final Class<A> annotationClass;

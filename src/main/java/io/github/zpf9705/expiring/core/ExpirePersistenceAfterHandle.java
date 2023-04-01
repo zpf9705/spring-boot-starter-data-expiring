@@ -11,6 +11,8 @@ import io.github.zpf9705.expiring.core.proxy.JdkProxyInvocationTrace;
  */
 public class ExpirePersistenceAfterHandle extends JdkProxyInvocationTrace<ExpireMapConnection, PersistenceExec> {
 
+    private static final long serialVersionUID = -2346911415600201852L;
+
     public ExpirePersistenceAfterHandle(ExpireMapConnection target, Class<PersistenceExec> annotationClass) {
         super(target, annotationClass);
     }
