@@ -3,13 +3,12 @@ package io.github.zpf9705.expiring.listener;
 import cn.hutool.aop.aspects.SimpleAspect;
 import cn.hutool.core.util.ArrayUtil;
 import io.github.zpf9705.expiring.core.logger.Console;
-import io.github.zpf9705.expiring.util.ExpirePersistenceUtils;
+import io.github.zpf9705.expiring.core.ExpirePersistenceUtils;
 
 import java.lang.reflect.Method;
 
 /**
- * Call cache deletion method after the callback class, for persistent files deleted
- * Using {@link cn.hutool.Hutool} encapsulation of spring-based tool to realize the unity of the proxy object callback
+ * expire map Delete the callback expired for {@link }
  *
  * @author zpf
  * @since 1.1.0

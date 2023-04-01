@@ -1,10 +1,9 @@
-package io.github.zpf9705.expiring.util;
+package io.github.zpf9705.expiring.core;
 
-
-import io.github.zpf9705.expiring.core.Entry;
-import io.github.zpf9705.expiring.core.ExpireGlobePersistence;
 import io.github.zpf9705.expiring.core.logger.Console;
+import io.github.zpf9705.expiring.util.AssertUtils;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,37 +18,40 @@ import java.util.concurrent.TimeUnit;
 public abstract class ExpirePersistenceUtils {
 
     /**
-     * Key/value pair for persistence will need a static solution
+     * Put {@code key} and {@code value} and {@code duration} and {@code timeUnit} in to persistence
      *
-     * @param key             persistence key
-     * @param value           persistence value
-     * @param duration        persistence key of duration
-     * @param timeUnit        persistence key of timeUnit
-     * @param factoryBeanName cache template for ioc
-     * @param <K>             persistence key data type
-     * @param <V>             persistence value data type
+     * @param key      must not be {@literal null}.
+     * @param value    must not be {@literal null}.
+     * @param duration must not be {@literal null}.
+     * @param timeUnit must not be {@literal null}.
+     * @param <K>      key generic
+     * @param <V>      value generic
      */
-    public static <K, V> void putPersistence(K key, V value, Long duration, TimeUnit timeUnit,
-                                             String factoryBeanName) {
+    public static <K, V> void putPersistence(K key, V value, Long duration, TimeUnit timeUnit) {
         run(() -> {
             AssertUtils.Persistence.notNull(key, "key no be null");
             AssertUtils.Persistence.notNull(value, "value no be null");
+            //get current thread factory name
+            String factoryName = ExpireFactoryNameHolder.getFactoryName();
+            AssertUtils.Persistence.hasText(factoryName, "factoryName no be null");
             ExpireGlobePersistence<K, V> put =
-                    ExpireGlobePersistence.of(Entry.of(key, value, duration, timeUnit), factoryBeanName);
+                    ExpireGlobePersistence.of(Entry.of(key, value, duration, timeUnit), factoryName);
             //判断是否已经写入
             AssertUtils.Persistence.isTrue(!put.persistenceExist(), "persistence already exist ");
             put.serial();
+            //after reset current thread Expire Factory Name
+            ExpireFactoryNameHolder.restFactoryNamedContent();
         }, "putPersistence");
     }
 
     /**
-     * Replace the corresponding key value the value of a persistent alternatives
+     * Replace the corresponding {@code  key} {@code value} the value of a {@code newValue}
      *
-     * @param key      persistence key
-     * @param value    persistence value
-     * @param newValue persistence replace value
-     * @param <K>      persistence key data type
-     * @param <V>      persistence value data type
+     * @param key      must not be {@literal null}.
+     * @param value    must not be {@literal null}.
+     * @param newValue must not be {@literal null}.
+     * @param <K>      key generic
+     * @param <V>      value generic
      */
     public static <K, V> void replacePersistence(K key, V value, V newValue) {
         run(() -> {
@@ -63,14 +65,14 @@ public abstract class ExpirePersistenceUtils {
     }
 
     /**
-     * Exist to have persistent files to a custom initialization time
+     * Set a {@code key} and {@code value} with new duration , but if {@code key} exist
      *
-     * @param key      persistence key
-     * @param value    persistence value
-     * @param duration persistence key of duration
-     * @param timeUnit persistence key of timeUnit
-     * @param <K>      persistence key data type
-     * @param <V>      persistence value data type
+     * @param key      must not be {@literal null}.
+     * @param value    must not be {@literal null}.
+     * @param duration must not be {@literal null}.
+     * @param timeUnit must not be {@literal null}.
+     * @param <K>      key generic
+     * @param <V>      value generic
      */
     public static <K, V> void setEPersistence(K key, V value, Long duration, TimeUnit timeUnit) {
         run(() -> {
@@ -85,13 +87,12 @@ public abstract class ExpirePersistenceUtils {
     }
 
     /**
-     * The persistent file already exists for the expiration time limit reset,
-     * reset the standard depends on the default system planning
+     * Rest a {@code key} and {@code value} combination of persistence
      *
-     * @param key   persistence key
-     * @param value persistence value
-     * @param <K>   persistence key data type
-     * @param <V>   persistence value data type
+     * @param key   must not be {@literal null}.
+     * @param value must not be {@literal null}.
+     * @param <K>   key generic
+     * @param <V>   value generic
      */
     public static <K, V> void restPersistence(K key, V value) {
         run(() -> {
@@ -104,12 +105,12 @@ public abstract class ExpirePersistenceUtils {
     }
 
     /**
-     * After delete system cache value, remove the corresponding persistence file
+     * Remove a {@code key} and {@code value} persistence record
      *
-     * @param key   persistence key
-     * @param value persistence value
-     * @param <K>   persistence key data type
-     * @param <V>   persistence value data type
+     * @param key   must not be {@literal null}.
+     * @param value must not be {@literal null}.
+     * @param <K>   key generic
+     * @param <V>   value generic
      */
     public static <K, V> void removePersistence(K key, V value) {
         run(() -> {
@@ -128,11 +129,8 @@ public abstract class ExpirePersistenceUtils {
      * @param method   method name
      */
     public static void run(Runnable runnable, String method) {
-        try {
-            runnable.run();
-        } catch (Throwable e) {
-            Console.exceptionOfDebugOrWare(method, e,
-                    "Run the cache Persistence method [{}] An exception occurs [{}]");
-        }
+        CompletableFuture.runAsync(runnable)
+                .whenComplete((v, e) -> Console.exceptionOfDebugOrWare(method, e,
+                        "Run the cache Persistence method [{}] An exception occurs [{}]"));
     }
 }

@@ -15,22 +15,34 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("rawtypes")
 public class DefaultExpireMapClientConfiguration implements ExpireMapClientConfiguration {
 
+    private final String factoryName;
     private final Integer maxSize;
     private final Long defaultExpireTime;
     private final TimeUnit defaultExpireTimeUnit;
     private final ExpirationPolicy expirationPolicy;
     private final List<ExpirationListener> expirationListeners;
 
-    public DefaultExpireMapClientConfiguration(Integer maxSize,
+    public DefaultExpireMapClientConfiguration(String factoryName,
+                                               Integer maxSize,
                                                Long defaultExpireTime,
                                                TimeUnit defaultExpireTimeUnit,
                                                ExpirationPolicy expirationPolicy,
                                                List<ExpirationListener> expirationListeners) {
+        this.factoryName = factoryName;
         this.maxSize = maxSize;
         this.defaultExpireTime = defaultExpireTime;
         this.defaultExpireTimeUnit = defaultExpireTimeUnit;
         this.expirationPolicy = expirationPolicy;
         this.expirationListeners = expirationListeners;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfiguration#getFactoryName()
+     */
+    @Override
+    public String getFactoryName() {
+        return this.factoryName;
     }
 
     /*

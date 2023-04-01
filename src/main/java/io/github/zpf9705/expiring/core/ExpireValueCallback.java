@@ -16,8 +16,9 @@ public interface ExpireValueCallback<T> {
      * closing the connection or handling exceptions.
      *
      * @param connection Expire connection
+     * @param factoryBeanName spring ioc inject name
      * @return a result object or {@code null} if none
      */
     @Nullable
-    T doInExpire(ExpireConnection connection);
+    T doInExpire(ExpireConnection connection, String factoryBeanName);
 }

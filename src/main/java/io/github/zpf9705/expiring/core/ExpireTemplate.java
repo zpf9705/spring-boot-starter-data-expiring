@@ -114,7 +114,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     @Override
     public <T> T execute(ExpireValueCallback<T> action, boolean composeException) {
 
-        AssertUtils.Operation.isTrue(initialized,"Execute must before initialized");
+        AssertUtils.Operation.isTrue(initialized, "Execute must before initialized");
 
         ExpireConnectionFactory connectionFactory = getConnectionFactory();
 
@@ -122,9 +122,11 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
         AssertUtils.Operation.notNull(connectionFactory.getConnection(), "Connection no be null");
 
+        AssertUtils.Operation.hasText(this.factoryBeanName, "FactoryBeanName no be null");
+
         T result;
         try {
-            result = action.doInExpire(connectionFactory.getConnection());
+            result = action.doInExpire(connectionFactory.getConnection(), this.factoryBeanName);
 
         } catch (Throwable e) {
             solverException(e, composeException);
@@ -217,7 +219,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     @Nullable
     @Override
     public Boolean delete(K key) {
-        Long result = execute(connection -> connection.delete(
+        Long result = execute((connection, f) -> connection.delete(
                 this.rawKey(key)
         ), true);
         return result != null && result.intValue() == 1;
@@ -229,7 +231,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
         if (CollectionUtils.isEmpty(keys)) {
             return 0L;
         }
-        return this.execute(connection -> connection.delete(
+        return this.execute((connection, f) -> connection.delete(
                 this.rawKeys(keys)
         ), true);
     }
@@ -237,7 +239,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     @Override
     public Map<K, V> deleteType(K key) {
 
-        Map<byte[], byte[]> map = this.execute(connection -> connection.deleteType(
+        Map<byte[], byte[]> map = this.execute((connection, f) -> connection.deleteType(
                 this.rawKey(key)
         ), true);
 
@@ -255,12 +257,12 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
     @Override
     public Boolean deleteAll() {
-        return this.execute(ExpireKeyCommands::deleteAll, true);
+        return this.execute((connection, f) -> connection.deleteAll(), true);
     }
 
     @Override
     public Boolean exist(K key) {
-        return this.execute(connection -> connection.hasKey(
+        return this.execute((connection, f) -> connection.hasKey(
                 this.rawKey(key)
         ), true);
     }

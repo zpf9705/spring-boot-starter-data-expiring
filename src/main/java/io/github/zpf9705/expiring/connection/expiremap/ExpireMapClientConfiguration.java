@@ -3,6 +3,8 @@ package io.github.zpf9705.expiring.connection.expiremap;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
@@ -22,7 +24,13 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 3.0.0
  */
+@SuppressWarnings("rawtypes")
 public interface ExpireMapClientConfiguration {
+
+    /**
+     * @return {@literal String} spring ioc factory name
+     */
+    String getFactoryName();
 
     /**
      * @return {@literal Integer} map max save size
@@ -50,12 +58,13 @@ public interface ExpireMapClientConfiguration {
     List<ExpirationListener> getExpirationListeners();
 
     /**
-     * Create a new {@link ExpireMapClientConfigurationBuilder} to build {@link ExpireMapClientConfiguration} to be used with
+     * Create a new {@link ExpireMapClientConfigurationBuilder} to build {@link ExpireMapClientConfiguration}
+     * to be used with factoryName
      *
      * @return a new {@link ExpireMapClientConfigurationBuilder} to build {@link ExpireMapClientConfiguration}
      */
-    static ExpireMapClientConfigurationBuilder builder() {
-        return new ExpireMapClientConfigurationBuilder();
+    static ExpireMapClientConfigurationBuilder builder(String factoryName) {
+        return new ExpireMapClientConfigurationBuilder(factoryName);
     }
 
     /**
@@ -73,16 +82,17 @@ public interface ExpireMapClientConfiguration {
      *
      * @return a {@link ExpireMapClientConfiguration} with defaults.
      */
-    static ExpireMapClientConfiguration defaultConfiguration() {
-        return builder().build();
+    static ExpireMapClientConfiguration defaultConfiguration(String factoryName) {
+        return builder(factoryName).build();
     }
 
     /**
      * build for {@link ExpireMapClientConfiguration}
      */
-    @SuppressWarnings("rawtypes")
     class ExpireMapClientConfigurationBuilder {
 
+        @NonNull
+        String factoryName;
         @Nullable
         Integer maxSize;
         @Nullable
@@ -97,7 +107,8 @@ public interface ExpireMapClientConfiguration {
         static final ExpirationPolicy DEFAULT_EXPIRATION_POLICY = ExpirationPolicy.ACCESSED;
         final List<ExpirationListener> expirationListeners = new ArrayList<>();
 
-        ExpireMapClientConfigurationBuilder() {
+        ExpireMapClientConfigurationBuilder(String factoryName) {
+            this.factoryName = factoryName;
         }
 
         /**
@@ -181,8 +192,12 @@ public interface ExpireMapClientConfiguration {
             if (this.expirationPolicy == null) {
                 this.expirationPolicy = DEFAULT_EXPIRATION_POLICY;
             }
-            return new DefaultExpireMapClientConfiguration(this.maxSize,
-                    this.defaultExpireTime, this.defaultExpireTimeUnit, this.expirationPolicy,
+            return new DefaultExpireMapClientConfiguration(
+                    this.factoryName,
+                    this.maxSize,
+                    this.defaultExpireTime,
+                    this.defaultExpireTimeUnit,
+                    this.expirationPolicy,
                     this.expirationListeners);
         }
     }

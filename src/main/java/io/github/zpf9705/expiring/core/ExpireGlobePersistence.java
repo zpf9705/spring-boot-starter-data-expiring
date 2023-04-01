@@ -115,7 +115,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
     }
 
     /**
-     * check provider persistence path
+     * Check provider persistence path
      */
     public static void checkDirectory() {
         String persistencePath = cacheProperties.getPersistence().getPersistencePath();
@@ -131,7 +131,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
     }
 
     /**
-     * if no found persistence path will check error path and give logger
+     * If no found persistence path will check error path and give logger
      *
      * @param persistencePath persistence path
      */

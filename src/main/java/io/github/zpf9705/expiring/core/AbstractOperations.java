@@ -26,10 +26,11 @@ public abstract class AbstractOperations<K, V> {
         }
 
         @Override
-        public V doInExpire(ExpireConnection connection) {
+        public V doInExpire(ExpireConnection connection, String factoryBeanName) {
             /*
              * How to have a special transformation of key/value demand, can be operated in this department
              */
+            ExpireFactoryNameHolder.setFactoryName(factoryBeanName);
             byte[] bytes = inExpire(rawKey(this.key), connection);
             return deserializeValue(bytes);
         }

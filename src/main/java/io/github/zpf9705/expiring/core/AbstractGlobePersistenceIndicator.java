@@ -17,14 +17,14 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
 
     /**
-     * serial cache persistence
+     * Serial cache persistence
      */
     public void serial() {
         // do nothing
     }
 
     /**
-     * deserialize cache persistence
+     * Deserialize cache persistence
      *
      * @param path persistence path
      */
@@ -56,7 +56,7 @@ public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
     }
 
     /**
-     * delete a file within fileName
+     * Delete a file within fileName
      *
      * @param fileName name of the file
      * @return If the real path to the file del , and does failed
