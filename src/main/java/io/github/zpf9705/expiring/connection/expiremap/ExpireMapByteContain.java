@@ -58,4 +58,18 @@ public class ExpireMapByteContain extends ArrayList<byte[]> {
     public boolean exist(byte[] bytes) {
         return getSimilarBytes(bytes) != null;
     }
+
+    /**
+     * Does not exist in the collection, and returns that value
+     *
+     * @param bytes value
+     * @return add success return value
+     */
+    public byte[] computeIfAbsent(byte[] bytes) {
+        if (exist(bytes)) {
+            this.addBytes(bytes);
+            return bytes;
+        }
+        return null;
+    }
 }
