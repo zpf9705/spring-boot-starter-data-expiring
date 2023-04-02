@@ -99,8 +99,8 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      * @see io.github.zpf9705.expiring.command.ExpireKeyCommands#setExpiration(byte[], Long, TimeUnit)
      */
     @Override
-    public void setExpiration(byte[] key, Long duration, TimeUnit timeUnit) {
-        this.slot.setExpirationDuration(key, duration, timeUnit);
+    public Boolean setExpiration(byte[] key, Long duration, TimeUnit timeUnit) {
+        return this.slot.setExpirationDuration(key, duration, timeUnit);
     }
 
     /*

@@ -82,7 +82,7 @@ public interface ExpireMapConnectionSlot extends DefaultedExpireConnection {
      * (non-Javadoc)
      * @see net.jodah.expiringmap.ExpiringMap#containsValue(Object)
      */
-    Boolean containsValue(byte[] key);
+    Boolean containsValue(byte[] value);
 
     /*
      * (non-Javadoc)
@@ -112,7 +112,7 @@ public interface ExpireMapConnectionSlot extends DefaultedExpireConnection {
      * (non-Javadoc)
      * @see net.jodah.expiringmap.ExpiringMap#setExpiration(Object, long, TimeUnit)
      */
-    void setExpirationDuration(byte[] key, Long duration, TimeUnit timeUnit);
+    Boolean setExpirationDuration(byte[] key, Long duration, TimeUnit timeUnit);
 
     /*
      * (non-Javadoc)

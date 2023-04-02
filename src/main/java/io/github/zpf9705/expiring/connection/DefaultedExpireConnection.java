@@ -59,8 +59,8 @@ public interface DefaultedExpireConnection extends ExpireConnection {
     }
 
     @Override
-    default void setExpiration(byte[] key, Long duration, TimeUnit unit) {
-        keyCommands().setExpiration(key, duration, unit);
+    default Boolean setExpiration(byte[] key, Long duration, TimeUnit unit) {
+        return keyCommands().setExpiration(key, duration, unit);
     }
 
     @Override

@@ -87,8 +87,9 @@ public interface ExpireKeyCommands {
      * @param key      must not be {@literal null}.
      * @param duration must not be {@literal null}.
      * @param timeUnit must not be {@literal null}.
+     * @return Set result
      */
-    void setExpiration(byte[] key, Long duration, TimeUnit timeUnit);
+    Boolean setExpiration(byte[] key, Long duration, TimeUnit timeUnit);
 
     /**
      * Reset the key {@code key} expiration time with old expiration time

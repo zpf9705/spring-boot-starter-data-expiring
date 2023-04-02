@@ -2,7 +2,6 @@ package io.github.zpf9705.expiring.core.proxy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
-
 /**
  * The JDK proxy object generation solution method
  *
