@@ -2,7 +2,6 @@ package io.github.zpf9705.expiring.core.persistence;
 
 import cn.hutool.core.io.FileUtil;
 import io.github.zpf9705.expiring.core.error.PersistenceException;
-import org.springframework.lang.NonNull;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -24,13 +23,8 @@ public abstract class AbstractGlobePersistenceIndicator extends FileUtil impleme
         // do nothing
     }
 
-    /**
-     * Deserialize cache persistence
-     *
-     * @param path persistence path
-     */
-    public void deserialize(@NonNull String path) {
-        // do nothing
+    public void deserializeWithPath(String path){
+
     }
 
     /**
@@ -60,7 +54,7 @@ public abstract class AbstractGlobePersistenceIndicator extends FileUtil impleme
      * Delete a file within fileName
      *
      * @param fileName name of the file
-     * @return If the real path to the file del , and does failed
+     * @return If the real path to the file del , and does fail
      */
     public boolean del0(String fileName) {
         boolean c = true;

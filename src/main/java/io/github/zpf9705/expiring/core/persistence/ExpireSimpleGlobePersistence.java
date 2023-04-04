@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
+import org.springframework.util.CollectionUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -424,20 +425,6 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     }
 
     @Override
-    public void deserialize(@NonNull String path) {
-        CompletableFuture.runAsync(() -> {
-            try {
-                deserializeWithPath(path);
-            } catch (Throwable e) {
-                Console.exceptionOfDebugOrWare(
-                        "deserialize", e,
-                        "Deserialize {} Restore cache prepare error : {}"
-                );
-            }
-        });
-    }
-
-    @Override
     public String getFactoryName() {
         return ExpireSimpleGlobePersistence.class.getName();
     }
@@ -447,14 +434,25 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
         if (StringUtils.isBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
             path = cacheProperties.getPersistencePath();
         }
-        AssertUtils.Persistence.hasText(path, "Path no be blank");
-        AssertUtils.Persistence.isTrue(isDirectory(path),
-                "This path [" + path + "] belong file no a directory");
-        List<File> files = loopFiles(path,
-                v -> v.isFile() && v.getName().endsWith(PREFIX_BEFORE));
-        AssertUtils.Persistence.notEmpty(files, "This path [" + path + "] no found files");
+        List<File> files = null;
+        if (StringUtils.isBlank(path)) {
+            Console.info("Path no be blank , but you provide null");
+        } else {
+            if (!isDirectory(path)) {
+                Console.info("This path [{}] belong file no a directory", path);
+            } else {
+                files = loopFiles(path, v -> v.isFile() && v.getName().endsWith(PREFIX_BEFORE));
+                if (CollectionUtils.isEmpty(files)) {
+                    Console.info("This path [{}] no found files", path);
+                }
+            }
+        }
+        if (CollectionUtils.isEmpty(files)){
+            return;
+        }
         //Loop back
-        files.forEach(v -> {
+        List<File> finalFiles = files;
+        CompletableFuture.runAsync(() -> finalFiles.forEach(v -> {
             try {
                 deserializeWithFile(v);
             } catch (Throwable e) {
@@ -463,7 +461,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
                         "Restore cache file {} error : {}"
                 );
             }
-        });
+        }));
     }
 
     @Override
