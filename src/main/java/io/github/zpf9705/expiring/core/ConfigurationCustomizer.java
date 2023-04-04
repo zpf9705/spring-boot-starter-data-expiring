@@ -1,7 +1,5 @@
 package io.github.zpf9705.expiring.core;
 
-import io.github.zpf9705.expiring.autoconfigure.ExpireProperties;
-
 /**
  * Interface-oriented configuration integration needs to be combined auto Load Configuration
  *           {@link org.springframework.context.annotation.Bean}
@@ -13,7 +11,7 @@ import io.github.zpf9705.expiring.autoconfigure.ExpireProperties;
 public interface ConfigurationCustomizer {
 
     /**
-     * setting method for {@link ExpireProperties} Configuration
+     * Setting for {@link ExpireProperties} Configuration
      *
      * @param properties {@link ExpireProperties}
      */

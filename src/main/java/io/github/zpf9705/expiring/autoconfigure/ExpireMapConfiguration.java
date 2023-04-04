@@ -9,8 +9,11 @@ import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfiguration;
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfigurationCustomizer;
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionFactory;
-import io.github.zpf9705.expiring.core.ExpireGlobePersistence;
+import io.github.zpf9705.expiring.core.ExpireProperties;
 import io.github.zpf9705.expiring.core.ValueOperations;
+import io.github.zpf9705.expiring.core.persistence.ExpireGlobePersistenceFactory;
+import io.github.zpf9705.expiring.core.persistence.ExpireSimpleGlobePersistence;
+import io.github.zpf9705.expiring.core.persistence.PersistenceFactory;
 import io.github.zpf9705.expiring.listener.PersistenceExpiringCallback;
 import io.github.zpf9705.expiring.core.logger.Console;
 import net.jodah.expiringmap.ExpirationListener;
@@ -25,7 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -92,8 +94,13 @@ public class ExpireMapConfiguration extends AbstractExpireConfiguration implemen
     @ConditionalOnProperty(prefix = "expire.config", name = "open-persistence", havingValue = "true")
     @ConditionalOnBean(value = {ValueOperations.class}, name = {"application-ec"})
     public String persistenceRegain(@Value("${expire.config.persistence-path:default}") String path) {
-        ExpireGlobePersistence.INSTANCE.deserialize(path);
-        return "globe Persistence regain ok";
+        PersistenceFactory factory = ExpireGlobePersistenceFactory.getPersistenceFactory(
+                ExpireSimpleGlobePersistence.class.getName());
+        if (factory == null) {
+            return "Client name [" + ExpiringMap.class.getName() + "] persistenceRegain failed";
+        }
+        factory.deserializeWithPath(path);
+        return "Client name [" + ExpiringMap.class.getName() + "] persistenceRegain ok";
     }
 
     @Bean("expireMap::expireMapClientCustomizer")

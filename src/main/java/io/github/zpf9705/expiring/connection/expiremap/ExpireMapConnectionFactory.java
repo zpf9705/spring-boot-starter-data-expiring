@@ -2,8 +2,8 @@ package io.github.zpf9705.expiring.connection.expiremap;
 
 import io.github.zpf9705.expiring.connection.ExpireConnection;
 import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
-import io.github.zpf9705.expiring.core.ExpirePersistenceAfterHandle;
-import io.github.zpf9705.expiring.core.PersistenceExec;
+import io.github.zpf9705.expiring.core.persistence.ExpirePersistenceAfterHandle;
+import io.github.zpf9705.expiring.core.persistence.PersistenceExec;
 import io.github.zpf9705.expiring.core.proxy.JdkProxy;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;

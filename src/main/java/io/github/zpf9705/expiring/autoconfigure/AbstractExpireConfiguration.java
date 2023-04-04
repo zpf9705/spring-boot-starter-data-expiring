@@ -37,7 +37,7 @@ public abstract class AbstractExpireConfiguration implements InitializingBean, B
     /**
      * Get banner source class
      *
-     * @return a using banner class type
+     * @return a using banner class type no be {@literal null}
      */
     @NonNull
     public abstract Class<?> getSourceClass();
@@ -45,7 +45,7 @@ public abstract class AbstractExpireConfiguration implements InitializingBean, B
     /**
      * Using banner start up banner
      *
-     * @return a {@link StartUpBanner}
+     * @return a {@link StartUpBanner} no be {@literal null}
      */
     @NonNull
     public abstract StartUpBanner getStartUpBanner();

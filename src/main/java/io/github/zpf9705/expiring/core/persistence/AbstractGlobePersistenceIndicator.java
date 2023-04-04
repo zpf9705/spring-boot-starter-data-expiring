@@ -1,7 +1,9 @@
-package io.github.zpf9705.expiring.core;
+package io.github.zpf9705.expiring.core.persistence;
 
 import cn.hutool.core.io.FileUtil;
+import io.github.zpf9705.expiring.core.ExpireTemplate;
 import io.github.zpf9705.expiring.core.error.PersistenceException;
+import org.springframework.lang.NonNull;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -9,12 +11,12 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * Here provides a cache persistent {@link ExpireGlobePersistence} all process
+ * Here provides a cache persistent {@link ExpireSimpleGlobePersistence} all process
  *
  * @author zpf
  * @since 1.1.0
  */
-public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
+public abstract class AbstractGlobePersistenceIndicator extends FileUtil implements PersistenceFactory {
 
     /**
      * Serial cache persistence
@@ -28,7 +30,7 @@ public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
      *
      * @param path persistence path
      */
-    public void deserialize(String path) {
+    public void deserialize(@NonNull String path) {
         // do nothing
     }
 
@@ -68,41 +70,6 @@ public abstract class AbstractGlobePersistenceIndicator<K, V> extends FileUtil {
         }
         return c;
     }
-
-    /**
-     * Restore memory within a path
-     *
-     * @param path Persistence path
-     */
-    public abstract void deserializeO(String path) throws PersistenceException;
-
-    /**
-     * Restore memory within a file
-     *
-     * @param file Persistence file
-     * @throws PersistenceException Persistence ex
-     */
-    public abstract void deserialize0(File file) throws PersistenceException;
-
-    /**
-     * Restore memory of read file buff
-     *
-     * @param buffer file read buff
-     * @throws PersistenceException Persistence ex
-     */
-    public abstract void deserialize0(StringBuilder buffer) throws PersistenceException;
-
-    /**
-     * Restore memory of expireTemplate regain this info
-     *
-     * @param template    {@link ExpireTemplate}
-     * @param persistence read file of persistence
-     * @param writePath   persistence write path
-     * @throws PersistenceException Persistence ex
-     */
-    public abstract void deserialize0(ExpireTemplate<K, V> template,
-                                      ExpireGlobePersistence.Persistence<K, V> persistence, String writePath)
-            throws PersistenceException;
 
     /**
      * Restore the cache time remaining

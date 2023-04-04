@@ -1,4 +1,4 @@
-package io.github.zpf9705.expiring.core;
+package io.github.zpf9705.expiring.core.persistence;
 
 import java.util.concurrent.TimeUnit;
 
@@ -60,7 +60,7 @@ public interface GlobePersistence<K, V> {
     /**
      * get current Persistence
      *
-     * @return {@link ExpireGlobePersistence.Persistence}
+     * @return {@link ExpireSimpleGlobePersistence.Persistence}
      */
-    ExpireGlobePersistence.Persistence<K, V> getPersistence();
+    ExpireSimpleGlobePersistence.Persistence<K, V> getPersistence();
 }

@@ -1,4 +1,4 @@
-package io.github.zpf9705.expiring.core;
+package io.github.zpf9705.expiring.core.persistence;
 
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionSlot;
 import io.github.zpf9705.expiring.core.proxy.JdkProxyInvocationTrace;

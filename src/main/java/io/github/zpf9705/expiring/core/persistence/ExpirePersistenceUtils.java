@@ -1,5 +1,6 @@
-package io.github.zpf9705.expiring.core;
+package io.github.zpf9705.expiring.core.persistence;
 
+import io.github.zpf9705.expiring.core.ExpireFactoryNameHolder;
 import io.github.zpf9705.expiring.core.logger.Console;
 import io.github.zpf9705.expiring.util.AssertUtils;
 
@@ -9,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Cache persistence tool
  * <ul>
- *     {@link ExpireGlobePersistence}
+ *     {@link ExpireSimpleGlobePersistence}
  * </ul>
  *
  * @author zpf
@@ -34,8 +35,8 @@ public abstract class ExpirePersistenceUtils {
             //get current thread factory name
             String factoryName = ExpireFactoryNameHolder.getFactoryName();
             AssertUtils.Persistence.hasText(factoryName, "factoryName no be null");
-            ExpireGlobePersistence<K, V> put =
-                    ExpireGlobePersistence.of(Entry.of(key, value, duration, timeUnit), factoryName);
+            ExpireSimpleGlobePersistence<K, V> put =
+                    ExpireSimpleGlobePersistence.of(Entry.of(key, value, duration, timeUnit), factoryName);
             //判断是否已经写入
             AssertUtils.Persistence.isTrue(!put.persistenceExist(), "persistence already exist ");
             put.serial();
@@ -58,7 +59,7 @@ public abstract class ExpirePersistenceUtils {
             AssertUtils.Persistence.notNull(key, "key no be null");
             AssertUtils.Persistence.notNull(value, "value no be null");
             AssertUtils.Persistence.notNull(newValue, "newValue no be null");
-            ExpireGlobePersistence<K, V> replace = ExpireGlobePersistence.of(key, value);
+            ExpireSimpleGlobePersistence<K, V> replace = ExpireSimpleGlobePersistence.of(key, value);
             AssertUtils.Persistence.isTrue(replace.persistenceExist(), "persistence no exist");
             replace.replacePersistence(newValue);
         }, "replacePersistence");
@@ -80,7 +81,7 @@ public abstract class ExpirePersistenceUtils {
             AssertUtils.Persistence.notNull(value, "value no be null");
             AssertUtils.Persistence.notNull(duration, "duration no be null");
             AssertUtils.Persistence.notNull(timeUnit, "timeUnit no be null");
-            ExpireGlobePersistence<K, V> setE = ExpireGlobePersistence.of(key, value);
+            ExpireSimpleGlobePersistence<K, V> setE = ExpireSimpleGlobePersistence.of(key, value);
             AssertUtils.Persistence.isTrue(setE.persistenceExist(), "persistence no exist");
             setE.setExpirationPersistence(duration, timeUnit);
         }, "setEPersistence");
@@ -98,7 +99,7 @@ public abstract class ExpirePersistenceUtils {
         run(() -> {
             AssertUtils.Persistence.notNull(key, "key no be null");
             AssertUtils.Persistence.notNull(value, "value no be null");
-            ExpireGlobePersistence<K, V> reset = ExpireGlobePersistence.of(key, value);
+            ExpireSimpleGlobePersistence<K, V> reset = ExpireSimpleGlobePersistence.of(key, value);
             AssertUtils.Persistence.isTrue(reset.persistenceExist(), "persistence no exist");
             reset.resetExpirationPersistence();
         }, "restPersistence");
@@ -116,7 +117,7 @@ public abstract class ExpirePersistenceUtils {
         run(() -> {
             AssertUtils.Persistence.notNull(key, "key no be null");
             AssertUtils.Persistence.notNull(value, "value no be null");
-            ExpireGlobePersistence<K, V> remove = ExpireGlobePersistence.of(key, value);
+            ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.of(key, value);
             AssertUtils.Persistence.isTrue(remove.persistenceExist(), "persistence no exist");
             remove.removePersistence();
         }, "removePersistence");

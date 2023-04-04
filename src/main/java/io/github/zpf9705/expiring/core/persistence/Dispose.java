@@ -1,4 +1,4 @@
-package io.github.zpf9705.expiring.core;
+package io.github.zpf9705.expiring.core.persistence;
 
 /**
  * The cache persistence operation interface for {@link ExpirePersistenceUtils}

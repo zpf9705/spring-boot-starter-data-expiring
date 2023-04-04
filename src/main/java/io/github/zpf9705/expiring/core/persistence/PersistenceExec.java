@@ -1,4 +1,4 @@
-package io.github.zpf9705.expiring.core;
+package io.github.zpf9705.expiring.core.persistence;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

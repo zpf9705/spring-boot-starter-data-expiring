@@ -3,7 +3,7 @@ package io.github.zpf9705.expiring.listener;
 import cn.hutool.aop.aspects.SimpleAspect;
 import cn.hutool.core.util.ArrayUtil;
 import io.github.zpf9705.expiring.core.logger.Console;
-import io.github.zpf9705.expiring.core.ExpirePersistenceUtils;
+import io.github.zpf9705.expiring.core.persistence.ExpirePersistenceUtils;
 
 import java.lang.reflect.Method;
 
