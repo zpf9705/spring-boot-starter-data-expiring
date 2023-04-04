@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.core.serializer;
 
-import cn.hutool.core.bean.BeanUtil;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import io.reactivex.rxjava3.core.Single;
 import org.springframework.util.SerializationUtils;
