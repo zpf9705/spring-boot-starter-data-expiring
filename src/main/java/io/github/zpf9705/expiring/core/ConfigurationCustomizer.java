@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.core;
 
-import io.github.zpf9705.expiring.autoconfigure.ExpireMapCacheProperties;
+import io.github.zpf9705.expiring.autoconfigure.ExpireProperties;
 
 /**
  * Interface-oriented configuration integration needs to be combined auto Load Configuration
@@ -13,9 +13,9 @@ import io.github.zpf9705.expiring.autoconfigure.ExpireMapCacheProperties;
 public interface ConfigurationCustomizer {
 
     /**
-     * setting method for {@link ExpireMapCacheProperties} Configuration
+     * setting method for {@link ExpireProperties} Configuration
      *
-     * @param properties {@link ExpireMapCacheProperties}
+     * @param properties {@link ExpireProperties}
      */
-    void customize(ExpireMapCacheProperties properties);
+    void customize(ExpireProperties properties);
 }

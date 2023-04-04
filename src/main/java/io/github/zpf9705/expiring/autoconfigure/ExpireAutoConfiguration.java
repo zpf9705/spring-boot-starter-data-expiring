@@ -1,5 +1,9 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
+import io.github.zpf9705.expiring.banner.ExpireStartUpBanner;
+import io.github.zpf9705.expiring.banner.ExpireStarterBanner;
+import io.github.zpf9705.expiring.banner.StartUpBanner;
+import io.github.zpf9705.expiring.banner.Version;
 import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
 import io.github.zpf9705.expiring.core.*;
 import io.github.zpf9705.expiring.listener.ExpiringListener;
@@ -20,7 +24,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
+import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
+
+import java.io.PrintStream;
 import java.util.List;
 
 /**
@@ -49,25 +56,45 @@ import java.util.List;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ExpireOperations.class})
-@EnableConfigurationProperties(ExpireMapCacheProperties.class)
+@EnableConfigurationProperties({ExpireProperties.class})
 @Import(ExpireMapConfiguration.class)
-public class ExpireAutoConfiguration implements InitializingBean {
+public class ExpireAutoConfiguration extends AbstractExpireConfiguration implements InitializingBean {
 
-    private final ExpireMapCacheProperties expireMapCacheProperties;
+    private final ExpireProperties expireProperties;
 
     private final List<ConfigurationCustomizer> configurationCustomizers;
 
-    public ExpireAutoConfiguration(ExpireMapCacheProperties expireMapCacheProperties,
+    public ExpireAutoConfiguration(ExpireProperties expireProperties,
                                    ObjectProvider<List<ConfigurationCustomizer>> customizerS) {
-        this.expireMapCacheProperties = expireMapCacheProperties;
+        this.expireProperties = expireProperties;
         this.configurationCustomizers = customizerS.getIfAvailable();
     }
 
     @Override
     public void afterPropertiesSet() {
         if (!CollectionUtils.isEmpty(configurationCustomizers)) {
-            configurationCustomizers.forEach(v -> v.customize(this.expireMapCacheProperties));
+            configurationCustomizers.forEach(v -> v.customize(this.expireProperties));
         }
+    }
+
+    @Override
+    public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
+        /*
+         * print expire starters version and banner info
+         */
+        ExpireStartUpBanner.printBanner(environment, getStartUpBanner(), sourceClass, out);
+    }
+
+    @Override
+    @NonNull
+    public Class<?> getSourceClass() {
+        return Version.class;
+    }
+
+    @Override
+    @NonNull
+    public StartUpBanner getStartUpBanner() {
+        return new ExpireStarterBanner();
     }
 
     @Bean(name = "keySValueOExpireTemplate")
@@ -102,7 +129,7 @@ public class ExpireAutoConfiguration implements InitializingBean {
     @ConditionalOnBean(name = "keySValueSExpiredTemplate")
     @ConditionalOnMissingBean(name = "keySValueSValueOperations")
     public ValueOperations<String, String> keySValueSValueOperations(@Qualifier("keySValueSExpiredTemplate")
-                                                                         StringExpireTemplate template) {
+                                                                     StringExpireTemplate template) {
         return template.opsForValue();
     }
 
@@ -110,7 +137,7 @@ public class ExpireAutoConfiguration implements InitializingBean {
     @ConditionalOnBean(name = "keySValueOExpireTemplate")
     @ConditionalOnMissingBean(name = "keySValueOExpirationOperations")
     public ExpirationOperations<String, Object> keySValueOExpirationOperations(@Qualifier("keySValueOExpireTemplate")
-                                                                     ExpireTemplate<String, Object> template) {
+                                                                               ExpireTemplate<String, Object> template) {
         return template.opsExpirationOperations();
     }
 
@@ -118,7 +145,7 @@ public class ExpireAutoConfiguration implements InitializingBean {
     @ConditionalOnBean(name = "keySValueSExpiredTemplate")
     @ConditionalOnMissingBean(name = "keySValueSExpirationOperations")
     public ExpirationOperations<String, String> keySValueSExpirationOperations(@Qualifier("keySValueSExpiredTemplate")
-                                                                                   StringExpireTemplate template) {
+                                                                               StringExpireTemplate template) {
         return template.opsExpirationOperations();
     }
 
@@ -126,15 +153,5 @@ public class ExpireAutoConfiguration implements InitializingBean {
     @ConditionalOnMissingBean(name = {"application-ec"})
     public Application application() {
         return new Application();
-    }
-
-    @Bean
-    @ConditionalOnProperty(prefix = "expire.cache.globe-config.persistence", name = "open-persistence",
-            havingValue = "true")
-    @ConditionalOnBean(value = {ValueOperations.class}, name = {"application-ec"})
-    public String globePersistenceRegain(@Value("${expire.cache.globe-config.persistence.persistence-path:default}")
-                                         String path) {
-        ExpireGlobePersistence.INSTANCE.deserialize(path);
-        return "globe Persistence regain ok";
     }
 }

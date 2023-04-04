@@ -120,8 +120,6 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
         AssertUtils.Operation.notNull(connectionFactory, "ConnectionFactory no be null");
 
-        AssertUtils.Operation.notNull(connectionFactory.getConnection(), "Connection no be null");
-
         AssertUtils.Operation.hasText(this.factoryBeanName, "FactoryBeanName no be null");
 
         T result;

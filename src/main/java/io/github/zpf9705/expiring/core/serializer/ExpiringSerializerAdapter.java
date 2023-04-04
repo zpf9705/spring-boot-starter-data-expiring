@@ -2,6 +2,7 @@ package io.github.zpf9705.expiring.core.serializer;
 
 import cn.hutool.core.bean.BeanUtil;
 import io.github.zpf9705.expiring.util.AssertUtils;
+import io.reactivex.rxjava3.core.Single;
 import org.springframework.util.SerializationUtils;
 
 /**
@@ -31,13 +32,13 @@ public class ExpiringSerializerAdapter<T> implements ExpiringSerializer<T> {
         T t = null;
         Object deserialize = SerializationUtils.deserialize(bytes);
         if (deserialize != null) {
-            t = BeanUtil.copyProperties(deserialize, type);
+            t = Single.just(deserialize).ofType(this.type).blockingGet();
         }
         return t;
     }
 
     @Override
     public Class<T> serializerType() {
-        return type;
+        return this.type;
     }
 }

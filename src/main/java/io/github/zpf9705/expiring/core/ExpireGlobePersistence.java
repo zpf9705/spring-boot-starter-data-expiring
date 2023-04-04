@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import io.github.zpf9705.expiring.autoconfigure.Application;
-import io.github.zpf9705.expiring.autoconfigure.ExpireMapCacheProperties;
+import io.github.zpf9705.expiring.autoconfigure.ExpireProperties;
 import io.github.zpf9705.expiring.core.error.PersistenceException;
 import io.github.zpf9705.expiring.core.logger.Console;
 import io.github.zpf9705.expiring.util.AssertUtils;
@@ -49,7 +49,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
 
     private static final long serialVersionUID = 7755214068683107950L;
 
-    private static ExpireMapCacheProperties cacheProperties;
+    private static ExpireProperties cacheProperties;
 
     private static final String PREFIX_BEFORE = ".aof";
 
@@ -107,8 +107,8 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
      * load static cacheProperties
      */
     public static void resolveCacheProperties() {
-        cacheProperties = Application.context.getBean(ExpireMapCacheProperties.class);
-        OPEN_PERSISTENCE = cacheProperties.getPersistence().getOpenPersistence();
+        cacheProperties = Application.context.getBean(ExpireProperties.class);
+        OPEN_PERSISTENCE = cacheProperties.getOpenPersistence();
         //if you open persistence will auto create directory
         if (OPEN_PERSISTENCE) {
             checkDirectory();
@@ -119,7 +119,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
      * Check provider persistence path
      */
     public static void checkDirectory() {
-        String persistencePath = cacheProperties.getPersistence().getPersistencePath();
+        String persistencePath = cacheProperties.getPersistencePath();
         if (StringUtils.isNotBlank(persistencePath)) {
             //Determine whether to native folders and whether the folder
             if (!isDirectory(persistencePath)) {
@@ -212,14 +212,14 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
             return;
         }
         if ((entry.getDuration() != null && entry.getDuration() >=
-                cacheProperties.getPersistence().getNoPersistenceOfExpireTime())
+                cacheProperties.getNoPersistenceOfExpireTime())
                 && (entry.getTimeUnit() != null && entry.getTimeUnit()
-                .equals(cacheProperties.getPersistence().getNoPersistenceOfExpireTimeUnit()))) {
+                .equals(cacheProperties.getNoPersistenceOfExpireTimeUnit()))) {
             return;
         }
         throw new PersistenceException("Only more than or == " +
-                cacheProperties.getPersistence().getNoPersistenceOfExpireTime() + " " +
-                cacheProperties.getPersistence().getNoPersistenceOfExpireTimeUnit() +
+                cacheProperties.getNoPersistenceOfExpireTime() + " " +
+                cacheProperties.getNoPersistenceOfExpireTimeUnit() +
                 " can be persisted so key [" + entry.getKey() + "] value [" + entry.getValue() + "] no persisted ");
     }
 
@@ -251,7 +251,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
      */
     public static <K> String rawWritePath(@NonNull K key) {
         AssertUtils.Persistence.notNull(key, "Key no be null ");
-        return cacheProperties.getPersistence().getPersistencePath()
+        return cacheProperties.getPersistencePath()
                 //md5 sign to prevent the file name is too long
                 + DigestUtil.md5Hex(key.toString())
                 + PREFIX_BEFORE;
@@ -439,7 +439,7 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
     @Override
     public void deserializeO(String path) {
         if (StringUtils.isBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
-            path = cacheProperties.getPersistence().getPersistencePath();
+            path = cacheProperties.getPersistencePath();
         }
         AssertUtils.Persistence.hasText(path, "Path no be blank");
         AssertUtils.Persistence.isTrue(isDirectory(path),

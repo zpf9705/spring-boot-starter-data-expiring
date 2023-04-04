@@ -20,6 +20,8 @@ public class ExpireMapConnectionFactory implements ExpireConnectionFactory {
 
     private final ExpireMapClientConfiguration clientConfiguration;
 
+    private ExpireMapConnectionSlot slot;
+
     public ExpireMapConnectionFactory(@NonNull ExpireMapClientConfiguration clientConfiguration) {
         this.clientConfiguration = clientConfiguration;
     }
@@ -27,7 +29,10 @@ public class ExpireMapConnectionFactory implements ExpireConnectionFactory {
     @Override
     @NonNull
     public ExpireConnection getConnection() {
-        return buildExpireMapConnection(this.clientConfiguration);
+        if (this.slot == null){
+            this.slot = buildExpireMapConnection(this.clientConfiguration);
+        }
+        return this.slot;
     }
 
     /**

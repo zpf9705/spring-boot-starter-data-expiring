@@ -10,25 +10,27 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
 /**
- * Access to expire - map version information
+ * Access to source expire version information
  *
  * @author zpf
  * @since 2.2.2
  */
-public final class ExpireMapVersion {
+public final class Version {
 
-    private ExpireMapVersion(){}
-
-    public static String getVersion() {
-        return determineExpireMapVersion();
+    private Version() {
     }
 
-    private static String determineExpireMapVersion() {
-        String implementationVersion = ExpireMapVersion.class.getPackage().getImplementationVersion();
+    public static String getVersion(Class<?> sourceClass) {
+        if (sourceClass == null) return "UNKNOWN";
+        return determineExpireVersion(sourceClass);
+    }
+
+    private static String determineExpireVersion(Class<?> sourceClass) {
+        String implementationVersion = sourceClass.getPackage().getImplementationVersion();
         if (implementationVersion != null) {
             return implementationVersion;
         }
-        CodeSource codeSource = ExpireMapVersion.class.getProtectionDomain().getCodeSource();
+        CodeSource codeSource = sourceClass.getProtectionDomain().getCodeSource();
         if (codeSource == null) {
             return null;
         }

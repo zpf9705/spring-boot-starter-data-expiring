@@ -2,20 +2,28 @@ package io.github.zpf9705.expiring.autoconfigure;
 
 import cn.hutool.aop.proxy.SpringCglibProxyFactory;
 import cn.hutool.core.util.ReflectUtil;
+import io.github.zpf9705.expiring.banner.ExpireMapBanner;
 import io.github.zpf9705.expiring.banner.ExpireStartUpBanner;
+import io.github.zpf9705.expiring.banner.StartUpBanner;
 import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfiguration;
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfigurationCustomizer;
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionFactory;
+import io.github.zpf9705.expiring.core.ExpireGlobePersistence;
+import io.github.zpf9705.expiring.core.ValueOperations;
 import io.github.zpf9705.expiring.listener.PersistenceExpiringCallback;
 import io.github.zpf9705.expiring.core.logger.Console;
 import net.jodah.expiringmap.ExpirationListener;
+import net.jodah.expiringmap.ExpiringMap;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -24,42 +32,48 @@ import org.springframework.core.env.Environment;
 import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Predicate;
 
 /**
- * Expire connection configuration using ExpireMap.
+ * Expire connection configuration using ExpireMap {@link net.jodah.expiringmap.ExpiringMap}
  *
  * @author zpf
- * @since jdk.spi.version-2022.11.18 - [2023-03-31 13:06]
+ * @since 3.0.0
  */
 @Configuration(
         proxyBeanMethods = false
 )
-@EnableConfigurationProperties(ExpireMapCacheProperties.class)
-public class ExpireMapConfiguration implements InitializingBean, EnvironmentAware {
+@EnableConfigurationProperties(ExpireProperties.class)
+public class ExpireMapConfiguration extends AbstractExpireConfiguration implements InitializingBean {
 
-    private final ExpireMapCacheProperties expireMapCacheProperties;
+    private final ExpireProperties expireProperties;
 
-    private Environment environment;
-
-    public ExpireMapConfiguration(ExpireMapCacheProperties expireMapCacheProperties) {
-        this.expireMapCacheProperties = expireMapCacheProperties;
+    public ExpireMapConfiguration(ExpireProperties expireProperties) {
+        this.expireProperties = expireProperties;
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
         /*
          * print expire - map version and banner info
          */
-        ExpireStartUpBanner.bannerPrinter(environment, ExpireAutoConfiguration.class);
+        ExpireStartUpBanner.printBanner(environment, getStartUpBanner(), sourceClass, out);
     }
 
     @Override
-    public void setEnvironment(@NonNull Environment environment) {
-        this.environment = environment;
+    @NonNull
+    public Class<?> getSourceClass() {
+        return ExpiringMap.class;
+    }
+
+    @Override
+    @NonNull
+    public StartUpBanner getStartUpBanner() {
+        return new ExpireMapBanner();
     }
 
     @Bean
@@ -73,15 +87,24 @@ public class ExpireMapConfiguration implements InitializingBean, EnvironmentAwar
         return new ExpireMapConnectionFactory(builder.build());
     }
 
-    @Bean
+    @Bean("expireMap::persistenceRegain")
+    @Override
+    @ConditionalOnProperty(prefix = "expire.config", name = "open-persistence", havingValue = "true")
+    @ConditionalOnBean(value = {ValueOperations.class}, name = {"application-ec"})
+    public String persistenceRegain(@Value("${expire.config.persistence-path:default}") String path) {
+        ExpireGlobePersistence.INSTANCE.deserialize(path);
+        return "globe Persistence regain ok";
+    }
+
+    @Bean("expireMap::expireMapClientCustomizer")
     @SuppressWarnings("rawtypes")
-    public ExpireMapClientConfigurationCustomizer customizer() {
+    public ExpireMapClientConfigurationCustomizer expireMapClientCustomizer() {
         return c -> {
             ExpireMapClientConfiguration.ExpireMapClientConfigurationBuilder builder =
-                    c.acquireMaxSize(expireMapCacheProperties.getMaxSize())
-                            .acquireDefaultExpireTime(expireMapCacheProperties.getDefaultExpireTime())
-                            .acquireDefaultExpireTimeUnit(expireMapCacheProperties.getDefaultExpireTimeUnit())
-                            .acquireDefaultExpirationPolicy(expireMapCacheProperties.getExpirationPolicy());
+                    c.acquireMaxSize(this.expireProperties.getExpiringMap().getMaxSize())
+                            .acquireDefaultExpireTime(this.expireProperties.getDefaultExpireTime())
+                            .acquireDefaultExpireTimeUnit(this.expireProperties.getDefaultExpireTimeUnit())
+                            .acquireDefaultExpirationPolicy(this.expireProperties.getExpiringMap().getExpirationPolicy());
             List<ExpirationListener> expirationListener = findExpirationListener();
             if (!CollectionUtils.isEmpty(expirationListener)) {
                 expirationListener.forEach(builder::addExpiredListener);
@@ -92,7 +115,7 @@ public class ExpireMapConfiguration implements InitializingBean, EnvironmentAwar
     @SuppressWarnings({"rawtypes"})
     public List<ExpirationListener> findExpirationListener() {
         //obtain listing packages path
-        String listeningPackages = expireMapCacheProperties.getListeningPackages();
+        String listeningPackages = this.expireProperties.getExpiringMap().getListeningPackages();
         if (StringUtils.isBlank(listeningPackages)) {
             Console.info(
                     "no provider listening scan path ," +
