@@ -27,7 +27,7 @@ public abstract class AbstractExpireConfiguration implements InitializingBean, B
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         //print client banner
         printBanner(this.environment, getSourceClass(), System.out);
     }

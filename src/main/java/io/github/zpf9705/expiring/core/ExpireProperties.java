@@ -1,5 +1,6 @@
 package io.github.zpf9705.expiring.core;
 
+import io.github.zpf9705.expiring.core.persistence.PersistenceFactory;
 import io.github.zpf9705.expiring.util.SystemUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,11 @@ public class ExpireProperties {
      * Whether to open the persistence
      */
     private Boolean openPersistence = false;
+
+    /**
+     * persistence factory class
+     */
+    private Class<? extends PersistenceFactory> persistenceFactoryClass;
 
     /**
      * Persistent path

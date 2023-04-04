@@ -10,10 +10,6 @@ import io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfigurat
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfigurationCustomizer;
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionFactory;
 import io.github.zpf9705.expiring.core.ExpireProperties;
-import io.github.zpf9705.expiring.core.ValueOperations;
-import io.github.zpf9705.expiring.core.persistence.ExpireGlobePersistenceFactory;
-import io.github.zpf9705.expiring.core.persistence.ExpireSimpleGlobePersistence;
-import io.github.zpf9705.expiring.core.persistence.PersistenceFactory;
 import io.github.zpf9705.expiring.listener.PersistenceExpiringCallback;
 import io.github.zpf9705.expiring.core.logger.Console;
 import net.jodah.expiringmap.ExpirationListener;
@@ -23,10 +19,7 @@ import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -82,25 +75,10 @@ public class ExpireMapConfiguration extends AbstractExpireConfiguration implemen
     @ConditionalOnMissingBean({ExpireConnectionFactory.class})
     public ExpireMapConnectionFactory expireMapConnectionFactory(
             ObjectProvider<ExpireMapClientConfigurationCustomizer> buildCustomizer) {
-        ExpireMapClientConfiguration.ExpireMapClientConfigurationBuilder builder
-                = ExpireMapClientConfiguration.builder();
+        ExpireMapClientConfiguration.ExpireMapClientConfigurationBuilder builder = ExpireMapClientConfiguration.builder();
         buildCustomizer.orderedStream()
                 .forEach((customizer) -> customizer.customize(builder));
         return new ExpireMapConnectionFactory(builder.build());
-    }
-
-    @Bean("expireMap::persistenceRegain")
-    @Override
-    @ConditionalOnProperty(prefix = "expire.config", name = "open-persistence", havingValue = "true")
-    @ConditionalOnBean(value = {ValueOperations.class}, name = {"application-ec"})
-    public String persistenceRegain(@Value("${expire.config.persistence-path:default}") String path) {
-        PersistenceFactory factory = ExpireGlobePersistenceFactory.getPersistenceFactory(
-                ExpireSimpleGlobePersistence.class.getName());
-        if (factory == null) {
-            return "Client name [" + ExpiringMap.class.getName() + "] persistenceRegain failed";
-        }
-        factory.deserializeWithPath(path);
-        return "Client name [" + ExpiringMap.class.getName() + "] persistenceRegain ok";
     }
 
     @Bean("expireMap::expireMapClientCustomizer")

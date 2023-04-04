@@ -1,5 +1,7 @@
 package io.github.zpf9705.expiring.banner;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -16,6 +18,8 @@ import java.util.jar.JarFile;
  * @since 2.2.2
  */
 public final class Version {
+
+    public static final Attributes.Name BUNDLE_VERSION = new Attributes.Name("Bundle-Version");
 
     private Version() {
     }
@@ -49,6 +53,11 @@ public final class Version {
     }
 
     private static String getImplementationVersion(JarFile jarFile) throws IOException {
-        return jarFile.getManifest().getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+        Attributes attributes = jarFile.getManifest().getMainAttributes();
+        String version = attributes.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+        if (StringUtils.isBlank(version)) {
+            version = attributes.getValue(BUNDLE_VERSION);
+        }
+        return version;
     }
 }

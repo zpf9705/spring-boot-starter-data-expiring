@@ -6,13 +6,18 @@ import io.github.zpf9705.expiring.banner.StartUpBanner;
 import io.github.zpf9705.expiring.banner.Version;
 import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
 import io.github.zpf9705.expiring.core.*;
+import io.github.zpf9705.expiring.core.persistence.ExpireGlobePersistenceFactory;
+import io.github.zpf9705.expiring.core.persistence.ExpireSimpleGlobePersistence;
+import io.github.zpf9705.expiring.core.persistence.PersistenceFactory;
 import io.github.zpf9705.expiring.listener.ExpiringListener;
 import io.github.zpf9705.expiring.listener.ExpiringListeners;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializerAdapter;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
+import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -70,6 +75,7 @@ public class ExpireAutoConfiguration extends AbstractExpireConfiguration impleme
 
     @Override
     public void afterPropertiesSet() {
+        super.afterPropertiesSet();
         if (!CollectionUtils.isEmpty(configurationCustomizers)) {
             configurationCustomizers.forEach(v -> v.customize(this.expireProperties));
         }
@@ -151,5 +157,23 @@ public class ExpireAutoConfiguration extends AbstractExpireConfiguration impleme
     @ConditionalOnMissingBean(name = {"application-ec"})
     public Application application() {
         return new Application();
+    }
+
+    @Bean("expireMap::persistenceRegain")
+    @Override
+    @ConditionalOnProperty(prefix = "expire.config", name = "open-persistence", havingValue = "true")
+    @ConditionalOnBean(value = {ValueOperations.class}, name = {"application-ec"})
+    public String persistenceRegain(@Value("${expire.config.persistence-path:default}") String path) {
+        Class<?> factoryClass = this.expireProperties.getPersistenceFactoryClass();
+        if (factoryClass == null) {
+            return "Open persistence now , but provider factoryClass is null so persistenceRegain failed";
+        }
+        String clientName = factoryClass.getName();
+        PersistenceFactory factory = ExpireGlobePersistenceFactory.getPersistenceFactory(clientName);
+        if (factory == null) {
+            return "Client name [" + clientName + "] persistenceRegain failed";
+        }
+        factory.deserializeWithPath(path);
+        return "Client name [" + clientName + "] persistenceRegain ok";
     }
 }
