@@ -25,9 +25,7 @@ public class ExpirePersistenceAfterHandle extends JdkProxyInvocationTrace<Expire
     @Override
     public void invokeSubsequent(PersistenceExec proxyExec, Object[] args) {
         super.invokeSubsequent(proxyExec, args);
-        if (args instanceof Byte[]){
-            //dispose proxyExec
-            proxyExec.value().dispose(args);
-        }
+        //dispose proxyExec
+        proxyExec.value().dispose(args);
     }
 }
