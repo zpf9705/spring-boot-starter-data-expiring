@@ -7,22 +7,15 @@ import io.github.zpf9705.expiring.banner.Version;
 import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
 import io.github.zpf9705.expiring.core.*;
 import io.github.zpf9705.expiring.core.persistence.ExpireGlobePersistenceFactory;
-import io.github.zpf9705.expiring.core.persistence.ExpireSimpleGlobePersistence;
 import io.github.zpf9705.expiring.core.persistence.PersistenceFactory;
-import io.github.zpf9705.expiring.listener.ExpiringListener;
-import io.github.zpf9705.expiring.listener.ExpiringListeners;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializerAdapter;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
-import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -37,21 +30,17 @@ import java.util.List;
  * This autoconfiguration apply to spring boot
  * The automatic assembly provides the cache configuration depends on the class and the realization of the annotation
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
- * {@link org.springframework.beans.factory.InitializingBean}
- * {@link org.springframework.beans.factory.BeanFactory}
- * {@link EnvironmentAware}
- * {@link ApplicationContextAware}
- * {@link Environment}
- * {@link ApplicationContext}
  * Here has been configured with key/value pair {@code String , String } {@code  String , Object} Template model
  * You can go to see the specific class {@link ExpireTemplate} {@link StringExpireTemplate}
  * At the same time they also good to operation interface type {@link ValueOperations}
- * At the same time you can use {@link ConfigurationCustomizer} to provide personalized configuration expiring map
+ * At the same time you can use {@link ConfigurationCustomizer} to provide personalized configuration expiring
  * But can be by  {@link ObjectProvider} use an array collection mode faces interface configuration mode
- * At the same time provides a cache expiration monitoring function , you can see {@link ExpiringListener}
- * or {@link ExpiringListeners} and you only implementation {@link net.jodah.expiringmap.ExpirationListener}
- * The corresponding annotation on the class, can help you find the corresponding generic template,
- * do it after the expiration of correction in a timely manner
+ * Now according to Spring - the boot - starters - data - redis encapsulation mode
+ * Open in the form of the client to build Expiring, each is implemented in the client.
+ * Such as {@link io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfiguration}
+ * All the operation will be placed on the Connection and simulate the join operation
+ * Such as {@link io.github.zpf9705.expiring.connection.ExpireConnection} . This layer is {@link net.jodah.expiringmap.ExpiringMap}
+ * Additional data on the bottom will adopt a byte type for storage in order to enhance the cache restart recovery
  * After you see this introduce to achieve your business
  *
  * @author zpf
