@@ -10,7 +10,7 @@ import org.springframework.lang.NonNull;
 import java.io.PrintStream;
 
 /**
- * Here is the client configuration of abstract methods {@inheritDoc Banner} {@inheritDoc Environment}
+ * Here is the client configuration of abstract methods {@code Banner} {@code Environment}
  * Life cycle in the client configuration, print the client's banner and recovery behavior after restart,
  * can expand the other methods
  *
@@ -56,7 +56,7 @@ public abstract class AbstractExpireConfiguration implements InitializingBean, B
      * @param path a persistence path
      * @return persistence sync result
      */
-    public String persistenceRegain(String path){
+    public String persistenceRegain(String path) {
         return "OK";
     }
 }

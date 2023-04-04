@@ -15,11 +15,6 @@ import java.util.concurrent.TimeUnit;
  * Here is about {@link net.jodah.expiringmap.ExpiringMap} client configuration interface,
  * provides the function of the configuration and obtain
  * Providing optional elements allows a more specific configuration of the client
- * <li>get map max size</li>
- * <li>get expire default time</li>
- * <li>get expire default time unit</li>
- * <li>get expire way</li>
- * <li>get Expiration Listeners</li>
  *
  * @author zpf
  * @since 3.0.0

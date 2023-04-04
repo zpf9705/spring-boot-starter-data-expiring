@@ -29,6 +29,7 @@ public interface ExpireStringCommands {
      * @param value    must not be {@literal null}.
      * @param duration the key expiration timeout.
      * @param unit     must not be {@literal null}.
+     * @return setE result
      */
     Boolean setE(byte[] key, byte[] value, Long duration, TimeUnit unit);
 

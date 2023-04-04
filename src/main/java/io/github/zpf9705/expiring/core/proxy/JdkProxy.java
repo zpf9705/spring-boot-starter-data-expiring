@@ -2,6 +2,7 @@ package io.github.zpf9705.expiring.core.proxy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
+
 /**
  * The JDK proxy object generation solution method
  *
@@ -15,6 +16,8 @@ public abstract class JdkProxy {
      *
      * @param target          target object
      * @param annotationClass annotation class type
+     * @param <A>     target type
+     * @param <T>     bind annotation after handler
      * @return proxy object
      */
     public static <T, A extends Annotation> T createProxy(T target, Class<A> annotationClass) {
@@ -25,6 +28,8 @@ public abstract class JdkProxy {
      * Create target proxy object within an {@code JdkProxyInvocationHandler}
      *
      * @param handler {@link JdkProxyInvocationHandler}
+     * @param <A>     target type
+     * @param <T>     bind annotation after handler
      * @return proxy object
      */
     @SuppressWarnings("unchecked")

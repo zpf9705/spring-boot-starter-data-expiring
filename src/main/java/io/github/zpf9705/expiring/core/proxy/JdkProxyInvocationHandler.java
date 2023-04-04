@@ -51,6 +51,7 @@ public abstract class JdkProxyInvocationHandler<T, A extends Annotation> impleme
      * Agent performs follow-up unified method
      *
      * @param proxyExec proxy exec annotation
+     * @param args      proxy method args
      */
     public abstract void invokeSubsequent(A proxyExec, Object[] args);
 }
