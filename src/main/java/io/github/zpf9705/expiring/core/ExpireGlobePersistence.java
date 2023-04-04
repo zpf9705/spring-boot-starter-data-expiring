@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
+
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -529,9 +530,17 @@ public class ExpireGlobePersistence<K, V> extends AbstractGlobePersistenceIndica
             throw new PersistenceException("File [" + writePath + "] record time [" + persistence.getExpire() +
                     "] before or equals now");
         }
+        //save key/value with byte[]
         Entry<K, V> entry = persistence.getEntry();
+        //serializer key restore
+        K key = template.getKeySerializer().deserialize((byte[]) entry.getKey());
+        //serializer value restore
+        V value = template.getValueSerializer().deserialize((byte[]) entry.getValue());
+        //use connection restore byte
+        template.getConnectionFactory().getConnection()
+                .restoreByteType((byte[]) entry.getKey(), (byte[]) entry.getValue());
         //Remaining time is less than the standard not trigger persistence
-        template.opsForValue().set(entry.getKey(), entry.getValue(),
+        template.opsForValue().set(key, value,
                 condition(now, persistence.getExpire(), entry.getTimeUnit()),
                 entry.getTimeUnit());
         //Print successfully restore cached information

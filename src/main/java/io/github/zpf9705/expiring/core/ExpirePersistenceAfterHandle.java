@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.core;
 
-import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnection;
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionSlot;
 import io.github.zpf9705.expiring.core.proxy.JdkProxyInvocationTrace;
 
@@ -26,7 +25,9 @@ public class ExpirePersistenceAfterHandle extends JdkProxyInvocationTrace<Expire
     @Override
     public void invokeSubsequent(PersistenceExec proxyExec, Object[] args) {
         super.invokeSubsequent(proxyExec, args);
-        //dispose proxyExec
-        proxyExec.value().dispose(args);
+        if (args instanceof Byte[]){
+            //dispose proxyExec
+            proxyExec.value().dispose(args);
+        }
     }
 }

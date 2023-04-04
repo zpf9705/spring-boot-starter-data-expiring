@@ -8,5 +8,19 @@ package io.github.zpf9705.expiring.core;
  */
 public interface Dispose {
 
+    int indexOne = 0;
+
+    int indexTwo = 1;
+
+    int indexThree = 2;
+
+    int indexFour = 3;
+
+    int lengthSimple = 2;
+
+    int lengthGan = 3;
+
+    int lengthDlg = 4;
+
     void dispose(Object[] args);
 }

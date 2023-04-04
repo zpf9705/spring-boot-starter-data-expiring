@@ -9,6 +9,7 @@ import io.github.zpf9705.expiring.core.PersistenceExecTypeEnum;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.lang.Nullable;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -267,5 +268,11 @@ public class ExpireMapConnection implements ExpireMapConnectionSlot {
         if (key == null) return false;
         this.expiringMap.resetExpiration(key);
         return true;
+    }
+
+    @Override
+    public void restoreByteType(byte[] key, byte[] value) {
+        this.containOfKey.computeIfAbsent(key);
+        this.containOfValue.computeIfAbsent(value);
     }
 }

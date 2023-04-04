@@ -128,7 +128,7 @@ public abstract class ExpirePersistenceUtils {
      * @param runnable method runnable
      * @param method   method name
      */
-    public static void run(Runnable runnable, String method) {
+    private static void run(Runnable runnable, String method) {
         CompletableFuture.runAsync(runnable)
                 .whenComplete((v, e) -> Console.exceptionOfDebugOrWare(method, e,
                         "Run the cache Persistence method [{}] An exception occurs [{}]"));
