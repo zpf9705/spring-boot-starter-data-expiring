@@ -7,12 +7,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
- * Fluent implementation of  {@link ExpireAccessor}
- * <p>
- * To achieve {@link ExpiringMap} apis , And to specify the API provides the value of persistence
+ * Connection factory operation accessor  {@link InitializingBean#afterPropertiesSet()}
+ * Provide connection factory acquisition and corresponding related pre initialization during template initialization
  *
  * @author zpf
- * @since 1.1.0
+ * @since 3.0.0
  */
 public class ExpireAccessor implements InitializingBean {
 
