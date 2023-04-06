@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * You can use this annotation to specify the corresponding template bean add monitor date
+ * Since 3.0.0 version no longer provide the technical support
  *
  * @author zpf
  * @since 1.1.0

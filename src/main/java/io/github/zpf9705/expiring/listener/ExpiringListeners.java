@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * Is {@link ExpiringListener} group of annotation mode, can realize the mass of a single template pattern
+ * Since 3.0.0 version no longer provide the technical support
  *
  * @author zpf
  * @since 1.1.0

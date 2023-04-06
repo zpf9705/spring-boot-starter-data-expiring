@@ -3,16 +3,16 @@ package io.github.zpf9705.expiring.listener;
 import net.jodah.expiringmap.ExpirationListener;
 
 /**
- * default Expiring Load Listener of key{@code  Object} and value {@code Object}
+ * default Expiring Load Listener container of key{@code  Object} and value {@code Object}
  *
  * @author zpf
- * @since 2.0.1
+ * @since 3.0.0
  */
-public abstract class MessageExpiringListener implements ExpirationListener<byte[], byte[]> {
+public abstract class MessageExpiringContainer implements ExpirationListener<byte[], byte[]> {
 
     @Override
     public void expired(byte[] key, byte[] value) {
-        onMessage(new Message(key, value));
+        onMessage(Message.serial(key,value));
     }
 
     /**
