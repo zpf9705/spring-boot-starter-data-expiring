@@ -257,9 +257,9 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
         }
         similarHashKeys.forEach(si -> {
             String hashValue = KEY_VALUE_HASH.get(si);
-            if (StringUtils.isNotBlank(hashValue)){
+            if (StringUtils.isNotBlank(hashValue)) {
                 ExpireSimpleGlobePersistence p = CACHE_MAP.get(rawHashComb(si, hashValue));
-                if (p != null){
+                if (p != null) {
                     similar.add(p);
                 }
             }
@@ -383,19 +383,17 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
      * Get a cache template by the bean's name in the container
      *
      * @param factoryBeanName factory in container of spring boot bean name
-     * @param <K>             key generic
-     * @param <V>             value generic
      * @return {@link ExpireTemplate}
      */
-    protected static <K, V> ExpireTemplate<K, V> accessToTheCacheTemplate(String factoryBeanName) {
-        ExpireTemplate<K, V> expireTemplate = null;
+    protected static ExpireTemplate accessToTheCacheTemplate(String factoryBeanName) {
+        ExpireTemplate expireTemplate = null;
         try {
             Object bean = Application.context.getBean(factoryBeanName);
             AssertUtils.Persistence.notNull(bean,
                     "ExpireTemplate [" + ExpireTemplate.class.getName() + "] no found in Spring ioc");
 
             if (bean instanceof ExpireTemplate) {
-                expireTemplate = (ExpireTemplate<K, V>) bean;
+                expireTemplate = (ExpireTemplate) bean;
             }
             AssertUtils.Persistence.notNull(expireTemplate, "Bean no instanceof ExpireTemplate");
         } catch (Exception e) {
@@ -630,7 +628,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
         ExpireSimpleGlobePersistence<K, V> of = CACHE_MAP.computeIfAbsent(rawHash, v -> of(persistence));
         AssertUtils.Persistence.notNull(of, "ExpireGlobePersistence no be null");
         //record [op bean]
-        ExpireTemplate<K, V> template = accessToTheCacheTemplate(persistence.getFactoryBeanName());
+        ExpireTemplate template = accessToTheCacheTemplate(persistence.getFactoryBeanName());
         deserializeWithTemplate(template, persistence, of.getWritePath());
     }
 
@@ -731,11 +729,13 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
             AssertUtils.Persistence.hasText(factoryBeanName, "factoryBeanName no be blank");
             K key = this.entry.getKey();
             //get template
-            ExpireTemplate<K, V> template = accessToTheCacheTemplate(factoryBeanName);
-            AssertUtils.Persistence.isTrue(template.exist(key),
+            ExpireTemplate template = accessToTheCacheTemplate(factoryBeanName);
+            //The underlying the use of basic data types in upper byte type
+            Object deKey = template.getKeySerializer().deserialize((byte[]) key);
+            AssertUtils.Persistence.isTrue(template.exist(deKey),
                     "Key [" + this.entry.getKey() + "] no exist in cache");
             //For the rest of the due millisecond value
-            Long expectedExpiration = template.opsExpirationOperations().getExpectedExpiration(key);
+            Long expectedExpiration = template.opsExpirationOperations().getExpectedExpiration(deKey);
             AssertUtils.Persistence.isTrue(expectedExpiration != null && expectedExpiration != 0,
                     "Expected Expiration null or be zero");
             //give expire
