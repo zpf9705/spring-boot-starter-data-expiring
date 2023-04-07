@@ -44,6 +44,11 @@ public interface GlobePersistence<K, V> {
     void removePersistence();
 
     /**
+     * Delete all the cache Persistence
+     */
+    void removeAllPersistence();
+
+    /**
      * Determine whether under expired
      *
      * @return Returns true or false

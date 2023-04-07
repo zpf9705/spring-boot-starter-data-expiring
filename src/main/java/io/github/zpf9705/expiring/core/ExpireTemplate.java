@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.core;
 
-import io.github.zpf9705.expiring.command.ExpireKeyCommands;
 import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
 import io.github.zpf9705.expiring.core.error.OperationsException;
 import io.github.zpf9705.expiring.core.logger.Console;
@@ -9,7 +8,6 @@ import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerialize
 import io.github.zpf9705.expiring.util.AssertUtils;
 import io.reactivex.rxjava3.core.Single;
 import net.jodah.expiringmap.ExpiringMap;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -304,36 +302,6 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
             }
         }
         return v;
-    }
-
-    /**
-     * exchange special class type
-     *
-     * @param o                     supplier
-     * @param ofTypeClass           type class
-     * @param composeSolveException Whether solve exception
-     * @param <O>                   You can specify the paradigm
-     * @return exchange obj
-     */
-    public <O> O ofType(Supplier<Object> o, Class<O> ofTypeClass, boolean composeSolveException) {
-        Object source = o.get();
-        //NOTE : source will be null but ofTypeClass is null return null
-        if (source == null || ofTypeClass == null) {
-            return null;
-        }
-        O target = null;
-        try {
-            /*
-             * update repeat call value to threadLocal
-             * @since 2.1.1-complete
-             */
-            target = Single.just(source)
-                    .ofType(ofTypeClass)
-                    .blockingGet();
-        } catch (Throwable e) {
-            solverException(e, composeSolveException);
-        }
-        return target;
     }
 
     /**

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  */
 public enum PersistenceExecTypeEnum implements Dispose {
 
-    PUT {
+    SET {
         @Override
         public void dispose(Object[] entry) {
             if (entry.length == lengthSimple) {
@@ -22,41 +22,50 @@ public enum PersistenceExecTypeEnum implements Dispose {
                                 (Long) entry[indexThree], (TimeUnit) entry[indexFour]);
             }
         }
-    }, REPLACE {
+    }, REPLACE_VALUE {
         @Override
         public void dispose(Object[] entry) {
             if (entry.length == lengthGan) {
                 ExpirePersistenceUtils
-                        .replacePersistence(entry[indexOne], entry[indexTwo], entry[indexThree]);
+                        .replaceValuePersistence(entry[indexOne], entry[indexTwo], entry[indexThree]);
             }
         }
-    }, SET_E {
+    }, REPLACE_DURATION {
         @Override
         public void dispose(Object[] entry) {
             if (entry.length == lengthDlg) {
                 ExpirePersistenceUtils
-                        .setEPersistence(entry[indexOne], entry[indexTwo],
+                        .replaceDurationPersistence(entry[indexOne], entry[indexTwo],
                                 (Long) entry[indexThree], (TimeUnit) entry[indexFour]);
             }
         }
-    }, REST {
+    }, REST_DURATION {
         @Override
         public void dispose(Object[] entry) {
-            if (entry.length == lengthSimple){
-                ExpirePersistenceUtils.restPersistence(entry[indexOne], entry[indexTwo]);
+            if (entry.length == lengthSimple) {
+                ExpirePersistenceUtils.restDurationPersistence(entry[indexOne], entry[indexTwo]);
             }
         }
-    }, REMOVE {
+    }, REMOVE_KEYS {
         @Override
         public void dispose(Object[] entry) {
-            if (entry.length == lengthSimple){
-                ExpirePersistenceUtils.removePersistence(entry[indexOne], entry[indexTwo]);
+            if (entry.length == lengthSi) {
+                ExpirePersistenceUtils.removePersistenceWithKeys(entry[indexOne]);
             }
         }
-    }, REMOVE_ANY {
+    }, REMOVE_TYPE {
         @Override
         public void dispose(Object[] entry) {
-
+            if (entry.length == lengthSi) {
+                ExpirePersistenceUtils.removeSimilarKeyPersistence(entry[indexOne]);
+            }
         }
-    }
+    }, REMOVE_ALL {
+        @Override
+        public void dispose(Object[] entry) {
+            if (entry == null) {
+                ExpirePersistenceUtils.removeAllPersistence();
+            }
+        }
+    };
 }

@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.command.expiremap;
 
 import io.github.zpf9705.expiring.command.ExpireKeyCommands;
-import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionSlot;
+import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionProxy;
 import org.springframework.lang.Nullable;
 
 import java.util.Map;
@@ -15,10 +15,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExpireMapKeyCommands implements ExpireKeyCommands {
 
-    private final ExpireMapConnectionSlot slot;
+    private final ExpireMapConnectionProxy delegate;
 
-    public ExpireMapKeyCommands(ExpireMapConnectionSlot slot) {
-        this.slot = slot;
+    public ExpireMapKeyCommands(ExpireMapConnectionProxy delegate) {
+        this.delegate = delegate;
     }
 
     /*
@@ -28,7 +28,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
     @Nullable
     @Override
     public Long delete(byte[]... keys) {
-        return this.slot.deleteReturnSuccessNum(keys);
+        return this.delegate.deleteReturnSuccessNum(keys);
     }
 
     /*
@@ -37,7 +37,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Map<byte[], byte[]> deleteType(byte[] key) {
-        return this.slot.deleteSimilarKey(key);
+        return this.delegate.deleteSimilarKey(key);
     }
 
     /*
@@ -46,7 +46,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Boolean deleteAll() {
-        return this.slot.reboot();
+        return this.delegate.reboot();
     }
 
     /*
@@ -55,7 +55,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Boolean hasKey(byte[] key) {
-        return this.slot.containsKey(key);
+        return this.delegate.containsKey(key);
     }
 
     /*
@@ -64,7 +64,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Long getExpiration(byte[] key) {
-        return this.slot.getExpirationWithKey(key);
+        return this.delegate.getExpirationWithKey(key);
     }
 
     /*
@@ -73,7 +73,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Long getExpiration(byte[] key, TimeUnit unit) {
-        return this.slot.getExpirationWithDuration(key, unit);
+        return this.delegate.getExpirationWithUnit(key, unit);
     }
 
     /*
@@ -82,7 +82,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Long getExpectedExpiration(byte[] key) {
-        return this.slot.getExpectedExpirationWithKey(key);
+        return this.delegate.getExpectedExpirationWithKey(key);
     }
 
     /*
@@ -91,7 +91,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Long getExpectedExpiration(byte[] key, TimeUnit unit) {
-        return this.slot.getExpectedExpirationWithUnit(key, unit);
+        return this.delegate.getExpectedExpirationWithUnit(key, unit);
     }
 
     /*
@@ -100,7 +100,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Boolean setExpiration(byte[] key, Long duration, TimeUnit timeUnit) {
-        return this.slot.setExpirationDuration(key, duration, timeUnit);
+        return this.delegate.setExpirationDuration(key, duration, timeUnit);
     }
 
     /*
@@ -109,6 +109,6 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      */
     @Override
     public Boolean resetExpiration(byte[] key) {
-        return this.slot.resetExpirationWithKey(key);
+        return this.delegate.resetExpirationWithKey(key);
     }
 }

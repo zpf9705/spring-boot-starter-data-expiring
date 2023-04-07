@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.core.persistence;
 
-import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionSlot;
+import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionProxy;
 import io.github.zpf9705.expiring.core.proxy.JdkProxyInvocationTrace;
 
 /**
@@ -9,11 +9,11 @@ import io.github.zpf9705.expiring.core.proxy.JdkProxyInvocationTrace;
  * @author zpf
  * @since 3.0.0
  */
-public class ExpirePersistenceAfterHandle extends JdkProxyInvocationTrace<ExpireMapConnectionSlot, PersistenceExec> {
+public class ExpirePersistenceAfterHandle extends JdkProxyInvocationTrace<ExpireMapConnectionProxy, PersistenceExec> {
 
     private static final long serialVersionUID = -2346911415600201852L;
 
-    public ExpirePersistenceAfterHandle(ExpireMapConnectionSlot target, Class<PersistenceExec> annotationClass) {
+    public ExpirePersistenceAfterHandle(ExpireMapConnectionProxy target, Class<PersistenceExec> annotationClass) {
         super(target, annotationClass);
     }
 

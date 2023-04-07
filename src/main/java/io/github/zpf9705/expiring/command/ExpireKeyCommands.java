@@ -1,5 +1,7 @@
 package io.github.zpf9705.expiring.command;
 
+import io.github.zpf9705.expiring.core.persistence.PersistenceExec;
+import io.github.zpf9705.expiring.core.persistence.PersistenceExecTypeEnum;
 import org.springframework.lang.Nullable;
 
 import java.util.Map;
@@ -20,6 +22,7 @@ public interface ExpireKeyCommands {
      * @return The number of keys that were removed.
      */
     @Nullable
+    @PersistenceExec(PersistenceExecTypeEnum.REMOVE_KEYS)
     Long delete(byte[]... keys);
 
     /**
@@ -28,6 +31,7 @@ public interface ExpireKeyCommands {
      * @param key must not be {@literal null}.
      * @return key/value
      */
+    @PersistenceExec(PersistenceExecTypeEnum.REMOVE_TYPE)
     Map<byte[], byte[]> deleteType(byte[] key);
 
     /**
@@ -35,6 +39,7 @@ public interface ExpireKeyCommands {
      *
      * @return true del all right
      */
+    @PersistenceExec(PersistenceExecTypeEnum.REMOVE_ALL)
     Boolean deleteAll();
 
     /**
@@ -91,6 +96,7 @@ public interface ExpireKeyCommands {
      * @param timeUnit must not be {@literal null}.
      * @return Set result
      */
+    @PersistenceExec(PersistenceExecTypeEnum.REPLACE_DURATION)
     Boolean setExpiration(byte[] key, Long duration, TimeUnit timeUnit);
 
     /**
@@ -99,5 +105,6 @@ public interface ExpireKeyCommands {
      * @param key must not be {@literal null}.
      * @return Reset result
      */
+    @PersistenceExec(PersistenceExecTypeEnum.REST_DURATION)
     Boolean resetExpiration(byte[] key);
 }

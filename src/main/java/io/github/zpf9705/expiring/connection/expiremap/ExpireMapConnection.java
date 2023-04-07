@@ -4,14 +4,11 @@ import io.github.zpf9705.expiring.command.ExpireKeyCommands;
 import io.github.zpf9705.expiring.command.ExpireStringCommands;
 import io.github.zpf9705.expiring.command.expiremap.ExpireMapKeyCommands;
 import io.github.zpf9705.expiring.command.expiremap.ExpireMapStringCommands;
-import io.github.zpf9705.expiring.core.persistence.PersistenceExec;
-import io.github.zpf9705.expiring.core.persistence.PersistenceExecTypeEnum;
+import io.github.zpf9705.expiring.connection.AbstractExpireConnection;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.lang.Nullable;
-
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -20,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 3.0.0
  */
-public class ExpireMapConnection implements ExpireMapConnectionSlot {
+public class ExpireMapConnection extends AbstractExpireConnection implements ExpireMapConnectionProxy {
 
     private final ExpiringMap<byte[], byte[]> expiringMap;
 
@@ -58,7 +55,6 @@ public class ExpireMapConnection implements ExpireMapConnectionSlot {
      * @see net.jodah.expiringmap.ExpiringMap#put(Object, Object)
      */
     @Override
-    @PersistenceExec(PersistenceExecTypeEnum.PUT)
     public Boolean put(byte[] key, byte[] value) {
         this.containOfKey.addBytes(key);
         this.containOfValue.addBytes(value);
@@ -71,7 +67,6 @@ public class ExpireMapConnection implements ExpireMapConnectionSlot {
      * @see net.jodah.expiringmap.ExpiringMap#put(Object, Object, long, TimeUnit)
      */
     @Override
-    @PersistenceExec(PersistenceExecTypeEnum.PUT)
     public Boolean putDuration(byte[] key, byte[] value, Long duration, TimeUnit unit) {
         this.containOfKey.addBytes(key);
         this.containOfValue.addBytes(value);
@@ -84,7 +79,6 @@ public class ExpireMapConnection implements ExpireMapConnectionSlot {
      * @see net.jodah.expiringmap.ExpiringMap#putIfAbsent(Object, Object)
      */
     @Override
-    @PersistenceExec(PersistenceExecTypeEnum.PUT)
     public Boolean putIfAbsent(byte[] key, byte[] value) {
         if (this.containOfKey.exist(key)) return false;
         this.containOfKey.addBytes(key);
@@ -98,7 +92,6 @@ public class ExpireMapConnection implements ExpireMapConnectionSlot {
      * @see net.jodah.expiringmap.ExpiringMap#setExpiration(Object, long, TimeUnit)
      */
     @Override
-    @PersistenceExec(PersistenceExecTypeEnum.PUT)
     public Boolean putIfAbsentDuration(byte[] key, byte[] value, Long duration, TimeUnit unit) {
         if (this.containOfKey.exist(key)) return false;
         this.containOfKey.add(key);
@@ -122,7 +115,6 @@ public class ExpireMapConnection implements ExpireMapConnectionSlot {
      * @see net.jodah.expiringmap.ExpiringMap#replace(Object, Object)
      */
     @Override
-    @PersistenceExec(PersistenceExecTypeEnum.REPLACE)
     public byte[] replace(byte[] key, byte[] newValue) {
         byte[] similarKey = this.containOfKey.getSimilarBytes(key);
         if (similarKey == null) return null;
@@ -139,7 +131,6 @@ public class ExpireMapConnection implements ExpireMapConnectionSlot {
      */
     @Nullable
     @Override
-    @PersistenceExec(PersistenceExecTypeEnum.REMOVE_ANY)
     public Long deleteReturnSuccessNum(byte[]... keys) {
         long count = 0L;
         for (byte[] key : keys) {
@@ -159,12 +150,17 @@ public class ExpireMapConnection implements ExpireMapConnectionSlot {
      * @see net.jodah.expiringmap.ExpiringMap#remove(Object, Object)
      */
     @Override
-    @PersistenceExec(PersistenceExecTypeEnum.REMOVE)
     public Map<byte[], byte[]> deleteSimilarKey(byte[] key) {
-        if (!hasKey(key)) {
-            return Collections.emptyMap();
-        }
-        return null;
+        Map<byte[], byte[]> map = new HashMap<>();
+        List<byte[]> delKeys = new ArrayList<>();
+        this.expiringMap.forEach((k, v) -> {
+            if (deserialize.apply(k, key)) {
+                map.put(k, v);
+                delKeys.add(k);
+            }
+        });
+        delKeys.forEach(this.expiringMap::remove);
+        return map;
     }
 
     /*
@@ -172,7 +168,6 @@ public class ExpireMapConnection implements ExpireMapConnectionSlot {
      * @see net.jodah.expiringmap.ExpiringMap#clear()
      */
     @Override
-    @PersistenceExec(PersistenceExecTypeEnum.REMOVE)
     public Boolean reboot() {
         this.expiringMap.clear();
         return true;
@@ -216,7 +211,7 @@ public class ExpireMapConnection implements ExpireMapConnectionSlot {
      * @see net.jodah.expiringmap.ExpiringMap#getExpiration(Object)
      */
     @Override
-    public Long getExpirationWithDuration(byte[] key, TimeUnit unit) {
+    public Long getExpirationWithUnit(byte[] key, TimeUnit unit) {
         Long expiration = this.getExpirationWithKey(key);
         if (expiration == null) return null;
         return TimeUnit.MICROSECONDS.convert(expiration, unit);
@@ -249,7 +244,6 @@ public class ExpireMapConnection implements ExpireMapConnectionSlot {
      * @see net.jodah.expiringmap.ExpiringMap#setExpiration(Object, long, TimeUnit)
      */
     @Override
-    @PersistenceExec(PersistenceExecTypeEnum.SET_E)
     public Boolean setExpirationDuration(byte[] key, Long duration, TimeUnit timeUnit) {
         key = this.containOfKey.getSimilarBytes(key);
         if (key == null) return false;
@@ -262,7 +256,6 @@ public class ExpireMapConnection implements ExpireMapConnectionSlot {
      * @see net.jodah.expiringmap.ExpiringMap#resetExpiration(Object)
      */
     @Override
-    @PersistenceExec(PersistenceExecTypeEnum.REST)
     public Boolean resetExpirationWithKey(byte[] key) {
         key = this.containOfKey.getSimilarBytes(key);
         if (key == null) return false;

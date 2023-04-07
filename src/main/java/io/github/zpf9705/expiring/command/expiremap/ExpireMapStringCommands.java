@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.command.expiremap;
 
 import io.github.zpf9705.expiring.command.ExpireStringCommands;
-import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionSlot;
+import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionProxy;
 
 import java.util.concurrent.TimeUnit;
 
@@ -13,10 +13,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExpireMapStringCommands implements ExpireStringCommands {
 
-    private final ExpireMapConnectionSlot slot;
+    private final ExpireMapConnectionProxy delegate;
 
-    public ExpireMapStringCommands(ExpireMapConnectionSlot slot) {
-        this.slot = slot;
+    public ExpireMapStringCommands(ExpireMapConnectionProxy delegate) {
+        this.delegate = delegate;
     }
 
     /*
@@ -25,7 +25,7 @@ public class ExpireMapStringCommands implements ExpireStringCommands {
      */
     @Override
     public Boolean set(byte[] key, byte[] value) {
-        return this.slot.put(key, value);
+        return this.delegate.put(key, value);
     }
 
     /*
@@ -34,7 +34,7 @@ public class ExpireMapStringCommands implements ExpireStringCommands {
      */
     @Override
     public Boolean setE(byte[] key, byte[] value, Long duration, TimeUnit unit) {
-        return this.slot.putDuration(key, value, duration, unit);
+        return this.delegate.putDuration(key, value, duration, unit);
     }
 
     /*
@@ -43,7 +43,7 @@ public class ExpireMapStringCommands implements ExpireStringCommands {
      */
     @Override
     public Boolean setNX(byte[] key, byte[] value) {
-        return this.slot.putIfAbsent(key, value);
+        return this.delegate.putIfAbsent(key, value);
     }
 
     /*
@@ -52,7 +52,7 @@ public class ExpireMapStringCommands implements ExpireStringCommands {
      */
     @Override
     public Boolean setEX(byte[] key, byte[] value, Long duration, TimeUnit unit) {
-        return this.slot.putIfAbsentDuration(key, value, duration, unit);
+        return this.delegate.putIfAbsentDuration(key, value, duration, unit);
     }
 
     /*
@@ -61,7 +61,7 @@ public class ExpireMapStringCommands implements ExpireStringCommands {
      */
     @Override
     public byte[] get(byte[] key) {
-        return this.slot.getVal(key);
+        return this.delegate.getVal(key);
     }
 
     /*
@@ -70,6 +70,6 @@ public class ExpireMapStringCommands implements ExpireStringCommands {
      */
     @Override
     public byte[] getAndSet(byte[] key, byte[] newValue) {
-        return this.slot.replace(key, newValue);
+        return this.delegate.replace(key, newValue);
     }
 }

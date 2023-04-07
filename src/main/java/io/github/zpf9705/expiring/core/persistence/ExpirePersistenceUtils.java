@@ -3,7 +3,11 @@ package io.github.zpf9705.expiring.core.persistence;
 import io.github.zpf9705.expiring.core.ExpireFactoryNameHolder;
 import io.github.zpf9705.expiring.core.logger.Console;
 import io.github.zpf9705.expiring.util.AssertUtils;
+import org.checkerframework.checker.units.qual.K;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -23,15 +27,15 @@ public abstract class ExpirePersistenceUtils {
      *
      * @param key      must not be {@literal null}.
      * @param value    must not be {@literal null}.
-     * @param duration must not be {@literal null}.
-     * @param timeUnit must not be {@literal null}.
+     * @param duration can be {@literal null}.
+     * @param timeUnit can be  {@literal null}.
      * @param <K>      key generic
      * @param <V>      value generic
      */
-    public static <K, V> void putPersistence(K key, V value, Long duration, TimeUnit timeUnit) {
+    public static <K, V> void putPersistence(@NonNull K key, @NonNull V value,
+                                             @Nullable Long duration,
+                                             @Nullable TimeUnit timeUnit) {
         run(() -> {
-            AssertUtils.Persistence.notNull(key, "key no be null");
-            AssertUtils.Persistence.notNull(value, "value no be null");
             //get current thread factory name
             String factoryName = ExpireFactoryNameHolder.getFactoryName();
             AssertUtils.Persistence.hasText(factoryName, "factoryName no be null");
@@ -54,11 +58,8 @@ public abstract class ExpirePersistenceUtils {
      * @param <K>      key generic
      * @param <V>      value generic
      */
-    public static <K, V> void replacePersistence(K key, V value, V newValue) {
+    public static <K, V> void replaceValuePersistence(@NonNull K key, @NonNull V value, @NonNull V newValue) {
         run(() -> {
-            AssertUtils.Persistence.notNull(key, "key no be null");
-            AssertUtils.Persistence.notNull(value, "value no be null");
-            AssertUtils.Persistence.notNull(newValue, "newValue no be null");
             ExpireSimpleGlobePersistence<K, V> replace = ExpireSimpleGlobePersistence.of(key, value);
             AssertUtils.Persistence.isTrue(replace.persistenceExist(), "persistence no exist");
             replace.replacePersistence(newValue);
@@ -75,15 +76,12 @@ public abstract class ExpirePersistenceUtils {
      * @param <K>      key generic
      * @param <V>      value generic
      */
-    public static <K, V> void setEPersistence(K key, V value, Long duration, TimeUnit timeUnit) {
+    public static <K, V> void replaceDurationPersistence(@NonNull K key, @NonNull V value,
+                                                         @NonNull Long duration, @NonNull TimeUnit timeUnit) {
         run(() -> {
-            AssertUtils.Persistence.notNull(key, "key no be null");
-            AssertUtils.Persistence.notNull(value, "value no be null");
-            AssertUtils.Persistence.notNull(duration, "duration no be null");
-            AssertUtils.Persistence.notNull(timeUnit, "timeUnit no be null");
-            ExpireSimpleGlobePersistence<K, V> setE = ExpireSimpleGlobePersistence.of(key, value);
-            AssertUtils.Persistence.isTrue(setE.persistenceExist(), "persistence no exist");
-            setE.setExpirationPersistence(duration, timeUnit);
+            ExpireSimpleGlobePersistence<K, V> replaceDuration = ExpireSimpleGlobePersistence.of(key, value);
+            AssertUtils.Persistence.isTrue(replaceDuration.persistenceExist(), "persistence no exist");
+            replaceDuration.setExpirationPersistence(duration, timeUnit);
         }, "setEPersistence");
     }
 
@@ -95,10 +93,8 @@ public abstract class ExpirePersistenceUtils {
      * @param <K>   key generic
      * @param <V>   value generic
      */
-    public static <K, V> void restPersistence(K key, V value) {
+    public static <K, V> void restDurationPersistence(@NonNull K key, @NonNull V value) {
         run(() -> {
-            AssertUtils.Persistence.notNull(key, "key no be null");
-            AssertUtils.Persistence.notNull(value, "value no be null");
             ExpireSimpleGlobePersistence<K, V> reset = ExpireSimpleGlobePersistence.of(key, value);
             AssertUtils.Persistence.isTrue(reset.persistenceExist(), "persistence no exist");
             reset.resetExpirationPersistence();
@@ -113,14 +109,59 @@ public abstract class ExpirePersistenceUtils {
      * @param <K>   key generic
      * @param <V>   value generic
      */
-    public static <K, V> void removePersistence(K key, V value) {
+    public static <K, V> void removePersistence(@NonNull K key, @NonNull V value) {
         run(() -> {
-            AssertUtils.Persistence.notNull(key, "key no be null");
-            AssertUtils.Persistence.notNull(value, "value no be null");
             ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.of(key, value);
             AssertUtils.Persistence.isTrue(remove.persistenceExist(), "persistence no exist");
             remove.removePersistence();
         }, "removePersistence");
+    }
+
+    /**
+     * Remove a {@code key} and {@code value} persistence record
+     *
+     * @param keys must not be {@literal null}.
+     * @param <K>  key generic
+     * @param <V>  value generic
+     */
+    @SafeVarargs
+    public static <K, V> void removePersistenceWithKeys(@NonNull K... keys) {
+        run(() -> {
+            for (K key : keys) {
+                ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.of(key);
+                if (!remove.persistenceExist()) {
+                    continue;
+                }
+                remove.removePersistence();
+            }
+        }, "removePersistenceWithKeys");
+    }
+
+    /**
+     * Remove a {@code key} Similar  persistence record
+     *
+     * @param key must not be {@literal null}.
+     * @param <K> key generic
+     * @param <V> value generic
+     */
+    public static <K, V> void removeSimilarKeyPersistence(@NonNull K key) {
+        run(() -> {
+            AssertUtils.Persistence.notNull(key, "key no be null");
+            List<ExpireSimpleGlobePersistence<K, V>> similar = ExpireSimpleGlobePersistence.ofSimilar(key);
+            AssertUtils.Persistence.notEmpty(similar, "No found key [" + key + "] similar persistence");
+            similar.forEach(s -> {
+                if (s.persistenceExist()) {
+                    s.removePersistence();
+                }
+            });
+        }, "removePersistence");
+    }
+
+    /**
+     * Remove all the cache files
+     */
+    public static void removeAllPersistence() {
+        run(ExpireSimpleGlobePersistence.INSTANCE::removeAllPersistence, "removeAllPersistence");
     }
 
     /**
@@ -129,7 +170,7 @@ public abstract class ExpirePersistenceUtils {
      * @param runnable method runnable
      * @param method   method name
      */
-    private static void run(Runnable runnable, String method) {
+    private static void run(@NonNull Runnable runnable, @NonNull String method) {
         CompletableFuture.runAsync(runnable)
                 .whenComplete((v, e) -> Console.exceptionOfDebugOrWare(method, e,
                         "Run the cache Persistence method [{}] An exception occurs [{}]"));

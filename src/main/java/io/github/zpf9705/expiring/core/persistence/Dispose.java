@@ -16,6 +16,8 @@ public interface Dispose {
 
     int indexFour = 3;
 
+    int lengthSi = 1;
+
     int lengthSimple = 2;
 
     int lengthGan = 3;

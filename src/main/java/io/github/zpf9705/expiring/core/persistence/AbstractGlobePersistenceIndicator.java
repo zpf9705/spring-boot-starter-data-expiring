@@ -73,5 +73,5 @@ public abstract class AbstractGlobePersistenceIndicator extends FileUtil impleme
      * @return The rest of the corresponding amount per unit time
      * @throws PersistenceException Persistence ex
      */
-    public abstract Long condition(LocalDateTime now, LocalDateTime expire, TimeUnit unit) throws PersistenceException;
+    protected abstract Long condition(LocalDateTime now, LocalDateTime expire, TimeUnit unit) throws PersistenceException;
 }

@@ -20,17 +20,17 @@ public class ExpireMapConnectionFactory implements ExpireConnectionFactory {
 
     private final ExpireMapClientConfiguration clientConfiguration;
 
-    private final ExpireMapConnectionSlot slot;
+    private final ExpireMapConnectionProxy proxy;
 
     public ExpireMapConnectionFactory(@NonNull ExpireMapClientConfiguration clientConfiguration) {
         this.clientConfiguration = clientConfiguration;
-        this.slot = buildExpireMapConnection(this.clientConfiguration);
+        this.proxy = doCreateExpireMapConnection(this.clientConfiguration);
     }
 
     @Override
     @NonNull
     public ExpireConnection getConnection() {
-        return this.slot;
+        return this.proxy;
     }
 
     /**
@@ -40,7 +40,7 @@ public class ExpireMapConnectionFactory implements ExpireConnectionFactory {
      * @return return a {@link ExpireMapConnection}
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public ExpireMapConnectionSlot buildExpireMapConnection(ExpireMapClientConfiguration clientConfiguration) {
+    public ExpireMapConnectionProxy doCreateExpireMapConnection(ExpireMapClientConfiguration clientConfiguration) {
         ExpiringMap<byte[], byte[]> expiringMap = ExpiringMap.builder()
                 .maxSize(this.clientConfiguration.getMaxSize())
                 .expiration(this.clientConfiguration.getDefaultExpireTime(),
@@ -54,7 +54,6 @@ public class ExpireMapConnectionFactory implements ExpireConnectionFactory {
             }
         }
         return JdkProxy.createProxy(
-                new ExpirePersistenceAfterHandle(new ExpireMapConnection(expiringMap), PersistenceExec.class)
-        );
+                new ExpirePersistenceAfterHandle(new ExpireMapConnection(expiringMap), PersistenceExec.class));
     }
 }
