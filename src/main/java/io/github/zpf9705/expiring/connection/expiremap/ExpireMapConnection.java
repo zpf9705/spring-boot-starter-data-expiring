@@ -8,6 +8,7 @@ import io.github.zpf9705.expiring.connection.AbstractExpireConnection;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.lang.Nullable;
+
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -21,15 +22,12 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
 
     private final ExpiringMap<byte[], byte[]> expiringMap;
 
-    private final ExpireMapByteContain containOfKey;
-
-    private final ExpireMapByteContain containOfValue;
+    private final ExpireMapByteContain contain;
 
     public ExpireMapConnection(ExpiringMap<byte[], byte[]> expiringMap) {
         AssertUtils.Operation.notNull(expiringMap, "ExpiringMap init no be null");
         this.expiringMap = expiringMap;
-        this.containOfKey = new ExpireMapByteContain(100);
-        this.containOfValue = new ExpireMapByteContain(100);
+        this.contain = new ExpireMapByteContain(100);
     }
 
     /*
@@ -56,8 +54,7 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
      */
     @Override
     public Boolean put(byte[] key, byte[] value) {
-        this.containOfKey.addBytes(key);
-        this.containOfValue.addBytes(value);
+        this.contain.addBytes(key, value);
         this.expiringMap.put(key, value);
         return true;
     }
@@ -68,8 +65,7 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
      */
     @Override
     public Boolean putDuration(byte[] key, byte[] value, Long duration, TimeUnit unit) {
-        this.containOfKey.addBytes(key);
-        this.containOfValue.addBytes(value);
+        this.contain.addBytes(key, value);
         this.expiringMap.put(key, value, duration, unit);
         return true;
     }
@@ -80,9 +76,8 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
      */
     @Override
     public Boolean putIfAbsent(byte[] key, byte[] value) {
-        if (this.containOfKey.exist(key)) return false;
-        this.containOfKey.addBytes(key);
-        this.containOfValue.addBytes(value);
+        if (this.contain.existKey(key)) return false;
+        this.contain.addBytes(key,value);
         return this.expiringMap.put(key, value) == null;
     }
 
@@ -93,9 +88,8 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
      */
     @Override
     public Boolean putIfAbsentDuration(byte[] key, byte[] value, Long duration, TimeUnit unit) {
-        if (this.containOfKey.exist(key)) return false;
-        this.containOfKey.add(key);
-        this.containOfValue.add(value);
+        if (this.contain.existKey(key)) return false;
+        this.contain.addBytes(key,value);
         return this.expiringMap.put(key, value, duration, unit) == null;
     }
 
@@ -105,7 +99,7 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
      */
     @Override
     public byte[] getVal(byte[] key) {
-        byte[] simpleBytesKey = this.containOfKey.getSimilarBytes(key);
+        byte[] simpleBytesKey = this.contain.getSimilarBytesForKey(key);
         if (simpleBytesKey == null) return null;
         return this.expiringMap.get(simpleBytesKey);
     }
@@ -116,12 +110,9 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
      */
     @Override
     public byte[] replace(byte[] key, byte[] newValue) {
-        byte[] similarKey = this.containOfKey.getSimilarBytes(key);
+        byte[] similarKey = this.contain.getSimilarBytesForKey(key);
         if (similarKey == null) return null;
-        byte[] oldValue = this.expiringMap.get(similarKey);
-        if (oldValue != null) {
-            this.containOfValue.remove(oldValue);
-        }
+        this.contain.put(similarKey, newValue);
         return this.expiringMap.replace(similarKey, newValue);
     }
 
@@ -134,10 +125,11 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
     public Long deleteReturnSuccessNum(byte[]... keys) {
         long count = 0L;
         for (byte[] key : keys) {
-            byte[] similarKey = this.containOfKey.getSimilarBytes(key);
+            byte[] similarKey = this.contain.getSimilarBytesForKey(key);
             if (similarKey == null) {
                 continue;
             }
+            this.contain.remove(similarKey);
             if (this.expiringMap.remove(similarKey) != null) {
                 count++;
             }
@@ -169,6 +161,7 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
      */
     @Override
     public Boolean reboot() {
+        this.contain.clear();
         this.expiringMap.clear();
         return true;
     }
@@ -179,7 +172,7 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
      */
     @Override
     public Boolean containsKey(byte[] key) {
-        key = this.containOfKey.getSimilarBytes(key);
+        key = this.contain.getSimilarBytesForKey(key);
         if (key == null) return false;
         return this.expiringMap.containsKey(key);
     }
@@ -190,7 +183,7 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
      */
     @Override
     public Boolean containsValue(byte[] value) {
-        value = this.containOfValue.getSimilarBytes(value);
+        value = this.contain.getSimilarBytesForValue(value);
         if (value == null) return false;
         return this.expiringMap.containsValue(value);
     }
@@ -201,7 +194,7 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
      */
     @Override
     public Long getExpirationWithKey(byte[] key) {
-        key = this.containOfKey.getSimilarBytes(key);
+        key = this.contain.getSimilarBytesForKey(key);
         if (key == null) return null;
         return this.expiringMap.getExpiration(key);
     }
@@ -223,7 +216,7 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
      */
     @Override
     public Long getExpectedExpirationWithKey(byte[] key) {
-        key = this.containOfKey.getSimilarBytes(key);
+        key = this.contain.getSimilarBytesForKey(key);
         if (key == null) return null;
         return this.expiringMap.getExpectedExpiration(key);
     }
@@ -245,7 +238,7 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
      */
     @Override
     public Boolean setExpirationDuration(byte[] key, Long duration, TimeUnit timeUnit) {
-        key = this.containOfKey.getSimilarBytes(key);
+        key = this.contain.getSimilarBytesForKey(key);
         if (key == null) return false;
         this.expiringMap.setExpiration(key, duration, timeUnit);
         return true;
@@ -257,7 +250,7 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
      */
     @Override
     public Boolean resetExpirationWithKey(byte[] key) {
-        key = this.containOfKey.getSimilarBytes(key);
+        key = this.contain.getSimilarBytesForKey(key);
         if (key == null) return false;
         this.expiringMap.resetExpiration(key);
         return true;
@@ -265,7 +258,6 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
 
     @Override
     public void restoreByteType(byte[] key, byte[] value) {
-        this.containOfKey.computeIfAbsent(key);
-        this.containOfValue.computeIfAbsent(value);
+        this.contain.computeIfAbsent(key, v -> value);
     }
 }

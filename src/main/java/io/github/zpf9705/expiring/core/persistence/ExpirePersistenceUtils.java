@@ -35,9 +35,10 @@ public abstract class ExpirePersistenceUtils {
     public static <K, V> void putPersistence(@NonNull K key, @NonNull V value,
                                              @Nullable Long duration,
                                              @Nullable TimeUnit timeUnit) {
+        //get current thread factory name
+        String factoryName = ExpireFactoryNameHolder.getFactoryName();
+        //async
         run(() -> {
-            //get current thread factory name
-            String factoryName = ExpireFactoryNameHolder.getFactoryName();
             AssertUtils.Persistence.hasText(factoryName, "factoryName no be null");
             ExpireSimpleGlobePersistence<K, V> put =
                     ExpireSimpleGlobePersistence.of(Entry.of(key, value, duration, timeUnit), factoryName);

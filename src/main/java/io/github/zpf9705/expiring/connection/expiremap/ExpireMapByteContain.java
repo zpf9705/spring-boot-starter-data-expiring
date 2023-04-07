@@ -1,7 +1,11 @@
 package io.github.zpf9705.expiring.connection.expiremap;
 
-import java.util.ArrayList;
+
+import org.springframework.util.CollectionUtils;
+
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Serialization in the key do not match the value ，the original value of the preserved
@@ -11,7 +15,7 @@ import java.util.Arrays;
  * @author zpf
  * @since 3.0.0
  */
-public class ExpireMapByteContain extends ArrayList<byte[]> {
+public class ExpireMapByteContain extends ConcurrentHashMap<byte[], byte[]> {
 
     private static final long serialVersionUID = -851217802015189183L;
 
@@ -20,33 +24,51 @@ public class ExpireMapByteContain extends ArrayList<byte[]> {
     }
 
     /**
-     * Add {@code bytes} to list
+     * Add {@code bytes} to map
      *
-     * @param bytes value
+     * @param key   must not be {@literal null}
+     * @param value must not be {@literal null}
      */
-    public synchronized void addBytes(byte[] bytes) {
-        if (bytes == null) {
+    public void addBytes(byte[] key, byte[] value) {
+        if (key == null || value == null) {
             return;
         }
-        byte[] similarBytes = getSimilarBytes(bytes);
-        if (similarBytes != null) {
-            this.remove(bytes);
+        byte[] similarKey = getSimilarBytesForKey(key);
+        byte[] similarValue = getSimilarBytesForValue(value);
+        if (similarKey != null && similarValue != null) {
+            this.remove(similarKey, similarValue);
+        } else {
+            if (similarKey != null) {
+                this.remove(similarKey);
+            }
         }
-        this.add(bytes);
+        this.put(key, value);
     }
 
     /**
-     * Get similar bytes for {@code newBytesKey}
+     * Get similar key bytes for {@code newBytesKey}
      *
      * @param newBytesKey new bytes for {@code object}
      * @return bytes
      */
-    public synchronized byte[] getSimilarBytes(byte[] newBytesKey) {
+    public byte[] getSimilarBytesForKey(byte[] newBytesKey) {
         if (newBytesKey == null) {
             return null;
         }
-        return this.stream().filter(b -> Arrays.equals(b, newBytesKey))
-                .findFirst().orElse(null);
+        return this.filter(this.keySet(), newBytesKey);
+    }
+
+    /**
+     * Get similar value bytes for {@code newBytesKey}
+     *
+     * @param newBytesValue new bytes for {@code object}
+     * @return bytes
+     */
+    public byte[] getSimilarBytesForValue(byte[] newBytesValue) {
+        if (newBytesValue == null) {
+            return null;
+        }
+        return this.filter(this.values(), newBytesValue);
     }
 
     /**
@@ -55,21 +77,32 @@ public class ExpireMapByteContain extends ArrayList<byte[]> {
      * @param bytes new bytes
      * @return exist in cache bytes list
      */
-    public boolean exist(byte[] bytes) {
-        return getSimilarBytes(bytes) != null;
+    public boolean existKey(byte[] bytes) {
+        return getSimilarBytesForKey(bytes) != null;
     }
 
     /**
-     * Does not exist in the collection, and returns that value
+     * Exit in key/value similar Bytes
      *
-     * @param bytes value
-     * @return add success return value
+     * @param bytes new bytes
+     * @return exist in cache bytes list
      */
-    public byte[] computeIfAbsent(byte[] bytes) {
-        if (exist(bytes)) {
-            this.addBytes(bytes);
-            return bytes;
+    public boolean existValue(byte[] bytes) {
+        return getSimilarBytesForValue(bytes) != null;
+    }
+
+    /**
+     * Filter similar element in collection
+     *
+     * @param collection must not be {@literal null}
+     * @param newBytes   must not be {@literal null}
+     * @return similar element
+     */
+    private byte[] filter(Collection<byte[]> collection, byte[] newBytes) {
+        if (CollectionUtils.isEmpty(collection)) {
+            return null;
         }
-        return null;
+        return collection.stream().filter(b -> Arrays.equals(b, newBytes))
+                .findFirst().orElse(null);
     }
 }
