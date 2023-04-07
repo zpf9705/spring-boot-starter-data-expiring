@@ -92,7 +92,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
      * load static cacheProperties
      */
     static void resolveCacheProperties() {
-        cacheProperties = Application.context.getBean(ExpireProperties.class);
+        cacheProperties = Application.findBean(ExpireProperties.class);
         OPEN_PERSISTENCE = cacheProperties.getOpenPersistence();
         //if you open persistence will auto create directory
         if (OPEN_PERSISTENCE) {
@@ -388,7 +388,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     protected static ExpireTemplate accessToTheCacheTemplate(String factoryBeanName) {
         ExpireTemplate expireTemplate = null;
         try {
-            Object bean = Application.context.getBean(factoryBeanName);
+            Object bean = Application.findBean(factoryBeanName);
             AssertUtils.Persistence.notNull(bean,
                     "ExpireTemplate [" + ExpireTemplate.class.getName() + "] no found in Spring ioc");
 

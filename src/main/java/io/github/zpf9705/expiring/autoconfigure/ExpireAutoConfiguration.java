@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -50,11 +51,13 @@ import java.util.List;
 @ConditionalOnClass({ExpireOperations.class})
 @EnableConfigurationProperties({ExpireProperties.class})
 @Import(ExpireMapConfiguration.class)
-public class ExpireAutoConfiguration extends AbstractExpireConfiguration implements InitializingBean {
+public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, EnvironmentAware, PersistenceCapable {
 
     private final ExpireProperties expireProperties;
 
     private final List<ConfigurationCustomizer> configurationCustomizers;
+
+    public Environment environment;
 
     public ExpireAutoConfiguration(ExpireProperties expireProperties,
                                    ObjectProvider<List<ConfigurationCustomizer>> customizerS) {
@@ -64,7 +67,7 @@ public class ExpireAutoConfiguration extends AbstractExpireConfiguration impleme
 
     @Override
     public void afterPropertiesSet() {
-        super.afterPropertiesSet();
+        this.printBanner(this.environment, getSourceClass(), System.out);
         if (!CollectionUtils.isEmpty(configurationCustomizers)) {
             configurationCustomizers.forEach(v -> v.customize(this.expireProperties));
         }
@@ -80,6 +83,17 @@ public class ExpireAutoConfiguration extends AbstractExpireConfiguration impleme
 
     @Override
     @NonNull
+    public Environment getEnvironment() {
+        return this.environment;
+    }
+
+    @Override
+    public void setEnvironment(@NonNull Environment environment) {
+        this.environment = environment;
+    }
+
+    @Override
+    @NonNull
     public Class<?> getSourceClass() {
         return Version.class;
     }
@@ -90,55 +104,55 @@ public class ExpireAutoConfiguration extends AbstractExpireConfiguration impleme
         return new ExpireStarterBanner();
     }
 
-    @Bean(name = "keySValueOExpireTemplate")
-    @ConditionalOnMissingBean(name = "keySValueOExpireTemplate")
-    public ExpireTemplate<String, Object> keySValueOExpireTemplate(ExpireConnectionFactory connectionFactory) {
+    @Bean(DEFAULT_SO_TEMPLATE)
+    @ConditionalOnMissingBean(name = DEFAULT_SO_TEMPLATE)
+    public ExpireTemplate<String, Object> expireTemplate(ExpireConnectionFactory connectionFactory) {
         ExpireTemplate<String, Object> template = new ExpireTemplate<>();
         template.setConnectionFactory(connectionFactory);
-        template.setFactoryBeanName("keySValueOExpireTemplate");
+        template.setFactoryBeanName(DEFAULT_SO_TEMPLATE);
         template.setKeySerializer(new GenericStringExpiringSerializer());
         template.setValueSerializer(new ExpiringSerializerAdapter<>(Object.class));
         return template;
     }
 
-    @Bean(name = "keySValueSExpiredTemplate")
-    @ConditionalOnMissingBean(name = "keySValueSExpiredTemplate")
-    public StringExpireTemplate keySValueSExpiredTemplate(ExpireConnectionFactory connectionFactory) {
+    @Bean(DEFAULT_SS_TEMPLATE)
+    @ConditionalOnMissingBean(name = DEFAULT_SS_TEMPLATE)
+    public StringExpireTemplate stringExpireTemplate(ExpireConnectionFactory connectionFactory) {
         StringExpireTemplate template = new StringExpireTemplate();
         template.setConnectionFactory(connectionFactory);
-        template.setFactoryBeanName("keySValueSExpiredTemplate");
+        template.setFactoryBeanName(DEFAULT_SS_TEMPLATE);
         return template;
     }
 
-    @Bean
-    @ConditionalOnBean(name = "keySValueOExpireTemplate")
-    @ConditionalOnMissingBean(name = "keySValueOValueOperations")
-    public ValueOperations<String, Object> keySValueOValueOperations(@Qualifier("keySValueOExpireTemplate")
+    @Bean(DEFAULT_SO_TEMPLATE_OPERATION)
+    @ConditionalOnBean(name = DEFAULT_SO_TEMPLATE)
+    @ConditionalOnMissingBean(name = DEFAULT_SO_TEMPLATE_OPERATION)
+    public ValueOperations<String, Object> valueOperations(@Qualifier(DEFAULT_SO_TEMPLATE)
+                                                           ExpireTemplate<String, Object> template) {
+        return template.opsForValue();
+    }
+
+    @Bean(DEFAULT_SS_TEMPLATE_OPERATION)
+    @ConditionalOnBean(name = DEFAULT_SS_TEMPLATE)
+    @ConditionalOnMissingBean(name = DEFAULT_SS_TEMPLATE_OPERATION)
+    public ValueOperations<String, String> valueOperations(@Qualifier(DEFAULT_SS_TEMPLATE)
+                                                           StringExpireTemplate template) {
+        return template.opsForValue();
+    }
+
+    @Bean(DEFAULT_SO_TEMPLATE_OPERATION_E)
+    @ConditionalOnBean(name = DEFAULT_SO_TEMPLATE)
+    @ConditionalOnMissingBean(name = DEFAULT_SO_TEMPLATE_OPERATION_E)
+    public ExpirationOperations<String, Object> expirationOperations(@Qualifier(DEFAULT_SO_TEMPLATE)
                                                                      ExpireTemplate<String, Object> template) {
-        return template.opsForValue();
-    }
-
-    @Bean
-    @ConditionalOnBean(name = "keySValueSExpiredTemplate")
-    @ConditionalOnMissingBean(name = "keySValueSValueOperations")
-    public ValueOperations<String, String> keySValueSValueOperations(@Qualifier("keySValueSExpiredTemplate")
-                                                                     StringExpireTemplate template) {
-        return template.opsForValue();
-    }
-
-    @Bean
-    @ConditionalOnBean(name = "keySValueOExpireTemplate")
-    @ConditionalOnMissingBean(name = "keySValueOExpirationOperations")
-    public ExpirationOperations<String, Object> keySValueOExpirationOperations(@Qualifier("keySValueOExpireTemplate")
-                                                                               ExpireTemplate<String, Object> template) {
         return template.opsExpirationOperations();
     }
 
-    @Bean
-    @ConditionalOnBean(name = "keySValueSExpiredTemplate")
-    @ConditionalOnMissingBean(name = "keySValueSExpirationOperations")
-    public ExpirationOperations<String, String> keySValueSExpirationOperations(@Qualifier("keySValueSExpiredTemplate")
-                                                                               StringExpireTemplate template) {
+    @Bean(DEFAULT_SS_TEMPLATE_OPERATION_E)
+    @ConditionalOnBean(name = DEFAULT_SS_TEMPLATE)
+    @ConditionalOnMissingBean(name = DEFAULT_SS_TEMPLATE_OPERATION_E)
+    public ExpirationOperations<String, String> expirationOperations(@Qualifier(DEFAULT_SS_TEMPLATE)
+                                                                     StringExpireTemplate template) {
         return template.opsExpirationOperations();
     }
 
@@ -147,6 +161,7 @@ public class ExpireAutoConfiguration extends AbstractExpireConfiguration impleme
     public Application application() {
         return new Application();
     }
+
 
     @Bean("expireMap::persistenceRegain")
     @Override
@@ -165,4 +180,22 @@ public class ExpireAutoConfiguration extends AbstractExpireConfiguration impleme
         factory.deserializeWithPath(path);
         return "Client name [" + clientName + "] persistenceRegain ok";
     }
+
+
+    //-----------------------------------Bean name example-------------------------------------
+    static final String DEFAULT_SO_TEMPLATE = "DEFAULT_SO_TEMPLATE";
+
+    static final String OPERATION = "_OPERATION";
+
+    static final String OPERATION_E = "_OPERATION_E";
+
+    static final String DEFAULT_SO_TEMPLATE_OPERATION = DEFAULT_SO_TEMPLATE + OPERATION;
+
+    static final String DEFAULT_SO_TEMPLATE_OPERATION_E = DEFAULT_SO_TEMPLATE + OPERATION_E;
+
+    static final String DEFAULT_SS_TEMPLATE = "DEFAULT_SS_TEMPLATE";
+
+    static final String DEFAULT_SS_TEMPLATE_OPERATION = DEFAULT_SS_TEMPLATE + OPERATION;
+
+    static final String DEFAULT_SS_TEMPLATE_OPERATION_E = DEFAULT_SS_TEMPLATE + OPERATION_E;
 }

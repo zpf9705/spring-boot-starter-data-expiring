@@ -21,6 +21,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -43,12 +44,13 @@ import java.util.function.Predicate;
         proxyBeanMethods = false
 )
 @EnableConfigurationProperties(ExpireProperties.class)
-public class ExpireMapConfiguration extends AbstractExpireConfiguration implements InitializingBean {
+public class ExpireMapConfiguration extends ExpireConnectionConfiguration implements ExpireBannerDisplayDevice,
+        EnvironmentAware {
 
-    private final ExpireProperties expireProperties;
+    private Environment environment;
 
-    public ExpireMapConfiguration(ExpireProperties expireProperties) {
-        this.expireProperties = expireProperties;
+    public ExpireMapConfiguration(ExpireProperties properties) {
+        super(properties);
     }
 
     @Override
@@ -57,6 +59,17 @@ public class ExpireMapConfiguration extends AbstractExpireConfiguration implemen
          * print expire - map version and banner info
          */
         ExpireStartUpBanner.printBanner(environment, getStartUpBanner(), sourceClass, out);
+    }
+
+    @Override
+    public void setEnvironment(@NonNull Environment environment) {
+        this.environment = environment;
+    }
+
+    @Override
+    @NonNull
+    public Environment getEnvironment() {
+        return this.environment;
     }
 
     @Override
@@ -84,12 +97,13 @@ public class ExpireMapConfiguration extends AbstractExpireConfiguration implemen
     @Bean("expireMap::expireMapClientCustomizer")
     @SuppressWarnings("rawtypes")
     public ExpireMapClientConfigurationCustomizer expireMapClientCustomizer() {
+        ExpireProperties expireProperties = getProperties();
         return c -> {
             ExpireMapClientConfiguration.ExpireMapClientConfigurationBuilder builder =
-                    c.acquireMaxSize(this.expireProperties.getExpiringMap().getMaxSize())
-                            .acquireDefaultExpireTime(this.expireProperties.getDefaultExpireTime())
-                            .acquireDefaultExpireTimeUnit(this.expireProperties.getDefaultExpireTimeUnit())
-                            .acquireDefaultExpirationPolicy(this.expireProperties.getExpiringMap().getExpirationPolicy());
+                    c.acquireMaxSize(expireProperties.getExpiringMap().getMaxSize())
+                            .acquireDefaultExpireTime(expireProperties.getDefaultExpireTime())
+                            .acquireDefaultExpireTimeUnit(expireProperties.getDefaultExpireTimeUnit())
+                            .acquireDefaultExpirationPolicy(expireProperties.getExpiringMap().getExpirationPolicy());
             List<ExpirationListener> expirationListener = findExpirationListener();
             if (!CollectionUtils.isEmpty(expirationListener)) {
                 expirationListener.forEach(builder::addExpiredListener);
@@ -100,7 +114,7 @@ public class ExpireMapConfiguration extends AbstractExpireConfiguration implemen
     @SuppressWarnings({"rawtypes"})
     public List<ExpirationListener> findExpirationListener() {
         //obtain listing packages path
-        String listeningPackages = this.expireProperties.getExpiringMap().getListeningPackages();
+        String listeningPackages = getProperties().getExpiringMap().getListeningPackages();
         if (StringUtils.isBlank(listeningPackages)) {
             Console.info(
                     "no provider listening scan path ," +
