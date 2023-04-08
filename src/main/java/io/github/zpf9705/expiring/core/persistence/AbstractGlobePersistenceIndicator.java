@@ -2,6 +2,8 @@ package io.github.zpf9705.expiring.core.persistence;
 
 import cn.hutool.core.io.FileUtil;
 import io.github.zpf9705.expiring.core.error.PersistenceException;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -23,7 +25,7 @@ public abstract class AbstractGlobePersistenceIndicator extends FileUtil impleme
         // do nothing
     }
 
-    public void deserializeWithPath(String path){
+    public void deserializeWithPath(@Nullable String path) {
 
     }
 
@@ -63,15 +65,4 @@ public abstract class AbstractGlobePersistenceIndicator extends FileUtil impleme
         }
         return c;
     }
-
-    /**
-     * Restore the cache time remaining
-     *
-     * @param now    now time
-     * @param expire expiring time
-     * @param unit   time unit
-     * @return The rest of the corresponding amount per unit time
-     * @throws PersistenceException Persistence ex
-     */
-    protected abstract Long condition(LocalDateTime now, LocalDateTime expire, TimeUnit unit) throws PersistenceException;
 }

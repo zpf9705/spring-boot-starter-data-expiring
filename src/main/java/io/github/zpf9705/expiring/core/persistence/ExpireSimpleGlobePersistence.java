@@ -16,6 +16,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
 import java.io.*;
@@ -48,24 +50,25 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
 
     private static final long serialVersionUID = 7755214068683107950L;
 
+    @Getter
     private static ExpireProperties cacheProperties;
 
-    private static final String PREFIX_BEFORE = ".aof";
+    public static final String PREFIX_BEFORE = ".aof";
 
-    private static final String AT = "@";
+    public static final String AT = "@";
 
-    private static final String DEFAULT_WRITE_PATH_SIGN = "default";
+    public static final String DEFAULT_WRITE_PATH_SIGN = "default";
 
     private Persistence<K, V> persistence;
 
     @Getter
-    private String writePath;
+    public String writePath;
 
     private static final String DEALT = "$*&";
 
     private static boolean OPEN_PERSISTENCE;
 
-    private static final Map<String, ExpireSimpleGlobePersistence> CACHE_MAP = new ConcurrentHashMap<>();
+    public static final Map<String, ExpireSimpleGlobePersistence> CACHE_MAP = new ConcurrentHashMap<>();
 
     public static final ExpireSimpleGlobePersistence<Object, Object> INSTANCE = new ExpireSimpleGlobePersistence<>();
 
@@ -76,9 +79,6 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     private final Lock readLock = readWriteLock.readLock();
 
     private final Lock writeLock = readWriteLock.writeLock();
-
-    private ExpireSimpleGlobePersistence() {
-    }
 
     static {
         try {
@@ -91,7 +91,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     /**
      * load static cacheProperties
      */
-    static void resolveCacheProperties() {
+    protected static void resolveCacheProperties() {
         cacheProperties = Application.findBean(ExpireProperties.class);
         OPEN_PERSISTENCE = cacheProperties.getOpenPersistence();
         //if you open persistence will auto create directory
@@ -103,7 +103,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     /**
      * Check provider persistence path
      */
-    static void checkDirectory() {
+    protected static void checkDirectory() {
         String persistencePath = cacheProperties.getPersistencePath();
         if (StringUtils.isNotBlank(persistencePath)) {
             //Determine whether to native folders and whether the folder
@@ -116,27 +116,12 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
         }
     }
 
-    public ExpireSimpleGlobePersistence(Persistence<K, V> persistence, String writePath) {
-        AssertUtils.Persistence.notNull(writePath, "writePath no be null");
-        this.writePath = writePath;
-        AssertUtils.Persistence.notNull(persistence, "Persistence no be null !");
-        this.persistence = persistence;
-    }
-
-    public ExpireSimpleGlobePersistence(Supplier<Persistence<K, V>> persistence, String writePath) {
-        AssertUtils.Persistence.notNull(writePath, "writePath no be null");
-        this.writePath = writePath;
-        Persistence<K, V> p = persistence.get();
-        AssertUtils.Persistence.notNull(p, "Persistence no be null !");
-        this.persistence = p;
-    }
-
     /**
      * If no found persistence path will check error path and give logger
      *
      * @param persistencePath persistence path
      */
-    static void checkError(String persistencePath) {
+    protected static void checkError(String persistencePath) {
         String[] pathArray = persistencePath.split("/");
         AssertUtils.Persistence.notEmpty(pathArray,
                 "[" + persistencePath + "] no a path");
@@ -151,18 +136,35 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
         }
     }
 
+    private ExpireSimpleGlobePersistence() {
+    }
+
+    protected ExpireSimpleGlobePersistence(@NonNull Persistence<K, V> persistence, @NonNull String writePath) {
+        this.writePath = writePath;
+        this.persistence = persistence;
+    }
+
+    protected ExpireSimpleGlobePersistence(@NonNull Supplier<Persistence<K, V>> persistence,
+                                           @NonNull String writePath) {
+        this.writePath = writePath;
+        Persistence<K, V> p = persistence.get();
+        AssertUtils.Persistence.notNull(p, "Persistence no be null");
+        this.persistence = p;
+    }
+
     /**
-     * Through the entry {@link Entry} and container bean name to construct a persistent object
+     * Set in cache map and get an {@code ExpireByteGlobePersistence} with {@code Entry<K,V>} and {@code FactoryBeanName}
+     * Whether need to query in the cache
      *
-     * @param entry           {@link Entry}
-     * @param factoryBeanName factory in container of spring boot bean name
+     * @param entry           must not be {@literal null}
+     * @param factoryBeanName must not be {@literal null}
      * @param <K>             key generic
      * @param <V>             value generic
-     * @return {@link ExpireSimpleGlobePersistence}
+     * @return {@link ExpireByteGlobePersistence}
      */
-    public static <K, V> ExpireSimpleGlobePersistence<K, V> of(Entry<K, V> entry, String factoryBeanName) {
+    protected static <K, V> ExpireSimpleGlobePersistence<K, V> ofSet(@NonNull Entry<K, V> entry,
+                                                                     @NonNull String factoryBeanName) {
         checkOf(entry);
-        AssertUtils.Persistence.hasText(factoryBeanName, "FactoryBeanName no be blank");
         String rawHash = rawHash(entry.getKey(), entry.getValue());
         String writePath = rawWritePath(entry.getKey());
         ExpireSimpleGlobePersistence<K, V> persistence = CACHE_MAP.get(rawHash);
@@ -181,31 +183,31 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     }
 
     /**
-     * To build a persistent object by persistent core classes {@link Persistence}
+     * Set in cache map and get an {@code ExpireByteGlobePersistence} with {@code Persistence<K,V>}
+     * Don't query is in the cache
      *
-     * @param persistence {@link Persistence}
+     * @param persistence must not be {@literal null}
      * @param <K>         key generic
      * @param <V>         value generic
-     * @return {@link ExpireSimpleGlobePersistence}
+     * @return {@link ExpireByteGlobePersistence}
      */
-    public static <K, V> ExpireSimpleGlobePersistence<K, V> of(Persistence<K, V> persistence) {
+    protected static <K, V> ExpireSimpleGlobePersistence<K, V> ofSetPersistence(@NonNull Persistence<K, V> persistence) {
         checkPersistence(persistence);
         Entry<K, V> entry = persistence.entry;
-        //To recalculate the path
-        String writePath = rawWritePath(entry.getKey());
-        return new ExpireSimpleGlobePersistence<>(() -> persistence, writePath);
+        return CACHE_MAP.computeIfAbsent(rawHash(entry.getKey(), entry.getValue()), v ->
+                new ExpireSimpleGlobePersistence(() -> persistence, rawWritePath(entry.getKey())));
     }
 
     /**
-     * Directly through the key/value pair from the cache take persistent objects in the map
+     * Get an {@code ExpireSimpleGlobePersistence<K,V>} in cache map with {@code key} and {@code value}
      *
      * @param key   must not be {@literal null}.
-     * @param value must not be {@literal null}.
+     * @param value can be {@literal null}.
      * @param <K>   key generic
      * @param <V>   value generic
      * @return {@link ExpireSimpleGlobePersistence}
      */
-    public static <K, V> ExpireSimpleGlobePersistence<K, V> of(K key, V value) {
+    protected static <K, V> ExpireSimpleGlobePersistence<K, V> ofGet(@NonNull K key, @Nullable V value) {
         checkOpenPersistence();
         AssertUtils.Persistence.notNull(key, "Key no be null");
         String persistenceKey;
@@ -225,28 +227,27 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     }
 
     /**
-     * Directly through the key from the cache take persistent objects in the map
+     * Get an {@code ExpireSimpleGlobePersistence<K,V>} in cache map with {@code key}
      *
      * @param key must not be {@literal null}.
      * @param <K> key generic
      * @param <V> value generic
      * @return {@link ExpireSimpleGlobePersistence}
      */
-    public static <K, V> ExpireSimpleGlobePersistence<K, V> of(K key) {
-        return of(key, null);
+    protected static <K, V> ExpireSimpleGlobePersistence<K, V> ofGet(@NonNull K key) {
+        return ofGet(key, null);
     }
 
     /**
-     * Looking for a similar hash key with persistence
+     * Get any {@code ExpireSimpleGlobePersistence<K,V>} in cache map with similar {@code key}
      *
      * @param key must not be {@literal null}.
      * @param <K> key generic
      * @param <V> value generic
      * @return {@link ExpireSimpleGlobePersistence}
      */
-    public static <V, K> List<ExpireSimpleGlobePersistence<K, V>> ofSimilar(K key) {
+    protected static <V, K> List<ExpireSimpleGlobePersistence<K, V>> ofGetSimilar(@NonNull K key) {
         checkOpenPersistence();
-        AssertUtils.Persistence.notNull(key, "Key no be null");
         List<ExpireSimpleGlobePersistence<K, V>> similar = new ArrayList<>();
         String rawHash = rawHash(key);
         List<String> similarHashKeys = KEY_VALUE_HASH.keySet().stream()
@@ -270,11 +271,11 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     /**
      * Check whether accord with standard of cache persistence
      *
-     * @param entry {@link Entry}
+     * @param entry must not be {@literal null}.
      * @param <K>   key generic
      * @param <V>   value generic
      */
-    static <V, K> void checkOf(Entry<K, V> entry) {
+    protected static <V, K> void checkOf(@NonNull Entry<K, V> entry) {
         checkOpenPersistence();
         checkEntry(entry);
         //empty just pass
@@ -300,8 +301,10 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
      * @param <K>         key generic
      * @param <V>         value generic
      */
-    static <V, K> void checkPersistence(Persistence<K, V> persistence) {
-        AssertUtils.Persistence.notNull(persistence, "Persistence no be null");
+    protected static <V, K> void checkPersistence(@NonNull Persistence<K, V> persistence) {
+        AssertUtils.Persistence.notNull(persistence.getEntry(), "Persistence Entry no be null");
+        AssertUtils.Persistence.notNull(persistence.getFactoryBeanName(), "FactoryBeanName no be null");
+        AssertUtils.Persistence.notNull(persistence.getExpire(), "Expire no be null");
         checkEntry(persistence.getEntry());
     }
 
@@ -312,8 +315,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
      * @param <K>   key generic
      * @param <V>   value generic
      */
-    static <V, K> void checkEntry(Entry<K, V> entry) {
-        AssertUtils.Persistence.notNull(entry, "Entry no be null");
+    protected static <V, K> void checkEntry(@NonNull Entry<K, V> entry) {
         AssertUtils.Persistence.notNull(entry.getKey(), "Key no be null");
         AssertUtils.Persistence.notNull(entry.getValue(), "Value no be null");
     }
@@ -321,7 +323,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     /**
      * Check whether the open the persistent cache
      */
-    static void checkOpenPersistence() {
+    protected static void checkOpenPersistence() {
         AssertUtils.Persistence.isTrue(OPEN_PERSISTENCE, "No open expiring persistence");
     }
 
@@ -332,7 +334,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
      * @param <K> key generic
      * @return final write path
      */
-    protected static <K> String rawWritePath(K key) {
+    protected static <K> String rawWritePath(@NonNull K key) {
         AssertUtils.Persistence.notNull(key, "Key no be null ");
         return cacheProperties.getPersistencePath()
                 //md5 sign to prevent the file name is too long
@@ -347,7 +349,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
      * @param hashValue must not be {@literal null}.
      * @return hash mark
      */
-    protected static String rawHashComb(String hashKey, String hashValue) {
+    protected static String rawHashComb(@NonNull String hashKey, @NonNull String hashValue) {
         return DEALT + hashKey + hashValue;
     }
 
@@ -360,7 +362,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
      * @param <V>   value generic
      * @return hash mark
      */
-    protected static <K, V> String rawHash(K key, V value) {
+    protected static <K, V> String rawHash(@NonNull K key, @NonNull V value) {
         String rawHashKey = rawHash(key);
         String rawHashValue = rawHash(value);
         KEY_VALUE_HASH.putIfAbsent(rawHashKey, rawHashValue);
@@ -374,8 +376,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
      * @param <T> obj generic
      * @return hash mark
      */
-    protected static <T> String rawHash(T t) {
-        AssertUtils.Persistence.notNull(t, "T when hash no be null");
+    protected static <T> String rawHash(@NonNull T t) {
         return t.hashCode() + t.getClass().getName();
     }
 
@@ -385,7 +386,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
      * @param factoryBeanName factory in container of spring boot bean name
      * @return {@link ExpireTemplate}
      */
-    protected static ExpireTemplate accessToTheCacheTemplate(String factoryBeanName) {
+    protected static ExpireTemplate accessToTheCacheTemplate(@NonNull String factoryBeanName) {
         ExpireTemplate expireTemplate = null;
         try {
             Object bean = Application.findBean(factoryBeanName);
@@ -441,7 +442,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
             //Refresh time due to the key value no change don't need to delete the application cache
             entry.refreshOfExpire(duration, timeUnit);
             //Redefine the cache
-            of(Entry.of(entry.getKey(), entry.getValue(), duration, timeUnit), p.getFactoryBeanName()).serial();
+            ofSet(Entry.of(entry.getKey(), entry.getValue(), duration, timeUnit), p.getFactoryBeanName()).serial();
         } finally {
             writeLock.unlock();
         }
@@ -459,7 +460,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
             //Delete the old file to add a new key value no change don't need to delete the application cache
             del0(this.writePath);
             //To write a cache file
-            of(per.getEntry(), per.getFactoryBeanName()).serial();
+            ofSet(per.getEntry(), per.getFactoryBeanName()).serial();
         } finally {
             writeLock.unlock();
         }
@@ -480,7 +481,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
             //Delete the cache because the value changes
             CACHE_MAP.remove(rawHash(entry.getKey(), entry.getValue()));
             //To write a cache file
-            of(Entry.of(entry.getKey(), newValue, entry.getDuration(), entry.getTimeUnit()),
+            ofSet(Entry.of(entry.getKey(), newValue, entry.getDuration(), entry.getTimeUnit()),
                     per.getFactoryBeanName()).serial();
         } finally {
             writeLock.unlock();
@@ -542,7 +543,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     }
 
     @Override
-    public void deserializeWithPath(String path) {
+    public void deserializeWithPath(@Nullable String path) {
         if (StringUtils.isBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
             path = cacheProperties.getPersistencePath();
         }
@@ -577,7 +578,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     }
 
     @Override
-    public void deserializeWithFile(File file) {
+    public void deserializeWithFile(@NonNull File file) {
         AssertUtils.Persistence.notNull(file, "File no be null");
         InputStream in = null;
         BufferedReader read = null;
@@ -607,8 +608,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     }
 
     @Override
-    public void deserializeWithString(StringBuilder buffer) {
-        AssertUtils.Persistence.notNull(buffer, "Buffer no be null");
+    public void deserializeWithString(@NonNull StringBuilder buffer) {
         String json = buffer.toString();
         //check json
         AssertUtils.Persistence.isTrue(JSON.isValid(json), "Buffer data [" + json + "] no a valid json");
@@ -621,11 +621,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
             throw new PersistenceException("Buffer data [" + json + " ] parse Persistence error " +
                     "[" + e.getMessage() + "]");
         }
-        Entry<K, V> entry = persistence.getEntry();
-        //Recalculate the hash
-        String rawHash = rawHash(entry.getKey(), entry.getValue());
         //No cache in the cache
-        ExpireSimpleGlobePersistence<K, V> of = CACHE_MAP.computeIfAbsent(rawHash, v -> of(persistence));
+        ExpireSimpleGlobePersistence<K, V> of = ofSetPersistence(persistence);
         AssertUtils.Persistence.notNull(of, "ExpireGlobePersistence no be null");
         //record [op bean]
         ExpireTemplate template = accessToTheCacheTemplate(persistence.getFactoryBeanName());
@@ -633,17 +630,16 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     }
 
     /**
-     * Restore memory of expireTemplate regain this info
+     * Using the {@code template } cache data check for the rest of removing, and recovery
      *
-     * @param template    {@link ExpireTemplate}
-     * @param persistence read file of persistence
-     * @param writePath   persistence write path
-     * @throws PersistenceException Persistence ex
+     * @param template    must not be {@literal null}
+     * @param persistence must not be {@literal null}
+     * @param writePath   must not be {@literal null}
      */
-    public void deserializeWithTemplate(ExpireTemplate<K, V> template, Persistence<K, V> persistence, String writePath) {
-        AssertUtils.Persistence.notNull(template, "ExpireTemplate no be null");
-        AssertUtils.Persistence.notNull(persistence, "Persistence no be null");
-        AssertUtils.Persistence.notNull(writePath, "WritePath no be null");
+    public void deserializeWithTemplate(@NonNull ExpireTemplate template,
+                                        @NonNull Persistence<K, V> persistence,
+                                        @NonNull String writePath) {
+        //current time
         LocalDateTime now = LocalDateTime.now();
         //When the time is equal to or judged failure after now in record time
         if (persistence.getExpire() == null || now.isEqual(persistence.getExpire()) ||
@@ -655,26 +651,25 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
         }
         //save key/value with byte[]
         Entry<K, V> entry = persistence.getEntry();
-        //serializer key restore
-        K key = template.getKeySerializer().deserialize((byte[]) entry.getKey());
-        //serializer value restore
-        V value = template.getValueSerializer().deserialize((byte[]) entry.getValue());
-        //use connection restore byte
-        template.getConnectionFactory().getConnection()
-                .restoreByteType((byte[]) entry.getKey(), (byte[]) entry.getValue());
+        //check entry
+        checkEntry(entry);
         //Remaining time is less than the standard not trigger persistence
-        template.opsForValue().set(key, value,
+        template.opsForValue().set(entry.getKey(), entry.getValue(),
                 condition(now, persistence.getExpire(), entry.getTimeUnit()),
                 entry.getTimeUnit());
         //Print successfully restore cached information
         Console.info("Cache Key [{}] operation has been restored to the memory", entry.getKey());
     }
 
-    @Override
-    protected Long condition(LocalDateTime now, LocalDateTime expire, TimeUnit unit) {
-        AssertUtils.Persistence.notNull(now, "Now no be null");
-        AssertUtils.Persistence.notNull(expire, "Expire no be null");
-        AssertUtils.Persistence.notNull(unit, "Unit no be null");
+    /**
+     * Calculating the cache recovery time remaining with {@code TimeUnit}
+     *
+     * @param now    must not be {@literal null}
+     * @param expire must not be {@literal null}
+     * @param unit   must not be {@literal null}
+     * @return long result
+     */
+    protected Long condition(@NonNull LocalDateTime now, @NonNull LocalDateTime expire, @NonNull TimeUnit unit) {
         long value;
         switch (unit) {
             case SECONDS:
@@ -725,17 +720,13 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
             return new Persistence<>(entry);
         }
 
-        public Persistence<K, V> expireOn(String factoryBeanName) {
-            AssertUtils.Persistence.hasText(factoryBeanName, "factoryBeanName no be blank");
+        public Persistence<K, V> expireOn(@NonNull String factoryBeanName) {
             K key = this.entry.getKey();
             //get template
             ExpireTemplate template = accessToTheCacheTemplate(factoryBeanName);
-            //The underlying the use of basic data types in upper byte type
-            Object deKey = template.getKeySerializer().deserialize((byte[]) key);
-            AssertUtils.Persistence.isTrue(template.exist(deKey),
-                    "Key [" + this.entry.getKey() + "] no exist in cache");
+            AssertUtils.Persistence.isTrue(template.exist(key), "Key [" + key + "] no exist in cache");
             //For the rest of the due millisecond value
-            Long expectedExpiration = template.opsExpirationOperations().getExpectedExpiration(deKey);
+            Long expectedExpiration = template.opsExpirationOperations().getExpectedExpiration(key);
             AssertUtils.Persistence.isTrue(expectedExpiration != null && expectedExpiration != 0,
                     "Expected Expiration null or be zero");
             //give expire
