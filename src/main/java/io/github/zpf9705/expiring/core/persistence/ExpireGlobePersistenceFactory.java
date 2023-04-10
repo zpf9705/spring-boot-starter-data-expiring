@@ -1,6 +1,7 @@
 package io.github.zpf9705.expiring.core.persistence;
 
 import io.github.zpf9705.expiring.util.AssertUtils;
+import io.github.zpf9705.expiring.util.ServiceLoadUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 
@@ -62,10 +63,11 @@ public abstract class ExpireGlobePersistenceFactory {
                 PERSISTENCE_FACTORIES = new ArrayList<>();
             }
             /*
-             * @see ServiceLoader
+             * @see ServiceLoadUtils
              */
-            ServiceLoader<PersistenceFactory> load = ServiceLoader.load(PersistenceFactory.class);
-            load.forEach(factory -> PERSISTENCE_FACTORIES.add(factory));
+            Iterator<PersistenceFactory> factoryIterator =
+                    ServiceLoadUtils.load(PersistenceFactory.class).loadAllSubInstance();
+            factoryIterator.forEachRemaining(factory -> PERSISTENCE_FACTORIES.add(factory));
         }
 
         /**

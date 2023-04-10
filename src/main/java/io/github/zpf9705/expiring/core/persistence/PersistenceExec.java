@@ -16,4 +16,6 @@ import java.lang.annotation.Target;
 public @interface PersistenceExec {
 
     PersistenceExecTypeEnum value();
+
+    Class<? extends PersistenceSolver> shouldSolver() default ExpireBytesPersistenceSolver.class;
 }
