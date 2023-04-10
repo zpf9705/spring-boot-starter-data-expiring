@@ -36,7 +36,8 @@ public abstract class ExpireBytesPersistenceUtils {
         run(() -> {
             AssertUtils.Persistence.hasText(factoryName, "factoryName no be null");
             ExpireByteGlobePersistence put =
-                    ExpireByteGlobePersistence.ofSetBytes(Entry.of(key, value, duration, timeUnit), factoryName);
+                    ExpireByteGlobePersistence
+                            .ofSetBytes(Entry.of(key, value, duration, timeUnit), factoryName);
             //判断是否已经写入
             AssertUtils.Persistence.isTrue(!put.persistenceExist(), "persistence already exist ");
             put.serial();

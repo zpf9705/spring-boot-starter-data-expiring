@@ -173,7 +173,7 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
             return "Open persistence now , but provider factoryClass is null so persistenceRegain failed";
         }
         String clientName = factoryClass.getName();
-        PersistenceFactory factory = ExpireGlobePersistenceFactory.getPersistenceFactory(clientName);
+        PersistenceFactory factory = ExpireGlobePersistenceFactory.getPersistenceFactory(factoryClass);
         if (factory == null) {
             return "Client name [" + clientName + "] persistenceRegain failed";
         }

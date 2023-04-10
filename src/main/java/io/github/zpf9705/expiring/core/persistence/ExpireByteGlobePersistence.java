@@ -8,11 +8,11 @@ import io.github.zpf9705.expiring.core.error.PersistenceException;
 import io.github.zpf9705.expiring.core.logger.Console;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.function.Supplier;
 
 /**
  * Special extend for {@link ExpireSimpleGlobePersistence} with generic {@code byte[]}
@@ -29,10 +29,6 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
         super(persistence, writePath);
     }
 
-    public ExpireByteGlobePersistence(Supplier<Persistence<byte[], byte[]>> persistence, String writePath) {
-        super(persistence, writePath);
-    }
-
     /**
      * Set in cache map {@code ExpireByteGlobePersistence} with {@code Entry<byte[], byte[]>} and {@code FactoryBeanName}
      * Whether need to query in the cache
@@ -43,7 +39,7 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
      */
     public static ExpireByteGlobePersistence ofSetBytes(@NonNull Entry<byte[], byte[]> entry,
                                                         @NonNull String factoryBeanName) {
-        return convert(() -> ofSet(entry, factoryBeanName));
+        return ofSet(ExpireByteGlobePersistence.class, BytePersistence.class, entry, factoryBeanName);
     }
 
     /**
@@ -54,7 +50,7 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
      * @return {@link ExpireByteGlobePersistence}
      */
     public static ExpireByteGlobePersistence ofSetPersistenceBytes(@NonNull BytePersistence persistence) {
-        return convert(() -> ofSetPersistence(persistence));
+        return ofSetPersistence(ExpireByteGlobePersistence.class, persistence);
     }
 
     /**
@@ -65,7 +61,7 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
      * @return {@link ExpireByteGlobePersistence}
      */
     public static ExpireByteGlobePersistence ofGetBytes(byte[] key, byte[] value) {
-        return convert(() -> ofGet(key, value));
+        return ofGet(key, value, ExpireByteGlobePersistence.class);
     }
 
     /**
@@ -88,18 +84,9 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
         return null;
     }
 
-    /**
-     * Convert {@code ExpireSimpleGlobePersistence<byte[],byte[]> simpleGlobePersistence} to {@code ExpireByteGlobePersistence}
-     *
-     * @param simpleGlobePersistence must not be {@literal null}
-     * @return {@link ExpireSimpleGlobePersistence}
-     */
-    public static ExpireByteGlobePersistence convert(@NonNull Supplier<ExpireSimpleGlobePersistence<byte[], byte[]>>
-                                                             simpleGlobePersistence) {
-        if (simpleGlobePersistence.get() == null) {
-            return null;
-        }
-        return (ExpireByteGlobePersistence) simpleGlobePersistence.get();
+    @Override
+    public String getFactoryName() {
+        return ExpireByteGlobePersistence.class.getName();
     }
 
     @Override
@@ -110,7 +97,8 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
         //parse json
         BytePersistence persistence;
         try {
-            persistence = JSONObject.parseObject(json, new TypeReference<BytePersistence>() {});
+            persistence = JSONObject.parseObject(json, new TypeReference<BytePersistence>() {
+            });
         } catch (Exception e) {
             throw new PersistenceException("Buffer data [" + json + " ] parse Persistence error " +
                     "[" + e.getMessage() + "]");
@@ -160,11 +148,20 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
 
         private static final long serialVersionUID = -368192386828860022L;
 
+        public BytePersistence(Entry<byte[], byte[]> entry) {
+            super(entry);
+        }
+
+        public BytePersistence(Entry<byte[], byte[]> entry, String factoryBeanName) {
+            super(entry, factoryBeanName);
+        }
+
         @Override
-        public Persistence<byte[], byte[]> expireOn(@NonNull String factoryBeanName) {
+        public Persistence<byte[], byte[]> expireOn(@Nullable String factoryBeanName) {
+            setFactoryBeanNameAndCheck(factoryBeanName);
             byte[] key = this.getEntry().getKey();
             //get template
-            ExpireTemplate template = accessToTheCacheTemplate(factoryBeanName);
+            ExpireTemplate template = accessToTheCacheTemplate(getFactoryBeanName());
             //The underlying the use of basic data types in upper byte type
             Object deKey = template.getKeySerializer().deserialize(key);
             AssertUtils.Persistence.isTrue(template.exist(deKey),

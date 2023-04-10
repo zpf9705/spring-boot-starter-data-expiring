@@ -2,10 +2,10 @@ package io.github.zpf9705.expiring.core.persistence;
 
 import io.github.zpf9705.expiring.util.AssertUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.NonNull;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -14,43 +14,69 @@ import java.util.stream.Collectors;
  * @author zpf
  * @since 3.0.0
  */
-public class ExpireGlobePersistenceFactory {
+public abstract class ExpireGlobePersistenceFactory {
 
-    public static PersistenceFactory getPersistenceFactory(String clientName) {
-        if (StringUtils.isBlank(clientName)) {
+    /**
+     * The query cache persistent chemical plant
+     *
+     * @param factoryClass factory class
+     * @return implements {@code PersistenceFactory}
+     */
+    public static PersistenceFactory getPersistenceFactory(Class<?> factoryClass) {
+        if (factoryClass == null) {
             return null;
         }
-        return getPersistenceFactoryWithClientName(clientName);
+        return getPersistenceFactoryWithClassName(factoryClass);
     }
 
-    private static PersistenceFactory getPersistenceFactoryWithClientName(String clientName) {
-        PersistenceFactory factory = PersistenceFactoryEnum.findByClientName(clientName);
-        AssertUtils.Persistence.notNull(factory, "Sorry , no found clint name [" + clientName + "] " +
+    /**
+     * The query cache persistent chemical plant with client class name
+     *
+     * @param factoryClass factory class
+     * @return implements {@code PersistenceFactory}
+     */
+    private static PersistenceFactory getPersistenceFactoryWithClassName(@NonNull Class<?> factoryClass) {
+        PersistenceFactory factory = PersistenceFactoryProvider.findByClient(factoryClass);
+        AssertUtils.Persistence.notNull(factory, "Sorry , no found clint name [" + factoryClass.getName() + "] " +
                 "Persistence Factory");
         return factory;
     }
 
-    enum PersistenceFactoryEnum {
+    /**
+     * The query cache persistent chemical plant provider
+     */
+    static class PersistenceFactoryProvider {
 
-        SIMPLE(ExpireSimpleGlobePersistence.INSTANCE);
+        /**
+         * cache factory client
+         */
+        private static List<PersistenceFactory> PERSISTENCE_FACTORIES;
 
-        final PersistenceFactory factory;
+        /**
+         * initialize sign
+         */
+        private static final AtomicBoolean initialize = new AtomicBoolean(false);
 
-        PersistenceFactoryEnum(PersistenceFactory factory) {
-            this.factory = factory;
+        static {
+            if (initialize.compareAndSet(false, true)) {
+                PERSISTENCE_FACTORIES = new ArrayList<>();
+            }
+            /*
+             * @see ServiceLoader
+             */
+            ServiceLoader<PersistenceFactory> load = ServiceLoader.load(PersistenceFactory.class);
+            load.forEach(factory -> PERSISTENCE_FACTORIES.add(factory));
         }
 
-        public PersistenceFactory getFactory() {
-            return factory;
-        }
-
-        private static final List<PersistenceFactory> PERSISTENCE_FACTORIES =
-                Arrays.stream(PersistenceFactoryEnum.values()).map(PersistenceFactoryEnum::getFactory)
-                        .collect(Collectors.toList());
-
-        public static PersistenceFactory findByClientName(String clientName) {
+        /**
+         * According to the class from the cache object to obtain the corresponding factory
+         *
+         * @param factoryClass factory class
+         * @return implements {@code PersistenceFactory}
+         */
+        public static PersistenceFactory findByClient(@NonNull Class<?> factoryClass) {
             return PERSISTENCE_FACTORIES.stream()
-                    .filter(f -> Objects.equals(clientName, f.getFactoryName()))
+                    .filter(f -> Objects.equals(factoryClass.getName(), f.getFactoryName()))
                     .findFirst()
                     .orElse(null);
         }

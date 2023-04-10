@@ -40,8 +40,12 @@ public abstract class ExpirePersistenceUtils {
         //async
         run(() -> {
             AssertUtils.Persistence.hasText(factoryName, "factoryName no be null");
+            @SuppressWarnings("unchecked")
             ExpireSimpleGlobePersistence<K, V> put =
-                    ExpireSimpleGlobePersistence.of(Entry.of(key, value, duration, timeUnit), factoryName);
+                    ExpireSimpleGlobePersistence.ofSet(
+                            ExpireSimpleGlobePersistence.class,
+                            ExpireSimpleGlobePersistence.Persistence.class,
+                            Entry.of(key, value, duration, timeUnit), factoryName);
             //判断是否已经写入
             AssertUtils.Persistence.isTrue(!put.persistenceExist(), "persistence already exist ");
             put.serial();
@@ -61,7 +65,7 @@ public abstract class ExpirePersistenceUtils {
      */
     public static <K, V> void replaceValuePersistence(@NonNull K key, @NonNull V value, @NonNull V newValue) {
         run(() -> {
-            ExpireSimpleGlobePersistence<K, V> replace = ExpireSimpleGlobePersistence.of(key, value);
+            ExpireSimpleGlobePersistence<K, V> replace = ExpireSimpleGlobePersistence.ofGet(key, value,null);
             AssertUtils.Persistence.isTrue(replace.persistenceExist(), "persistence no exist");
             replace.replacePersistence(newValue);
         }, "replacePersistence");
@@ -80,7 +84,7 @@ public abstract class ExpirePersistenceUtils {
     public static <K, V> void replaceDurationPersistence(@NonNull K key, @NonNull V value,
                                                          @NonNull Long duration, @NonNull TimeUnit timeUnit) {
         run(() -> {
-            ExpireSimpleGlobePersistence<K, V> replaceDuration = ExpireSimpleGlobePersistence.of(key, value);
+            ExpireSimpleGlobePersistence<K, V> replaceDuration = ExpireSimpleGlobePersistence.ofGet(key, value,null);
             AssertUtils.Persistence.isTrue(replaceDuration.persistenceExist(), "persistence no exist");
             replaceDuration.setExpirationPersistence(duration, timeUnit);
         }, "setEPersistence");
@@ -96,7 +100,7 @@ public abstract class ExpirePersistenceUtils {
      */
     public static <K, V> void restDurationPersistence(@NonNull K key, @NonNull V value) {
         run(() -> {
-            ExpireSimpleGlobePersistence<K, V> reset = ExpireSimpleGlobePersistence.of(key, value);
+            ExpireSimpleGlobePersistence<K, V> reset = ExpireSimpleGlobePersistence.ofGet(key, value,null);
             AssertUtils.Persistence.isTrue(reset.persistenceExist(), "persistence no exist");
             reset.resetExpirationPersistence();
         }, "restPersistence");
@@ -112,7 +116,7 @@ public abstract class ExpirePersistenceUtils {
      */
     public static <K, V> void removePersistence(@NonNull K key, @NonNull V value) {
         run(() -> {
-            ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.of(key, value);
+            ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.ofGet(key, value,null);
             AssertUtils.Persistence.isTrue(remove.persistenceExist(), "persistence no exist");
             remove.removePersistence();
         }, "removePersistence");
@@ -129,7 +133,7 @@ public abstract class ExpirePersistenceUtils {
     public static <K, V> void removePersistenceWithKeys(@NonNull K... keys) {
         run(() -> {
             for (K key : keys) {
-                ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.of(key);
+                ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.ofGet(key);
                 if (!remove.persistenceExist()) {
                     continue;
                 }
@@ -148,7 +152,7 @@ public abstract class ExpirePersistenceUtils {
     public static <K, V> void removeSimilarKeyPersistence(@NonNull K key) {
         run(() -> {
             AssertUtils.Persistence.notNull(key, "key no be null");
-            List<ExpireSimpleGlobePersistence<K, V>> similar = ExpireSimpleGlobePersistence.ofSimilar(key);
+            List<ExpireSimpleGlobePersistence<K, V>> similar = ExpireSimpleGlobePersistence.ofGetSimilar(key);
             AssertUtils.Persistence.notEmpty(similar, "No found key [" + key + "] similar persistence");
             similar.forEach(s -> {
                 if (s.persistenceExist()) {
