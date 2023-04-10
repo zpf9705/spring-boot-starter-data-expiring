@@ -16,8 +16,8 @@ public abstract class JdkProxy {
      *
      * @param target          target object
      * @param annotationClass annotation class type
-     * @param <A>     target type
-     * @param <T>     bind annotation after handler
+     * @param <A>             target type
+     * @param <T>             bind annotation after handler
      * @return proxy object
      */
     public static <T, A extends Annotation> T createProxy(T target, Class<A> annotationClass) {

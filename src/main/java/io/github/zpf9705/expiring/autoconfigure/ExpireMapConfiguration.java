@@ -10,14 +10,12 @@ import io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfigurat
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfigurationCustomizer;
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionFactory;
 import io.github.zpf9705.expiring.core.ExpireProperties;
-import io.github.zpf9705.expiring.listener.PersistenceExpiringCallback;
 import io.github.zpf9705.expiring.core.logger.Console;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -153,10 +151,9 @@ public class ExpireMapConfiguration extends ExpireConnectionConfiguration implem
             if (target == null) {
                 continue;
             }
-            ExpirationListener listener =
-                    new SpringCglibProxyFactory().proxy(ReflectUtil.newInstance(aClass),
-                            PersistenceExpiringCallback.class);
-            expirationListeners.add(listener);
+            try {
+                expirationListeners.add(ReflectUtil.newInstance(aClass));
+            }catch (Exception ignored){}
         }
         return expirationListeners;
     }

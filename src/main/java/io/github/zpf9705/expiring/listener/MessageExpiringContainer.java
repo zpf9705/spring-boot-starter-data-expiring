@@ -1,5 +1,8 @@
 package io.github.zpf9705.expiring.listener;
 
+import io.github.zpf9705.expiring.core.persistence.ExpireBytesPersistenceSolver;
+import io.github.zpf9705.expiring.core.persistence.PersistenceSolver;
+import io.github.zpf9705.expiring.util.ServiceLoadUtils;
 import net.jodah.expiringmap.ExpirationListener;
 
 /**
@@ -12,7 +15,18 @@ public abstract class MessageExpiringContainer implements ExpirationListener<byt
 
     @Override
     public void expired(byte[] key, byte[] value) {
-        onMessage(Message.serial(key,value));
+        onMessage(Message.serial(key, value));
+        //clean Persistence with key and value
+        cleanPersistence(key,value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void cleanPersistence(byte[] key, byte[] value) {
+        PersistenceSolver<byte[], byte[]> solver = ServiceLoadUtils.load(PersistenceSolver.class)
+                .getSpecifiedServiceBySubClass(ExpireBytesPersistenceSolver.class);
+        if (solver != null) {
+            solver.removePersistence(key, value);
+        }
     }
 
     /**
