@@ -50,7 +50,10 @@ public class ExpireMapConnectionFactory implements ExpireConnectionFactory {
                 .build();
         if (!CollectionUtils.isEmpty(clientConfiguration.getExpirationListeners())) {
             for (ExpirationListener expirationListener : clientConfiguration.getExpirationListeners()) {
+                //sync
                 expiringMap.addExpirationListener(expirationListener);
+                //async
+                expiringMap.addAsyncExpirationListener(expirationListener);
             }
         }
         return JdkProxy.createProxy(

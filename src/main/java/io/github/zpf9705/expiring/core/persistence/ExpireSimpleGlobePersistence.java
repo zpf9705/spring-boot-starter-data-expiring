@@ -385,6 +385,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
      *
      * @param key must not be {@literal null}.
      * @param <K> key generic
+     * @param <G> Inherit generic
      * @return {@link ExpireSimpleGlobePersistence}
      */
     public static <G extends ExpireSimpleGlobePersistence, K> List<G> ofGetSimilar(@NonNull K key) {

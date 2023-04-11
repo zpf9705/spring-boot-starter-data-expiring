@@ -76,16 +76,14 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
     }
 
     @Override
-    public void removePersistenceWithKeys(@NonNull byte[]... keys) {
+    public void removePersistenceWithKey(@NonNull byte[] key) {
         run(() -> {
-            for (byte[] key : keys) {
-                ExpireByteGlobePersistence remove = ExpireByteGlobePersistence.ofGetBytes(key);
-                if (!remove.persistenceExist()) {
-                    continue;
-                }
-                remove.removePersistence();
+            ExpireByteGlobePersistence remove = ExpireByteGlobePersistence.ofGetBytes(key);
+            if (!remove.persistenceExist()) {
+                return;
             }
-        }, "removePersistenceWithKeys");
+            remove.removePersistence();
+        }, "removePersistenceWithKey");
     }
 
     @Override

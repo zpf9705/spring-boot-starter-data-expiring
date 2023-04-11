@@ -76,18 +76,15 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
         }, "removePersistence");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void removePersistenceWithKeys(@NonNull K... keys) {
+    public void removePersistenceWithKey(@NonNull K key) {
         run(() -> {
-            for (K key : keys) {
                 ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.ofGet(key);
                 if (!remove.persistenceExist()) {
-                    continue;
+                    return;
                 }
                 remove.removePersistence();
-            }
-        }, "removePersistenceWithKeys");
+        }, "removePersistenceWithKey");
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.github.zpf9705.expiring.core.persistence;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,7 +34,7 @@ public enum PersistenceExecTypeEnum implements Dispose {
         public void dispose(PersistenceSolver solver, Object[] entry) {
             if (entry.length == lengthDlg) {
                 solver.replaceDurationPersistence(entry[indexOne], entry[indexTwo],
-                                (Long) entry[indexThree], (TimeUnit) entry[indexFour]);
+                        (Long) entry[indexThree], (TimeUnit) entry[indexFour]);
             }
         }
     }, REST_DURATION {
@@ -47,7 +48,11 @@ public enum PersistenceExecTypeEnum implements Dispose {
         @Override
         public void dispose(PersistenceSolver solver, Object[] entry) {
             if (entry.length == lengthSi) {
-                solver.removePersistenceWithKeys(entry[indexOne]);
+                Object o = entry[indexOne];
+                if (o.getClass().isArray()) {
+                    Object[] array = (Object[]) o;
+                    Arrays.stream(array).forEach(solver::removePersistenceWithKey);
+                } else solver.removePersistenceWithKey(o);
             }
         }
     }, REMOVE_TYPE {

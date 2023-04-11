@@ -66,10 +66,9 @@ public interface PersistenceSolver<K, V> {
     /**
      * Remove a {@code key} and {@code value} persistence record
      *
-     * @param keys must not be {@literal null}.
+     * @param key must not be {@literal null}.
      */
-    @SuppressWarnings("unchecked")
-    void removePersistenceWithKeys(@NonNull K... keys);
+    void removePersistenceWithKey(@NonNull K key);
 
     /**
      * Remove a {@code key} Similar  persistence record
