@@ -70,7 +70,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
     public void removePersistence(@NonNull byte[] key, @NonNull byte[] value) {
         run(() -> {
             ExpireByteGlobePersistence remove = ExpireByteGlobePersistence.ofGetBytes(key, value);
-            AssertUtils.Persistence.isTrue(remove.persistenceExist(), "persistence no exist");
+            AssertUtils.Persistence.isTrue(remove.persistenceExist(), "persistence no exist, no repeat del");
             remove.removePersistence();
         }, "removePersistence");
     }

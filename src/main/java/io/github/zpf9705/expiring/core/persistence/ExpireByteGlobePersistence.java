@@ -25,6 +25,10 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
 
     private static final long serialVersionUID = 5518995337588214891L;
 
+    public ExpireByteGlobePersistence() {
+        super();
+    }
+
     public ExpireByteGlobePersistence(Persistence<byte[], byte[]> persistence, String writePath) {
         super(persistence, writePath);
     }
@@ -147,6 +151,10 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
     public static class BytePersistence extends Persistence<byte[], byte[]> {
 
         private static final long serialVersionUID = -368192386828860022L;
+
+        public BytePersistence() {
+            super();
+        }
 
         public BytePersistence(Entry<byte[], byte[]> entry) {
             super(entry);
