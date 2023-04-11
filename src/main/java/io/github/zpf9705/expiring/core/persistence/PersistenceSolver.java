@@ -94,4 +94,11 @@ public interface PersistenceSolver<K, V> {
                 .whenComplete((v, e) -> Console.exceptionOfDebugOrWare(method, e,
                         "Run the cache Persistence method [{}] An exception occurs [{}]"));
     }
+
+    /**
+     * @see PersistenceSolver#removeAllPersistence()
+     */
+    default void delAll() {
+        run(ExpireSimpleGlobePersistence.INSTANCE::removeAllPersistence, "removeAllPersistence");
+    }
 }

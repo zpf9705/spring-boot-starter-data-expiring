@@ -17,13 +17,16 @@ import io.github.zpf9705.expiring.util.AssertUtils;
 import io.reactivex.rxjava3.core.Single;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
+import javax.sound.midi.SysexMessage;
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -52,7 +55,6 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
     private static final long serialVersionUID = 7755214068683107950L;
 
     @Getter
-    @Setter
     private static ExpireProperties cacheProperties;
 
     public static final String PREFIX_BEFORE = ".aof";
@@ -507,8 +509,22 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
         AssertUtils.Persistence.notNull(key, "Key no be null ");
         return cacheProperties.getPersistencePath()
                 //md5 sign to prevent the file name is too long
-                + DigestUtil.md5Hex(key.toString())
+                + DigestUtils.md5Hex(getContentBytes(key))
                 + PREFIX_BEFORE;
+    }
+
+    /**
+     * Get the MD5 encryption byte array
+     *
+     * @param key must not be {@literal null}
+     * @param <K> key generic
+     * @return byte array
+     */
+    static <K> byte[] getContentBytes(@NonNull K key) {
+        if (key instanceof byte[]) {
+            return (byte[]) key;
+        }
+        return key.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     /**
@@ -686,6 +702,11 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
         }
     }
 
+    /**
+     * Get or default with ExpireSimpleGlobePersistence
+     *
+     * @return {@link ExpireSimpleGlobePersistence}
+     */
     public Class<? extends ExpireSimpleGlobePersistence> getGlobePersistenceClass() {
         if (this.globePersistenceClass == null) {
             return ExpireSimpleGlobePersistence.class;
@@ -693,6 +714,11 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
         return this.globePersistenceClass;
     }
 
+    /**
+     * Get or default with Persistence
+     *
+     * @return {@link Persistence}
+     */
     public Class<? extends Persistence> getPersistenceClass() {
         if (this.persistenceClass == null) {
             return Persistence.class;

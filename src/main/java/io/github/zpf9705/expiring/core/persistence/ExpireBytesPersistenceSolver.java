@@ -105,6 +105,6 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
 
     @Override
     public void removeAllPersistence() {
-        run(ExpireSimpleGlobePersistence.INSTANCE::removeAllPersistence, "removeAllPersistence");
+        delAll();
     }
 }

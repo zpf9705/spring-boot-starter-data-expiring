@@ -109,6 +109,6 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
 
     @Override
     public void removeAllPersistence() {
-        run(ExpireSimpleGlobePersistence.INSTANCE::removeAllPersistence, "removeAllPersistence");
+        delAll();
     }
 }

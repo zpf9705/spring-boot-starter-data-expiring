@@ -145,15 +145,13 @@ public abstract class Console {
      */
     public static void exceptionOfDebugOrWare(String target, Throwable ex, String format) {
         if (StringUtils.isBlank(target) || ex == null) {
-            logger.info("debugOrWare no provider info");
             return;
         }
         boolean print = false;
-        Logger log = Console.logger;
-        if (log.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             debug(format, target, ex.getMessage());
             print = true;
-        } else if (log.isWarnEnabled()) {
+        } else if (logger.isWarnEnabled()) {
             warn(format, target, ex.getMessage());
             print = true;
         }
