@@ -21,6 +21,10 @@ public class Application implements ApplicationContextAware {
         Application.context = applicationContext;
     }
 
+    /*
+     * (non-javadoc)
+     * @see org.springframework.context.ApplicationContext#getBean(String)
+     */
     public static Object findBean(String beanName) {
         if (StringUtils.isBlank(beanName)) {
             return null;
@@ -34,6 +38,10 @@ public class Application implements ApplicationContextAware {
         return bean;
     }
 
+    /*
+     * (non-javadoc)
+     * @see org.springframework.context.ApplicationContext#getBean(Class)
+     */
     public static <T> T findBean(Class<T> beanClass) {
         if (beanClass == null) {
             return null;
