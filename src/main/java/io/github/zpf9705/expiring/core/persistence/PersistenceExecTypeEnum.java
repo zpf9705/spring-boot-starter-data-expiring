@@ -64,5 +64,5 @@ public enum PersistenceExecTypeEnum implements Dispose {
                 solver.removeAllPersistence();
             }
         }
-    };
+    }
 }

@@ -1,13 +1,9 @@
 package io.github.zpf9705.expiring.core.persistence;
 
 import cn.hutool.core.io.FileUtil;
-import io.github.zpf9705.expiring.core.error.PersistenceException;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.io.File;
-import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -26,7 +22,7 @@ public abstract class AbstractGlobePersistenceIndicator extends FileUtil impleme
     }
 
     public void deserializeWithPath(@Nullable String path) {
-
+        // do nothing
     }
 
     /**

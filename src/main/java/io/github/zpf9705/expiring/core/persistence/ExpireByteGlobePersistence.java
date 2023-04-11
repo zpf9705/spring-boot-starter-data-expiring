@@ -35,7 +35,7 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
 
     /**
      * Set in cache map {@code ExpireByteGlobePersistence} with {@code Entry<byte[], byte[]>} and {@code FactoryBeanName}
-     * Whether need to query in the cache
+     * Whether you need to query in the cache
      *
      * @param entry           must not be {@literal null}
      * @param factoryBeanName must not be {@literal null}
@@ -75,7 +75,7 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
      * @return {@link ExpireSimpleGlobePersistence}
      */
     public static ExpireByteGlobePersistence ofGetBytes(byte[] key) {
-        return ofGetBytes(key, null);
+        return ofGet(key);
     }
 
     /**
@@ -85,7 +85,7 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
      * @return {@link ExpireSimpleGlobePersistence}
      */
     public static List<ExpireByteGlobePersistence> ofGetSimilarBytes(byte[] key) {
-        return null;
+        return ofGetSimilar(key);
     }
 
     @Override

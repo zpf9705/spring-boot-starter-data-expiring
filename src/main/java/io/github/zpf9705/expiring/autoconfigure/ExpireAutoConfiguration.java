@@ -10,7 +10,6 @@ import io.github.zpf9705.expiring.core.persistence.ExpireGlobePersistenceFactory
 import io.github.zpf9705.expiring.core.persistence.PersistenceFactory;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializerAdapter;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;

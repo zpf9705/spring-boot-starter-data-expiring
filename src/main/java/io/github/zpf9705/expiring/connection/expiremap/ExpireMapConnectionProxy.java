@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The expire - connection broker interface map
+ * The expiry - connection broker interface map
  * Main to Convenient the JDK dynamic proxy approach to the operation of the persistent object
  *
  * @author zpf

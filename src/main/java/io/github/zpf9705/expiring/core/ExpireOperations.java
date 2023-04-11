@@ -2,14 +2,10 @@ package io.github.zpf9705.expiring.core;
 
 
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializer;
-import net.jodah.expiringmap.ExpiringMap;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Template pattern specification interface operation

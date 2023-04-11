@@ -6,7 +6,6 @@ import io.github.zpf9705.expiring.core.logger.Console;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializer;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
 import io.github.zpf9705.expiring.util.AssertUtils;
-import io.reactivex.rxjava3.core.Single;
 import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -17,7 +16,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * <p>
@@ -133,7 +131,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     }
 
     /**
-     * Whether or not the default serializer should be used. If not, any serializers not explicitly
+     * Whether the default serializer should be used. If not, any serializers not explicitly
      * set will remain null and values will not be serialized or deserialized.
      *
      * @param enableDefaultSerializer The above

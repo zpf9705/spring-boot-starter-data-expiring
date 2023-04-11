@@ -1,7 +1,6 @@
 package io.github.zpf9705.expiring.core;
 
 import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
-import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
@@ -22,7 +21,7 @@ public class ExpireAccessor implements InitializingBean {
     }
 
     /**
-     * Get the expire connection factory
+     * Get the expiry connection factory
      *
      * @return The connectionFactory to get.
      */
@@ -31,7 +30,7 @@ public class ExpireAccessor implements InitializingBean {
     }
 
     /**
-     * Set the expire connection factory.
+     * Set the expiry connection factory.
      *
      * @param connectionFactory The connectionFactory to set.
      */

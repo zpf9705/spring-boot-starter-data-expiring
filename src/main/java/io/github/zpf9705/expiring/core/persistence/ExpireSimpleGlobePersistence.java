@@ -4,7 +4,6 @@ import ch.qos.logback.core.util.CloseUtil;
 import cn.hutool.core.exceptions.InvocationTargetRuntimeException;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
-import cn.hutool.crypto.digest.DigestUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
@@ -23,10 +22,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
-import javax.sound.midi.SysexMessage;
 import java.io.*;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -376,10 +373,10 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
      *
      * @param key must not be {@literal null}.
      * @param <K> key generic
-     * @param <V> value generic
+     * @param <G> Inherit generic
      * @return {@link ExpireSimpleGlobePersistence}
      */
-    public static <K, V> ExpireSimpleGlobePersistence<K, V> ofGet(@NonNull K key) {
+    public static <G extends ExpireSimpleGlobePersistence, K> G ofGet(@NonNull K key) {
         return ofGet(key, null, null);
     }
 
@@ -388,12 +385,11 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
      *
      * @param key must not be {@literal null}.
      * @param <K> key generic
-     * @param <V> value generic
      * @return {@link ExpireSimpleGlobePersistence}
      */
-    public static <V, K> List<ExpireSimpleGlobePersistence<K, V>> ofGetSimilar(@NonNull K key) {
+    public static <G extends ExpireSimpleGlobePersistence, K> List<G> ofGetSimilar(@NonNull K key) {
         checkOpenPersistence();
-        List<ExpireSimpleGlobePersistence<K, V>> similar = new ArrayList<>();
+        List<G> similar = new ArrayList<>();
         String rawHash = rawHash(key);
         List<String> similarHashKeys = KEY_VALUE_HASH.keySet().stream()
                 .filter(v -> v.equals(rawHash) || v.startsWith(rawHash) || v.contains(rawHash) || v.endsWith(rawHash))
@@ -406,7 +402,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistence
             if (StringUtils.isNotBlank(hashValue)) {
                 ExpireSimpleGlobePersistence p = CACHE_MAP.get(rawHashComb(si, hashValue));
                 if (p != null) {
-                    similar.add(p);
+                    similar.add((G) p);
                 }
             }
         });

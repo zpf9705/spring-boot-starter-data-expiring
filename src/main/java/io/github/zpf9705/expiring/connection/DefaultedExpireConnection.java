@@ -104,6 +104,7 @@ public interface DefaultedExpireConnection extends ExpireConnection {
     }
 
     @Override
-    default void close() throws Exception {
+    default void close() {
+        throw new UnsupportedOperationException();
     }
 }

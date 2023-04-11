@@ -7,7 +7,7 @@ import org.springframework.core.env.Environment;
 import java.io.PrintStream;
 
 /**
- * Print the expire client banners and version
+ * Print the expiry client banners and version
  *
  * @author zpf
  * @since 2.2.2
@@ -24,7 +24,8 @@ public abstract class ExpireStartUpBanner {
      * @param sourceClass using source class
      * @param printStream print type
      */
-    public static void printBanner(Environment environment, StartUpBanner banner, Class<?> sourceClass,
+    public static void printBanner(@SuppressWarnings("unused") Environment environment,
+                                   StartUpBanner banner, Class<?> sourceClass,
                                    PrintStream printStream) {
         printStream.println(banner.getBanner());
         String version = Version.getVersion(sourceClass);

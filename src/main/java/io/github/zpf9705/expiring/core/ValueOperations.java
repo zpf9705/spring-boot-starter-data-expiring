@@ -14,7 +14,7 @@ public interface ValueOperations<K, V> {
 
     /**
      * Set {@code value} for {@code key}.
-     * There is expire time for the default configuration
+     * There is expiry time for the default configuration
      *
      * @param key   must not be {@literal null}.
      * @param value must not be {@literal null}.

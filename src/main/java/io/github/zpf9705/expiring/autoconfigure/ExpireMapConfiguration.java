@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
-import cn.hutool.aop.proxy.SpringCglibProxyFactory;
 import cn.hutool.core.util.ReflectUtil;
 import io.github.zpf9705.expiring.banner.ExpireMapBanner;
 import io.github.zpf9705.expiring.banner.ExpireStartUpBanner;

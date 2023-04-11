@@ -4,11 +4,9 @@ import cn.hutool.core.io.FileUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.util.Map;
-import java.util.TimeZone;
 
 /**
- * Here is some tips on some of the API support system of Java classes
+ * Here is some tips on some API support system of Java classes
  *
  * @author zpf
  * @since 1.1.4

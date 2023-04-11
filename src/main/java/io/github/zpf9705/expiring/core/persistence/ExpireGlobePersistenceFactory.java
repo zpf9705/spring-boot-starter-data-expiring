@@ -2,12 +2,10 @@ package io.github.zpf9705.expiring.core.persistence;
 
 import io.github.zpf9705.expiring.util.AssertUtils;
 import io.github.zpf9705.expiring.util.ServiceLoadUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 /**
  * Expire Globe Persistence Factory for each client singleton
@@ -67,7 +65,8 @@ public abstract class ExpireGlobePersistenceFactory {
              */
             Iterator<PersistenceFactory> factoryIterator =
                     ServiceLoadUtils.load(PersistenceFactory.class).loadAllSubInstance();
-            factoryIterator.forEachRemaining(factory -> PERSISTENCE_FACTORIES.add(factory));
+            if (factoryIterator != null)
+                factoryIterator.forEachRemaining(factory -> PERSISTENCE_FACTORIES.add(factory));
         }
 
         /**
