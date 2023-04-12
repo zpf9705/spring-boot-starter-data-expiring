@@ -1,5 +1,6 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import io.github.zpf9705.expiring.banner.ExpireMapBanner;
 import io.github.zpf9705.expiring.banner.ExpireStartUpBanner;
@@ -10,6 +11,8 @@ import io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfigurat
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionFactory;
 import io.github.zpf9705.expiring.core.ExpireProperties;
 import io.github.zpf9705.expiring.core.logger.Console;
+import io.github.zpf9705.expiring.listener.ExpiringAsyncListener;
+import io.github.zpf9705.expiring.listener.ExpiringSyncListener;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +33,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Expire connection configuration using ExpireMap {@link net.jodah.expiringmap.ExpiringMap}
@@ -45,6 +49,24 @@ public class ExpireMapConfiguration extends ExpireConnectionConfiguration implem
         EnvironmentAware {
 
     private Environment environment;
+
+    static final String SYNC_SIGN = "SYNC";
+
+    static final String ASYNC_SIGN = "ASYNC";
+
+    static String EXPIRED_METHOD_NAME;
+
+    static final Predicate<Method> METHOD_PREDICATE = (s)-> EXPIRED_METHOD_NAME.equals(s.getName());
+
+    static {
+        /*
+         * Take the default Expiration Listener the class name of the first method
+         */
+        Method[] methods = ExpirationListener.class.getMethods();
+        if (ArrayUtil.isNotEmpty(methods)) {
+            EXPIRED_METHOD_NAME = methods[0].getName();
+        }
+    }
 
     public ExpireMapConfiguration(ExpireProperties properties) {
         super(properties);
@@ -101,15 +123,22 @@ public class ExpireMapConfiguration extends ExpireConnectionConfiguration implem
                             .acquireDefaultExpireTime(expireProperties.getDefaultExpireTime())
                             .acquireDefaultExpireTimeUnit(expireProperties.getDefaultExpireTimeUnit())
                             .acquireDefaultExpirationPolicy(expireProperties.getExpiringMap().getExpirationPolicy());
-            List<ExpirationListener> expirationListener = findExpirationListener();
-            if (!CollectionUtils.isEmpty(expirationListener)) {
-                expirationListener.forEach(builder::addExpiredListener);
+            Map<String, List<ExpirationListener>> listenerMap = findExpirationListener();
+            if (!CollectionUtils.isEmpty(listenerMap)) {
+                List<ExpirationListener> sync = listenerMap.get(SYNC_SIGN);
+                if (!CollectionUtils.isEmpty(sync)) {
+                    sync.forEach(builder::addSyncExpiredListener);
+                }
+                List<ExpirationListener> async = listenerMap.get(ASYNC_SIGN);
+                if (!CollectionUtils.isEmpty(async)) {
+                    async.forEach(builder::addASyncExpiredListener);
+                }
             }
         };
     }
 
     @SuppressWarnings({"rawtypes"})
-    public List<ExpirationListener> findExpirationListener() {
+    public Map<String, List<ExpirationListener>> findExpirationListener() {
         //obtain listing packages path
         String listeningPackages = getProperties().getExpiringMap().getListeningPackages();
         if (StringUtils.isBlank(listeningPackages)) {
@@ -117,7 +146,7 @@ public class ExpireMapConfiguration extends ExpireConnectionConfiguration implem
                     "no provider listening scan path ," +
                             "so ec no can provider binding Expiration Listener !"
             );
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
         //reflection find packages
         Reflections reflections = new Reflections(
@@ -128,32 +157,55 @@ public class ExpireMapConfiguration extends ExpireConnectionConfiguration implem
                 reflections.getSubTypesOf(ExpirationListener.class);
         if (CollectionUtils.isEmpty(subTypesOf)) {
             Console.info(
-                    "no provider implementation ExpiringLoadListener class ," +
-                            "so ec no can provider binding Expiration Listener !"
+                    "No provider implementation ExpiringLoadListener class ," +
+                            "so ec no can provider binding Expiration Listener"
             );
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
-        List<ExpirationListener> expirationListeners = new ArrayList<>();
-        final Predicate<Method> filter = (s) -> "expired".equals(s.getName());
-        for (Class<? extends ExpirationListener> aClass : subTypesOf) {
-            if (Modifier.isAbstract(aClass.getModifiers())) {
+        List<ExpirationListener> sync = new ArrayList<>();
+        List<ExpirationListener> async = new ArrayList<>();
+        Map<String, List<ExpirationListener>> listenerMap = new HashMap<>();
+        for (Class<? extends ExpirationListener> listenerClass : subTypesOf) {
+            if (Modifier.isAbstract(listenerClass.getModifiers())) {
                 continue;
             }
             Method target;
-            if (Arrays.stream(aClass.getMethods()).noneMatch(filter)) {
+            if (Arrays.stream(listenerClass.getMethods()).noneMatch(METHOD_PREDICATE)) {
                 continue;
             } else {
-                target = Arrays.stream(aClass.getMethods()).filter(filter)
+                target = Arrays.stream(listenerClass.getMethods()).filter(METHOD_PREDICATE)
                         .findFirst()
                         .orElse(null);
             }
             if (target == null) {
                 continue;
             }
-            try {
-                expirationListeners.add(ReflectUtil.newInstance(aClass));
-            }catch (Exception ignored){}
+            ExpirationListener listener = doCreateExpirationListener(listenerClass);
+            //Synchronous monitoring is preferred
+            ExpiringSyncListener syncListener = listenerClass.getAnnotation(ExpiringSyncListener.class);
+            if (syncListener == null) {
+                ExpiringAsyncListener asyncListener = listenerClass.getAnnotation(ExpiringAsyncListener.class);
+                if (asyncListener != null) {
+                    async.add(listener);
+                }
+            } else {
+                sync.add(listener);
+            }
         }
-        return expirationListeners;
+        listenerMap.put(SYNC_SIGN, sync);
+        listenerMap.put(ASYNC_SIGN, async);
+        return listenerMap;
+    }
+
+    @SuppressWarnings({"rawtypes"})
+    private ExpirationListener doCreateExpirationListener(Class<? extends ExpirationListener> listenerClass) {
+        if (listenerClass == null) return null;
+        ExpirationListener listener;
+        try {
+            listener = ReflectUtil.newInstance(listenerClass);
+        } catch (Throwable e) {
+            listener = null;
+        }
+        return listener;
     }
 }

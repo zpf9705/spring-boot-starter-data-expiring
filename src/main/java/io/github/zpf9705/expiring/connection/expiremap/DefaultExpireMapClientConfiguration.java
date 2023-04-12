@@ -19,18 +19,21 @@ public class DefaultExpireMapClientConfiguration implements ExpireMapClientConfi
     private final Long defaultExpireTime;
     private final TimeUnit defaultExpireTimeUnit;
     private final ExpirationPolicy expirationPolicy;
-    private final List<ExpirationListener> expirationListeners;
+    private final List<ExpirationListener> syncExpirationListeners;
+    private final List<ExpirationListener> asyncExpirationListeners;
 
     public DefaultExpireMapClientConfiguration(Integer maxSize,
                                                Long defaultExpireTime,
                                                TimeUnit defaultExpireTimeUnit,
                                                ExpirationPolicy expirationPolicy,
-                                               List<ExpirationListener> expirationListeners) {
+                                               List<ExpirationListener> syncExpirationListeners,
+                                               List<ExpirationListener> asyncExpirationListeners) {
         this.maxSize = maxSize;
         this.defaultExpireTime = defaultExpireTime;
         this.defaultExpireTimeUnit = defaultExpireTimeUnit;
         this.expirationPolicy = expirationPolicy;
-        this.expirationListeners = expirationListeners;
+        this.syncExpirationListeners = syncExpirationListeners;
+        this.asyncExpirationListeners = asyncExpirationListeners;
     }
 
     /*
@@ -71,10 +74,19 @@ public class DefaultExpireMapClientConfiguration implements ExpireMapClientConfi
 
     /*
      * (non-Javadoc)
-     * @see io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfiguration#getExpirationListeners()
+     * @see io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfiguration#getSyncExpirationListeners()
      */
     @Override
-    public List<ExpirationListener> getExpirationListeners() {
-        return this.expirationListeners;
+    public List<ExpirationListener> getSyncExpirationListeners() {
+        return this.syncExpirationListeners;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfiguration#getASyncExpirationListeners()
+     */
+    @Override
+    public List<ExpirationListener> getASyncExpirationListeners() {
+        return this.asyncExpirationListeners;
     }
 }

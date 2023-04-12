@@ -48,12 +48,18 @@ public class ExpireMapConnectionFactory implements ExpireConnectionFactory {
                 .expirationPolicy(this.clientConfiguration.getExpirationPolicy())
                 .variableExpiration()
                 .build();
-        if (!CollectionUtils.isEmpty(clientConfiguration.getExpirationListeners())) {
-            for (ExpirationListener expirationListener : clientConfiguration.getExpirationListeners()) {
+        if (!CollectionUtils.isEmpty(clientConfiguration.getSyncExpirationListeners())) {
+            for (ExpirationListener expirationListener : clientConfiguration.getSyncExpirationListeners()) {
                 //sync
                 expiringMap.addExpirationListener(expirationListener);
+
+            }
+        }
+        if (!CollectionUtils.isEmpty(clientConfiguration.getASyncExpirationListeners())){
+            for (ExpirationListener expirationListener : clientConfiguration.getASyncExpirationListeners()) {
                 //async
                 expiringMap.addAsyncExpirationListener(expirationListener);
+
             }
         }
         return JdkProxy.createProxy(
