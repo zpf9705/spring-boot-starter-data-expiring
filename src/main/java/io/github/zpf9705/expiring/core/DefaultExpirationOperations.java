@@ -21,7 +21,8 @@ public class DefaultExpirationOperations<K, V> extends AbstractOperations<K, V> 
     @Override
     public Long getExpiration(K key) {
         byte[] rawKey = this.rawKey(key);
-        return this.execute((connection, f) -> connection.getExpiration(rawKey), true);
+        return this.execute((connection) -> connection.getExpiration(rawKey),
+                false,true);
     }
 
     /*
@@ -31,7 +32,8 @@ public class DefaultExpirationOperations<K, V> extends AbstractOperations<K, V> 
     @Override
     public Long getExpiration(K key, TimeUnit unit) {
         byte[] rawKey = this.rawKey(key);
-        return this.execute((connection, f) -> connection.getExpiration(rawKey, unit), true);
+        return this.execute((connection) -> connection.getExpiration(rawKey, unit),
+                false,true);
     }
 
     /*
@@ -41,7 +43,8 @@ public class DefaultExpirationOperations<K, V> extends AbstractOperations<K, V> 
     @Override
     public Long getExpectedExpiration(K key) {
         byte[] rawKey = this.rawKey(key);
-        return this.execute((connection, f) -> connection.getExpectedExpiration(rawKey), true);
+        return this.execute((connection) -> connection.getExpectedExpiration(rawKey),
+                false,true);
     }
 
     /*
@@ -51,7 +54,8 @@ public class DefaultExpirationOperations<K, V> extends AbstractOperations<K, V> 
     @Override
     public Long getExpectedExpiration(K key, TimeUnit unit) {
         byte[] rawKey = this.rawKey(key);
-        return this.execute((connection, f) -> connection.getExpectedExpiration(rawKey, unit), true);
+        return this.execute((connection) -> connection.getExpectedExpiration(rawKey, unit),
+                false,true);
     }
 
     /*
@@ -61,7 +65,8 @@ public class DefaultExpirationOperations<K, V> extends AbstractOperations<K, V> 
     @Override
     public Boolean setExpiration(K key, Long duration, TimeUnit unit) {
         byte[] rawKey = this.rawKey(key);
-        return this.execute((connection, f) -> connection.setExpiration(rawKey, duration, unit), true);
+        return this.execute((connection) -> connection.setExpiration(rawKey, duration, unit),
+                false,true);
     }
 
     /*
@@ -71,6 +76,7 @@ public class DefaultExpirationOperations<K, V> extends AbstractOperations<K, V> 
     @Override
     public Boolean resetExpiration(K key) {
         byte[] rawKey = this.rawKey(key);
-        return this.execute((connection, f) -> connection.resetExpiration(rawKey), true);
+        return this.execute((connection) -> connection.resetExpiration(rawKey),
+                false,true);
     }
 }

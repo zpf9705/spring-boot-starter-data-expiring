@@ -1,21 +1,26 @@
 package io.github.zpf9705.expiring.core;
 
+import io.github.zpf9705.expiring.command.ExpireKeyCommands;
+import io.github.zpf9705.expiring.connection.ExpireConnection;
 import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
 import io.github.zpf9705.expiring.core.error.OperationsException;
 import io.github.zpf9705.expiring.core.logger.Console;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializer;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
 import io.github.zpf9705.expiring.util.AssertUtils;
+import io.reactivex.rxjava3.core.BackpressureStrategy;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.FlowableOnSubscribe;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import net.jodah.expiringmap.ExpiringMap;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * <p>
@@ -62,6 +67,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     private @Nullable ExpiringSerializer defaultSerializer;
     private boolean enableDefaultSerializer = true;
     private boolean initialized = false;
+    private int errorRetry = 1;
 
     private ExpiringSerializer<K> keySerialize;
     private ExpiringSerializer<V> valueSerialize;
@@ -108,26 +114,71 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     }
 
     @Override
-    public <T> T execute(ExpireValueCallback<T> action, boolean composeException) {
+    public <T> T execute(ExpireValueCallback<T> action, boolean holdFactoryName, boolean composeException) {
+        return execute(action, holdFactoryName, composeException, this.errorRetry);
+    }
 
+    /**
+     * Execute the plan had to adjust parameter calibration
+     *
+     * @param action           Expiry do action
+     * @param retryTime        When exception retry times
+     * @param holdFactoryName  Set template ioc name in hold
+     * @param composeException Whether to merge exception
+     * @param <T>              return paradigm
+     * @return return value be changed
+     */
+    public <T> T execute(ExpireValueCallback<T> action, boolean holdFactoryName, boolean composeException,
+                         int retryTime) {
         AssertUtils.Operation.isTrue(initialized, "Execute must before initialized");
-
-        ExpireConnectionFactory connectionFactory = getConnectionFactory();
-
-        AssertUtils.Operation.notNull(connectionFactory, "ConnectionFactory no be null");
 
         AssertUtils.Operation.hasText(this.factoryBeanName, "FactoryBeanName no be null");
 
-        T result;
-        try {
-            result = action.doInExpire(connectionFactory.getConnection(), this.factoryBeanName);
+        /*
+         * Because may be executed asynchronously, clean up where you need to perform
+         */
+        if (holdFactoryName) ExpireFactoryNameHolder.setFactoryName(this.factoryBeanName);
 
-        } catch (Throwable e) {
-            solverException(e, composeException);
-            result = null;
-        }
+        if (retryTime == 0) retryTime = 1;
 
-        return result;
+        ExpireConnectionFactory factory = getConnectionFactory();
+
+        AssertUtils.Operation.notNull(factory, "ExpireConnectionFactory no be null");
+
+        return execute(action, factory.getConnection(), composeException, retryTime);
+    }
+
+    /**
+     * Unified execute callback scheme, using a {@link io.reactivex.rxjava3.core.Flowable} to perform process monitoring,
+     * once found to have abnormal situation a timely manner according to the number of times for a retry, if still
+     * cannot successfully after retries,will prompt is given
+     *
+     * @param action           Expiry do action
+     * @param connection       Expiry connection
+     * @param retryTime        When exception retry times
+     * @param composeException Whether to merge exception
+     * @param <T>              return paradigm
+     * @return return value be changed
+     */
+    public <T> T execute(ExpireValueCallback<T> action, ExpireConnection connection, boolean composeException,
+                         int retryTime) {
+        /*
+         * The callback encapsulation
+         */
+        Supplier<T> supplierRunner = () -> action.doInExpire(connection);
+        /*
+         * @see io.reactivex.rxjava3.core.Flowable#create(FlowableOnSubscribe, BackpressureStrategy)
+         */
+        return Flowable.<T>create(
+                        click -> {
+                            click.onNext(supplierRunner.get());
+                            click.onComplete();
+                        }, BackpressureStrategy.LATEST)
+                .observeOn(Schedulers.trampoline())
+                .retry(retryTime)
+                // Here are abnormal logger record abnormal and whether the merger
+                .doOnError(e -> handFailException(e, composeException))
+                .blockingSingle();
     }
 
     /**
@@ -138,6 +189,15 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
      */
     public void setEnableDefaultSerializer(boolean enableDefaultSerializer) {
         this.enableDefaultSerializer = enableDefaultSerializer;
+    }
+
+    /**
+     * When you perform logic when an exception occurs retries
+     *
+     * @param errorRetry retry times
+     */
+    public void setErrorRetry(int errorRetry) {
+        this.errorRetry = errorRetry;
     }
 
     /**
@@ -213,9 +273,9 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     @Nullable
     @Override
     public Boolean delete(K key) {
-        Long result = execute((connection, f) -> connection.delete(
+        Long result = execute((connection) -> connection.delete(
                 this.rawKey(key)
-        ), true);
+        ), false, true);
         return result != null && result.intValue() == 1;
     }
 
@@ -225,17 +285,17 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
         if (CollectionUtils.isEmpty(keys)) {
             return 0L;
         }
-        return this.execute((connection, f) -> connection.delete(
+        return this.execute((connection) -> connection.delete(
                 this.rawKeys(keys)
-        ), true);
+        ), false, true);
     }
 
     @Override
     public Map<K, V> deleteType(K key) {
 
-        Map<byte[], byte[]> map = this.execute((connection, f) -> connection.deleteType(
+        Map<byte[], byte[]> map = this.execute((connection) -> connection.deleteType(
                 this.rawKey(key)
-        ), true);
+        ), false, true);
 
         if (CollectionUtils.isEmpty(map)) {
             return Collections.emptyMap();
@@ -251,14 +311,27 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
     @Override
     public Boolean deleteAll() {
-        return this.execute((connection, f) -> connection.deleteAll(), true);
+        return this.execute(ExpireKeyCommands::deleteAll, false, true);
     }
 
     @Override
     public Boolean exist(K key) {
-        return this.execute((connection, f) -> connection.hasKey(
+        return this.execute((connection) -> connection.hasKey(
                 this.rawKey(key)
-        ), true);
+        ), false, true);
+    }
+
+    /**
+     * Merge Print abnormal tip log
+     *
+     * @param e                exception
+     * @param composeException Whether to merge exception
+     */
+    private void handFailException(@NonNull Throwable e, boolean composeException) throws OperationsException {
+        Console.info("Expiry API abnormal operating the callback error [{}]", e.getMessage());
+        if (composeException) {
+            throw new OperationsException(e);
+        }
     }
 
     private byte[] rawKey(K key) {
@@ -283,7 +356,6 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
         for (K key : keys) {
             rawKeys[i++] = rawKey(key);
         }
-
         return rawKeys;
     }
 
@@ -300,19 +372,5 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
             }
         }
         return v;
-    }
-
-    /**
-     * solver exception way
-     *
-     * @param e                exception
-     * @param composeException whether solve exception
-     */
-    public void solverException(Throwable e, boolean composeException) throws OperationsException {
-        AssertUtils.Operation.notNull(e, "Exception handling object information can't be null");
-        Console.info("The cache implementation errors [{}]", e.getMessage());
-        if (composeException) {
-            throw new OperationsException(e);
-        }
     }
 }

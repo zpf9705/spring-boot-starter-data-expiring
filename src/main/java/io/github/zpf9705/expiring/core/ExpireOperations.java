@@ -15,8 +15,18 @@ import java.util.Map;
  **/
 public interface ExpireOperations<K, V> {
 
+    /**
+     * Expire Execute unified call solutions with {@link ExpireValueCallback}
+     * Used here connection factory used for uniform distribution
+     *
+     * @param action           expiry do action must not be {@literal null}.
+     * @param composeException {@literal true} Whether to merge exception
+     * @param holdFactoryName  {@literal true} Set template ioc name in hold
+     * @param <T>              return paradigm
+     * @return return value be changed
+     */
     @Nullable
-    <T> T execute(ExpireValueCallback<T> action, boolean composeException);
+    <T> T execute(ExpireValueCallback<T> action, boolean holdFactoryName, boolean composeException);
 
     /**
      * Delete given {@code key}.

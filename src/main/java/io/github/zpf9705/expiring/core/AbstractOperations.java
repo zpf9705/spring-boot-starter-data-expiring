@@ -26,11 +26,10 @@ public abstract class AbstractOperations<K, V> {
         }
 
         @Override
-        public V doInExpire(ExpireConnection connection, String factoryBeanName) {
+        public V doInExpire(ExpireConnection connection) {
             /*
              * How to have a special transformation of key/value demand, can be operated in this department
              */
-            ExpireFactoryNameHolder.setFactoryName(factoryBeanName);
             byte[] bytes = inExpire(rawKey(this.key), connection);
             return deserializeValue(bytes);
         }
@@ -46,8 +45,8 @@ public abstract class AbstractOperations<K, V> {
     }
 
     @Nullable
-    <T> T execute(ExpireValueCallback<T> callback, boolean composeException) {
-        return template.execute(callback, composeException);
+    <T> T execute(ExpireValueCallback<T> callback, boolean holdFactoryName, boolean composeException) {
+        return template.execute(callback, holdFactoryName, composeException);
     }
 
     /**
