@@ -4,12 +4,17 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * Cache persistence methods defined interfaces
+ * Persistent cache file is written to, change operation methods, such as defining interfaces
  *
  * @author zpf
  * @since 1.1.0
  */
-public interface GlobePersistence<K, V> {
+public interface GlobePersistenceWriteProcess<K, V> {
+
+    /**
+     * Serial cache persistence
+     */
+    void serial();
 
     /**
      * To determine whether a file exists

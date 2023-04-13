@@ -7,12 +7,12 @@ import org.springframework.lang.Nullable;
 import java.io.File;
 
 /**
- * Persistence Cache recovery collection of a variety of ways
+ * Persistence definition method interface file recovery factory, mainly describe the different factory class cache recovery
  *
  * @author zpf
  * @since 3.0.0
  */
-public interface PersistenceFactory {
+public interface PersistenceRenewFactory {
 
     /**
      * Get Factory name

@@ -7,23 +7,13 @@ import java.io.File;
 
 
 /**
- * Here provides a cache persistent {@link ExpireSimpleGlobePersistence} all process
+ * Cache persistence operation file operations abstract classes and provides about persistent files to add and delete functions
+ * The main function of provider comes from {@link cn.hutool.Hutool}
  *
  * @author zpf
  * @since 1.1.0
  */
-public abstract class AbstractGlobePersistenceIndicator extends FileUtil implements PersistenceFactory {
-
-    /**
-     * Serial cache persistence
-     */
-    public void serial() {
-        // do nothing
-    }
-
-    public void deserializeWithPath(@Nullable String path) {
-        // do nothing
-    }
+public abstract class AbstractPersistenceFileManager extends FileUtil {
 
     /**
      * Determine whether the specified file path

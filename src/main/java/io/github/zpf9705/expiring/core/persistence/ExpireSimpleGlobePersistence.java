@@ -46,8 +46,8 @@ import java.util.stream.Collectors;
  * @since 1.1.0
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class ExpireSimpleGlobePersistence<K, V> extends AbstractGlobePersistenceIndicator implements
-        GlobePersistence<K, V>, Serializable {
+public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileManager implements
+        GlobePersistenceWriteProcess<K, V>, PersistenceRenewFactory, Serializable {
 
     private static final long serialVersionUID = 7755214068683107950L;
 

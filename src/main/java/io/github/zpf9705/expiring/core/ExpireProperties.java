@@ -1,11 +1,12 @@
 package io.github.zpf9705.expiring.core;
 
-import io.github.zpf9705.expiring.core.persistence.PersistenceFactory;
+import io.github.zpf9705.expiring.core.persistence.PersistenceRenewFactory;
 import io.github.zpf9705.expiring.util.SystemUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.jodah.expiringmap.ExpirationPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,9 +26,9 @@ public class ExpireProperties {
     private Boolean openPersistence = false;
 
     /**
-     * persistence factory class
+     * Persistence Renew factory class
      */
-    private Class<? extends PersistenceFactory> persistenceFactoryClass;
+    private Class<? extends PersistenceRenewFactory> persistenceFactoryClass;
 
     /**
      * Persistent path

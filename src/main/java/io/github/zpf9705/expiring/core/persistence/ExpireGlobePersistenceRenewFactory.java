@@ -8,12 +8,13 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Expire Globe Persistence Factory for each client singleton
+ * Persistent cache files to restore factory abstract class, through the collection of {@link ServiceLoader}
+ * in the factory,according to the different implementations for recovery plant selection
  *
  * @author zpf
  * @since 3.0.0
  */
-public abstract class ExpireGlobePersistenceFactory {
+public abstract class ExpireGlobePersistenceRenewFactory {
 
     /**
      * The query cache persistent chemical plant
@@ -21,21 +22,21 @@ public abstract class ExpireGlobePersistenceFactory {
      * @param factoryClass factory class
      * @return implements {@code PersistenceFactory}
      */
-    public static PersistenceFactory getPersistenceFactory(Class<?> factoryClass) {
+    public static PersistenceRenewFactory getPersistenceFRenewFactory(Class<?> factoryClass) {
         if (factoryClass == null) {
             return null;
         }
-        return getPersistenceFactoryWithClassName(factoryClass);
+        return getPersistenceFRenewFactoryWithClass(factoryClass);
     }
 
     /**
-     * The query cache persistent chemical plant with client class name
+     * The query cache persistent chemical plant with client class type
      *
      * @param factoryClass factory class
      * @return implements {@code PersistenceFactory}
      */
-    private static PersistenceFactory getPersistenceFactoryWithClassName(@NonNull Class<?> factoryClass) {
-        PersistenceFactory factory = PersistenceFactoryProvider.findByClient(factoryClass);
+    private static PersistenceRenewFactory getPersistenceFRenewFactoryWithClass(@NonNull Class<?> factoryClass) {
+        PersistenceRenewFactory factory = PersistenceFactoryProvider.findRenewFactory(factoryClass);
         AssertUtils.Persistence.notNull(factory, "Sorry , no found clint name [" + factoryClass.getName() + "] " +
                 "Persistence Factory");
         return factory;
@@ -49,7 +50,7 @@ public abstract class ExpireGlobePersistenceFactory {
         /**
          * cache factory client
          */
-        private static List<PersistenceFactory> PERSISTENCE_FACTORIES;
+        private static List<PersistenceRenewFactory> PERSISTENCE_FACTORIES;
 
         /**
          * initialize sign
@@ -63,8 +64,8 @@ public abstract class ExpireGlobePersistenceFactory {
             /*
              * @see ServiceLoadUtils
              */
-            Iterator<PersistenceFactory> factoryIterator =
-                    ServiceLoadUtils.load(PersistenceFactory.class).loadAllSubInstance();
+            Iterator<PersistenceRenewFactory> factoryIterator =
+                    ServiceLoadUtils.load(PersistenceRenewFactory.class).loadAllSubInstance();
             if (factoryIterator != null)
                 factoryIterator.forEachRemaining(factory -> PERSISTENCE_FACTORIES.add(factory));
         }
@@ -75,7 +76,7 @@ public abstract class ExpireGlobePersistenceFactory {
          * @param factoryClass factory class
          * @return implements {@code PersistenceFactory}
          */
-        public static PersistenceFactory findByClient(@NonNull Class<?> factoryClass) {
+        public static PersistenceRenewFactory findRenewFactory(@NonNull Class<?> factoryClass) {
             return PERSISTENCE_FACTORIES.stream()
                     .filter(f -> Objects.equals(factoryClass.getName(), f.getFactoryName()))
                     .findFirst()
