@@ -9,10 +9,10 @@ import java.lang.annotation.Target;
  * Synchronous listener
  * <pre>
  *     {@code
- *     @ExpiringSyncListener
+ *     {@code @ExpiringSyncListener}
  *     public class ExpiringListenerManager extends MessageExpiringContainer {
  *
- *     @Override
+ *     {@code @Override}
  *     public void onMessage(Message message) {
  *         GeneralLog.info("Cache expiration key [{}]", message.getKey());
  *     }
