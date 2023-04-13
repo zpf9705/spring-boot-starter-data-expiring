@@ -5,6 +5,10 @@ import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerialize
 
 /**
  * String-focused extension of Expire Template
+ * <pre>
+ *     {@code
+ *      ExpireTemplate<String, String> = new StringExpireTemplate()}
+ * </pre>
  *
  * @author zpf
  * @since 1.1.0

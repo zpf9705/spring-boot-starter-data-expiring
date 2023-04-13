@@ -4,7 +4,8 @@ import io.github.zpf9705.expiring.connection.ExpireConnection;
 import org.springframework.lang.Nullable;
 
 /**
- * Callback interface for Redis 'low level' code. To be used with {@link ExpireTemplate} execution methods
+ * Callback interface for Redis 'low level' code.
+ * To be used with {@link ExpireTemplate} execution methods
  *
  * @author zpf
  * @since 3.0.0

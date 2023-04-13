@@ -6,7 +6,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
- * Cache expiration project simulation connection accessors ，its performance in the form of a connection factory
+ * Cache expiration project simulation connection accessors ,
+ * its performance in the form of a connection factory
  *
  * @author zpf
  * @since 3.0.0

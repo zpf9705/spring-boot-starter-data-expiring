@@ -7,7 +7,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
 
 /**
- * By {@link ApplicationContextAware} to the spring context, in the injection classes under the environment of use
+ * By {@link ApplicationContextAware} to the spring context,
+ * in the injection classes under the environment of use
  *
  * @author zpf
  * @since 1.1.0

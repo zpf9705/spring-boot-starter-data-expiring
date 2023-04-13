@@ -7,6 +7,18 @@ import java.lang.annotation.Target;
 
 /**
  * Synchronous listener
+ * <pre>
+ *     {@code
+ *     @ExpiringSyncListener
+ *     public class ExpiringListenerManager extends MessageExpiringContainer {
+ *
+ *     @Override
+ *     public void onMessage(Message message) {
+ *         GeneralLog.info("Cache expiration key [{}]", message.getKey());
+ *     }
+ * }
+ *     }
+ * </pre>
  *
  * @author zpf
  * @since 1.1.0

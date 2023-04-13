@@ -11,7 +11,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Connection factory creating {@link ExpireMapConnectionFactory} with {@link ExpireMapClientConfiguration}
+ * Connection factory creating {@link ExpireMapConnectionFactory}
+ * with {@link ExpireMapClientConfiguration}
  *
  * @author zpf
  * @since 3.0.0

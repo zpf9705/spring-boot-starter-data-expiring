@@ -33,10 +33,36 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
- * Expire connection configuration using expireMap {@link net.jodah.expiringmap.ExpiringMap}
+ * Expire connection configuration using expireMap
+ * {@link net.jodah.expiringmap.ExpiringMap}
+ * ------ english introduce -------
+ * Max Size: the maximum length of the map, add the 1001th entry, can lead to the first expired
+ * immediately (even if not to expiration time).
+ * Expiration: expiration time and expired unit, set the expiration time, is permanent.
+ * The use of expiration Policy: expiration policies.
+ * CREATED: when each update element, the countdown reset date.
+ * ACCESSED: in every visit elements, the countdown reset date.
+ * Variable Expiration: allows you to update the Expiration time value, if not set variable Expiration.
+ * Are not allowed to change the expiration time, once the executive change the expiration time
+ * will throw an Unsupported Operation Exception.
+ * Expiration Listener: synchronous expired reminders
+ * Async Expiration Listener: asynchronous expired reminders
+ * Entry Loader: lazy loading, if the key does not exist when calling the get method to create
+ * the default value
+ * ----------------------
+ * ------ 中文 解析 -------
+ * maxSize:map的最大长度,添加第1001个entry时,会导致第1个马上过期(即使没到过期时间)
+ * expiration:过期时间和过期单位,设置过期时间,则永久有效.
+ * expirationPolicy:过期策略的使用
+ * CREATED：  在每次更新元素时，过期倒计时清零
+ * ACCESSED： 在每次访问元素时，过期倒计时清零
+ * variableExpiration:允许更新过期时间值,如果不设置variableExpiration
+ * 不允许更改过期时间,一旦执行更改过期时间的操作则会抛出UnsupportedOperationException异常
+ * expirationListener:同步过期提醒
+ * asyncExpirationListener:异步过期提醒
+ * entryLoader:懒加载,调用get方法时若key不存在创建默认value
  *
  * @author zpf
  * @since 3.0.0

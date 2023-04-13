@@ -27,21 +27,30 @@ import java.io.PrintStream;
 import java.util.List;
 
 /**
- * This autoconfiguration apply to spring boot
- * The automatic assembly provides the cache configuration depends on the class and the realization of the annotation
- * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
- * Here has been configured with key/value pair {@code String , String } {@code  String , Object} Template model
- * You can go to see the specific class {@link ExpireTemplate} {@link StringExpireTemplate}
- * At the same time they also good to operation interface type {@link ValueOperations}
- * At the same time you can use {@link ConfigurationCustomizer} to provide personalized configuration expiring
- * But can be by  {@link ObjectProvider} use an array collection mode faces interface configuration mode
+ * This configuration is dependent on the spring autowire mechanism of the boot
+ * The principle of the automatic assembly depends on spring mechanism of SPI
+ * Specific performance for {@code resources/META-INF/spring.factories}
+ * Show the annotation {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
+ * <p>
+ * Automatic assembly paradigm for here
+ * <pre>
+ *        {@code ExpireTemplate<String, String> = new StringExpireTemplate()}
+ *        {@code ExpireTemplate<String, Object> = new ExpireTemplate()}
+ * </pre>
+ * You can go to see the specific class To learn more
+ * Also provides Jane in operating interface {@link ValueOperations} to simple operations
+ * At the same time you can use {@link ConfigurationCustomizer} to provide personalized
+ * configuration expiring , but can be by  {@link ObjectProvider} use an array collection
+ * mode faces interface configuration mode
+ * <p>
  * Now according to Spring - the boot - starters - data - redis encapsulation mode
  * Open in the form of the client to build Expiring, each is implemented in the client.
  * Such as {@link io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfiguration}
  * All the operation will be placed on the Connection and simulate the join operation
- * Such as {@link io.github.zpf9705.expiring.connection.ExpireConnection} . This layer is {@link net.jodah.expiringmap.ExpiringMap}
- * Additional data on the bottom will adopt a byte type for storage in order to enhance the cache restart recovery
- * After you see this introduce to achieve your business
+ * Such as {@link io.github.zpf9705.expiring.connection.ExpireConnection} .
+ * This layer is {@link net.jodah.expiringmap.ExpiringMap}
+ * Additional data on the bottom will adopt a byte type for storage in order to enhance
+ * the cache restart recovery
  *
  * @author zpf
  * @since 1.1.0
