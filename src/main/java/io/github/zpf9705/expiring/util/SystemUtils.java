@@ -37,7 +37,7 @@ public abstract class SystemUtils {
     }
 
     /**
-     * set system key and value constant or configuration or cache value
+     * Set system key and value constant or configuration or cache value
      *
      * @param key   set a value as a key
      * @param value set a value as a key of value
@@ -51,7 +51,7 @@ public abstract class SystemUtils {
     }
 
     /**
-     * get system key and value constant or configuration or cache value
+     * Get system key and value constant or configuration or cache value
      *
      * @param key value of key
      * @return You call parameter value of key value
@@ -65,7 +65,7 @@ public abstract class SystemUtils {
     }
 
     /**
-     * get current project path
+     * Get current project path
      *
      * @return path
      */
