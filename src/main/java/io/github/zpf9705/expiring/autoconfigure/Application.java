@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
 
 /**
- * Getting late spring context to cache recovery template generic method calls provide lookup
+ * By {@link ApplicationContextAware} to the spring context, in the injection classes under the environment of use
  *
  * @author zpf
  * @since 1.1.0

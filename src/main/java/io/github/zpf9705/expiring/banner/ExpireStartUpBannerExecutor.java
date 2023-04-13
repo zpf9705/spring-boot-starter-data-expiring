@@ -4,15 +4,16 @@ import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiStyle;
 import org.springframework.core.env.Environment;
+
 import java.io.PrintStream;
 
 /**
- * Print the expiry client banners and version
+ * Logo printing practitioner
  *
  * @author zpf
  * @since 2.2.2
  */
-public abstract class ExpireStartUpBanner {
+public abstract class ExpireStartUpBannerExecutor {
 
     private static final int STRAP_LINE_SIZE = 42;
 

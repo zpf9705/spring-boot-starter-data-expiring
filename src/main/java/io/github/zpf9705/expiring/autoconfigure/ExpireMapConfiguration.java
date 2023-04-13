@@ -3,7 +3,7 @@ package io.github.zpf9705.expiring.autoconfigure;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import io.github.zpf9705.expiring.banner.ExpireMapBanner;
-import io.github.zpf9705.expiring.banner.ExpireStartUpBanner;
+import io.github.zpf9705.expiring.banner.ExpireStartUpBannerExecutor;
 import io.github.zpf9705.expiring.banner.StartUpBanner;
 import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
 import io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfiguration;
@@ -36,7 +36,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * Expire connection configuration using ExpireMap {@link net.jodah.expiringmap.ExpiringMap}
+ * Expire connection configuration using expireMap {@link net.jodah.expiringmap.ExpiringMap}
  *
  * @author zpf
  * @since 3.0.0
@@ -56,7 +56,7 @@ public class ExpireMapConfiguration extends ExpireConnectionConfiguration implem
 
     static String EXPIRED_METHOD_NAME;
 
-    static final Predicate<Method> METHOD_PREDICATE = (s)-> EXPIRED_METHOD_NAME.equals(s.getName());
+    static final Predicate<Method> METHOD_PREDICATE = (s) -> EXPIRED_METHOD_NAME.equals(s.getName());
 
     static {
         /*
@@ -77,7 +77,7 @@ public class ExpireMapConfiguration extends ExpireConnectionConfiguration implem
         /*
          * print expire - map version and banner info
          */
-        ExpireStartUpBanner.printBanner(environment, getStartUpBanner(), sourceClass, out);
+        ExpireStartUpBannerExecutor.printBanner(environment, getStartUpBanner(), sourceClass, out);
     }
 
     @Override

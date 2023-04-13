@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
-import io.github.zpf9705.expiring.banner.ExpireStartUpBanner;
+import io.github.zpf9705.expiring.banner.ExpireStartUpBannerExecutor;
 import io.github.zpf9705.expiring.banner.ExpireStarterBanner;
 import io.github.zpf9705.expiring.banner.StartUpBanner;
 import io.github.zpf9705.expiring.banner.Version;
@@ -77,7 +77,7 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
         /*
          * print expire starters version and banner info
          */
-        ExpireStartUpBanner.printBanner(environment, getStartUpBanner(), sourceClass, out);
+        ExpireStartUpBannerExecutor.printBanner(environment, getStartUpBanner(), sourceClass, out);
     }
 
     @Override

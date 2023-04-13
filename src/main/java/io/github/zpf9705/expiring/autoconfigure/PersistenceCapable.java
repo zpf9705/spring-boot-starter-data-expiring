@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
 /**
- * Definition of persistent automatic assembly scheme loading cache to restore some files
+ * Global persistent cache restart recovery method defines the interface to spring bean automated
  *
  * @author zpf
  * @since 3.0.0

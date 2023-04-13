@@ -1,12 +1,12 @@
 package io.github.zpf9705.expiring.banner;
 
 /**
- * Start up banner for this starters
+ * Start up banner for this automatic assembly projects
  *
  * @author zpf
  * @since 3.0.0
  */
-public class ExpireStarterBanner implements StartUpBanner{
+public class ExpireStarterBanner implements StartUpBanner {
 
     private static final String BANNER = "" +
             " ██                          ██                             ██               \n" +

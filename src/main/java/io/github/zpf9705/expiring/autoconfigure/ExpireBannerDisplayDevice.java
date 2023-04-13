@@ -10,9 +10,12 @@ import org.springframework.lang.NonNull;
 import java.io.PrintStream;
 
 /**
- * Banner display interface when the project is started
- * If you rewrite the {@link ExpireBannerDisplayDevice#afterPropertiesSet()}
- * Will need to call {@link ExpireBannerDisplayDevice#printBanner(Environment, Class, PrintStream)} banner information display
+ * Here is the logo printing method for classification of program interface,
+ * mainly through the output of the {@code System} fixed pattern and print in injection class initialization
+ *
+ * <pre>
+ *  If override {@code afterPropertiesSet} need to perform {@code printBanner}
+ * </pre>
  *
  * @author zpf
  * @since 3.0.0
