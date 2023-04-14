@@ -1,8 +1,10 @@
 package io.github.zpf9705.expiring.connection;
 
+import io.github.zpf9705.expiring.util.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.SerializationUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
@@ -15,27 +17,25 @@ import java.util.function.BiPredicate;
 public abstract class AbstractExpireConnection implements DefaultedExpireConnection {
 
     /**
-     * Similar key check function expression
+     * Similar object key and object value  check function expression
      */
-    protected static final BiPredicate<String, String> type_predicate = (serial, simpler) -> {
-        if (StringUtils.isBlank(serial)) {
-            return false;
-        }
-        return serial.equals(simpler) ||
-                serial.startsWith(simpler) ||
-                serial.endsWith(simpler) ||
-                serial.contains(simpler);
-    };
-
-    /**
-     * Similar key deserialize check function expression
-     */
-    protected static final BiFunction<byte[], byte[], Boolean> deserialize = (b, c) -> {
-        Object de = SerializationUtils.deserialize(b);
-        Object ce = SerializationUtils.deserialize(c);
-        if (de != null && ce != null) {
-            return type_predicate.test(de.toString(), ce.toString());
+    private final BiFunction<Object, Object, Boolean> compare = (b, c) -> {
+        if (b != null && c != null) {
+            return ObjectUtils.simplerOfString.test(
+                    ObjectUtils.toStingWithMiddle(b),
+                    ObjectUtils.toStingWithMiddle(c));
         }
         return false;
     };
+
+    /**
+     * Compare with byte[] of similar
+     *
+     * @param compare  byte[] type
+     * @param compare_ byte[] type
+     * @return if {@literal true} prove that similar
+     */
+    public boolean SimilarJudgeOfBytes(byte[] compare, byte[] compare_) {
+        return this.compare.apply(compare, compare_);
+    }
 }

@@ -146,7 +146,7 @@ public class ExpireMapConnection extends AbstractExpireConnection implements Exp
         Map<byte[], byte[]> map = new HashMap<>();
         List<byte[]> delKeys = new ArrayList<>();
         this.expiringMap.forEach((k, v) -> {
-            if (deserialize.apply(k, key)) {
+            if (this.SimilarJudgeOfBytes(k, key)) {
                 map.put(k, v);
                 delKeys.add(k);
             }

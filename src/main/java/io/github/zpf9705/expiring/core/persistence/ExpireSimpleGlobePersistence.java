@@ -2,7 +2,6 @@ package io.github.zpf9705.expiring.core.persistence;
 
 import ch.qos.logback.core.util.CloseUtil;
 import cn.hutool.core.exceptions.InvocationTargetRuntimeException;
-import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -13,6 +12,7 @@ import io.github.zpf9705.expiring.core.ExpireTemplate;
 import io.github.zpf9705.expiring.core.error.PersistenceException;
 import io.github.zpf9705.expiring.core.logger.Console;
 import io.github.zpf9705.expiring.util.AssertUtils;
+import io.github.zpf9705.expiring.util.ObjectUtils;
 import io.reactivex.rxjava3.core.Single;
 import lombok.Getter;
 import lombok.Setter;
@@ -80,6 +80,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     public static final ExpireSimpleGlobePersistence<Object, Object> INSTANCE = new ExpireSimpleGlobePersistence<>();
 
     public static final Map<String, String> KEY_VALUE_HASH = new ConcurrentHashMap<>();
+
+    public static final Map<String, Object> TO_STRING = new ConcurrentHashMap<>();
 
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
@@ -354,7 +356,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         AssertUtils.Persistence.notNull(key, "Key no be null");
         String persistenceKey;
         if (value == null) {
-            String hashKey = rawHash(key);
+            String hashKey = ObjectUtils.rawHashWithType(key);
             String hashValue = KEY_VALUE_HASH.getOrDefault(hashKey, null);
             AssertUtils.Persistence.hasText(hashValue, "Key [" + key + "] no be hash value");
             persistenceKey = rawHashComb(hashKey, hashValue);
@@ -390,24 +392,20 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      */
     public static <G extends ExpireSimpleGlobePersistence, K> List<G> ofGetSimilar(@NonNull K key) {
         checkOpenPersistence();
-        List<G> similar = new ArrayList<>();
-        String rawHash = rawHash(key);
-        List<String> similarHashKeys = KEY_VALUE_HASH.keySet().stream()
-                .filter(v -> v.equals(rawHash) || v.startsWith(rawHash) || v.contains(rawHash) || v.endsWith(rawHash))
-                .collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(similarHashKeys)) {
-            return Collections.emptyList();
-        }
-        similarHashKeys.forEach(si -> {
-            String hashValue = KEY_VALUE_HASH.get(si);
-            if (StringUtils.isNotBlank(hashValue)) {
-                ExpireSimpleGlobePersistence p = CACHE_MAP.get(rawHashComb(si, hashValue));
-                if (p != null) {
-                    similar.add((G) p);
-                }
-            }
-        });
-        return similar;
+        String keySting = ObjectUtils.toStingWithMiddle(key);
+        return ObjectUtils.findStringSimilarElementStream(TO_STRING.keySet(), keySting)
+                .map(toStringKey -> {
+                    G g;
+                    Object keyObj = TO_STRING.get(toStringKey);
+                    String keyHash = ObjectUtils.rawHashWithType(keyObj);
+                    String valueHash = KEY_VALUE_HASH.get(ObjectUtils.rawHashWithType(keyObj));
+                    if (StringUtils.isNotBlank(valueHash)) {
+                        g = (G) CACHE_MAP.get(rawHashComb(keyHash, valueHash));
+                    } else {
+                        g = null;
+                    }
+                    return g;
+                }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**
@@ -545,47 +543,25 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @return hash mark
      */
     static <K, V> String rawHash(@NonNull K key, @NonNull V value) {
-        String rawHashKey = rawHash(key);
+        String rawHashKey = ObjectUtils.rawHashWithType(key);
         String rawHashValue = KEY_VALUE_HASH.get(rawHashKey);
         if (StringUtils.isBlank(rawHashValue)) {
-            rawHashValue = rawHash(value);
+            rawHashValue = ObjectUtils.rawHashWithType(value);
             KEY_VALUE_HASH.putIfAbsent(rawHashKey, rawHashValue);
+            recordContentToKeyString(key);
         }
         return DEALT + rawHashKey + rawHashValue;
     }
 
     /**
-     * Calculate the hash mark
+     * Converts the String mark of key
      *
-     * @param t   must not be {@literal null}.
-     * @param <T> obj generic
-     * @return hash mark
+     * @param key must not be {@literal null}.
+     * @param <K> key generic
+     * @param <V> value generic
      */
-    static <T> String rawHash(@NonNull T t) {
-        int hashcode = 0;
-        String className = t.getClass().getName();
-        if (ArrayUtil.isArray(t)) {
-            if (t instanceof byte[]) {
-                hashcode = Arrays.hashCode((byte[]) t);
-            } else if (t instanceof long[]) {
-                hashcode = Arrays.hashCode((long[]) t);
-            } else if (t instanceof int[]) {
-                hashcode = Arrays.hashCode((int[]) t);
-            } else if (t instanceof char[]) {
-                hashcode = Arrays.hashCode((char[]) t);
-            } else if (t instanceof short[]) {
-                hashcode = Arrays.hashCode((short[]) t);
-            } else if (t instanceof float[]) {
-                hashcode = Arrays.hashCode((float[]) t);
-            } else if (t instanceof double[]) {
-                hashcode = Arrays.hashCode((double[]) t);
-            } else if (t instanceof boolean[]) {
-                hashcode = Arrays.hashCode((boolean[]) t);
-            } else if (t instanceof Object[]) {
-                hashcode = Arrays.hashCode((Object[]) t);
-            }
-        }
-        return hashcode + className;
+    static <K, V> void recordContentToKeyString(@NonNull K key) {
+        TO_STRING.putIfAbsent(ObjectUtils.toStingWithMiddle(key), key);
     }
 
     /**
@@ -732,7 +708,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
             del0(this.writePath);
             //Delete the cache
             CACHE_MAP.remove(rawHash(entry.getKey(), entry.getValue()));
-            KEY_VALUE_HASH.remove(rawHash(entry.getKey()));
+            KEY_VALUE_HASH.remove(ObjectUtils.rawHashWithType(entry.getKey()));
         } finally {
             writeLock.unlock();
         }
