@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 3.0.0
  */
-public class ExpireMapHelper extends AbstractExpireHelper implements ExpireMapHelperProxy {
+public class ExpireMapHelper extends AbstractExpireHelper implements ExpireMapRealHelper {
 
     private final ExpiringMap<byte[], byte[]> expiringMap;
 

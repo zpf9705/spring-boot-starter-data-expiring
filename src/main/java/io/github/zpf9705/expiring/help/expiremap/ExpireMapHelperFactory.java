@@ -21,17 +21,17 @@ public class ExpireMapHelperFactory implements ExpireHelperFactory {
 
     private final ExpireMapClientConfiguration clientConfiguration;
 
-    private final ExpireMapHelperProxy proxy;
+    private final ExpireMapRealHelper helper;
 
     public ExpireMapHelperFactory(@NonNull ExpireMapClientConfiguration clientConfiguration) {
         this.clientConfiguration = clientConfiguration;
-        this.proxy = doCreateExpireMapConnection(this.clientConfiguration);
+        this.helper = doCreateExpireMapHelp(this.clientConfiguration);
     }
 
     @Override
     @NonNull
     public ExpireHelper getHelper() {
-        return this.proxy;
+        return this.helper;
     }
 
     /**
@@ -41,7 +41,7 @@ public class ExpireMapHelperFactory implements ExpireHelperFactory {
      * @return return a {@link ExpireMapHelper}
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public ExpireMapHelperProxy doCreateExpireMapConnection(ExpireMapClientConfiguration clientConfiguration) {
+    public ExpireMapRealHelper doCreateExpireMapHelp(ExpireMapClientConfiguration clientConfiguration) {
         ExpiringMap<byte[], byte[]> expiringMap = ExpiringMap.builder()
                 .maxSize(this.clientConfiguration.getMaxSize())
                 .expiration(this.clientConfiguration.getDefaultExpireTime(),

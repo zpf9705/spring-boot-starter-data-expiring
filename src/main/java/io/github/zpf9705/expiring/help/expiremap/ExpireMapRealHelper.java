@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 3.0.0
  */
-public interface ExpireMapHelperProxy extends ExpireHelper {
+public interface ExpireMapRealHelper extends ExpireHelper {
 
     /**
      * Proxy for {@link net.jodah.expiringmap.ExpiringMap#put(Object, Object)}

@@ -2,7 +2,7 @@ package io.github.zpf9705.expiring.core.persistence;
 
 import io.github.zpf9705.expiring.core.logger.Console;
 import io.github.zpf9705.expiring.core.proxy.JdkProxyInvocationTrace;
-import io.github.zpf9705.expiring.help.expiremap.ExpireMapHelperProxy;
+import io.github.zpf9705.expiring.help.expiremap.ExpireMapRealHelper;
 import io.github.zpf9705.expiring.util.ServiceLoadUtils;
 
 /**
@@ -11,11 +11,11 @@ import io.github.zpf9705.expiring.util.ServiceLoadUtils;
  * @author zpf
  * @since 3.0.0
  */
-public class ExpirePersistenceAfterHandle extends JdkProxyInvocationTrace<ExpireMapHelperProxy, PersistenceExec> {
+public class ExpirePersistenceAfterHandle extends JdkProxyInvocationTrace<ExpireMapRealHelper, PersistenceExec> {
 
     private static final long serialVersionUID = -2346911415600201852L;
 
-    public ExpirePersistenceAfterHandle(ExpireMapHelperProxy target, Class<PersistenceExec> annotationClass) {
+    public ExpirePersistenceAfterHandle(ExpireMapRealHelper target, Class<PersistenceExec> annotationClass) {
         super(target, annotationClass);
     }
 
