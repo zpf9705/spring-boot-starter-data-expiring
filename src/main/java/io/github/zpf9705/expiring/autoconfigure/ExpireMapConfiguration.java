@@ -5,12 +5,12 @@ import cn.hutool.core.util.ReflectUtil;
 import io.github.zpf9705.expiring.banner.ExpireMapBanner;
 import io.github.zpf9705.expiring.banner.ExpireStartUpBannerExecutor;
 import io.github.zpf9705.expiring.banner.StartUpBanner;
-import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
-import io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfiguration;
-import io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfigurationCustomizer;
-import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionFactory;
+import io.github.zpf9705.expiring.help.ExpireHelperFactory;
+import io.github.zpf9705.expiring.help.expiremap.ExpireMapClientConfiguration;
+import io.github.zpf9705.expiring.help.expiremap.ExpireMapClientConfigurationCustomizer;
 import io.github.zpf9705.expiring.core.ExpireProperties;
 import io.github.zpf9705.expiring.core.logger.Console;
+import io.github.zpf9705.expiring.help.expiremap.ExpireMapHelperFactory;
 import io.github.zpf9705.expiring.listener.ExpiringAsyncListener;
 import io.github.zpf9705.expiring.listener.ExpiringSyncListener;
 import net.jodah.expiringmap.ExpirationListener;
@@ -71,7 +71,7 @@ import java.util.function.Predicate;
         proxyBeanMethods = false
 )
 @EnableConfigurationProperties(ExpireProperties.class)
-public class ExpireMapConfiguration extends ExpireConnectionConfiguration implements ExpireBannerDisplayDevice,
+public class ExpireMapConfiguration extends ExpireHelperConfiguration implements ExpireBannerDisplayDevice,
         EnvironmentAware {
 
     private Environment environment;
@@ -130,13 +130,13 @@ public class ExpireMapConfiguration extends ExpireConnectionConfiguration implem
     }
 
     @Bean
-    @ConditionalOnMissingBean({ExpireConnectionFactory.class})
-    public ExpireMapConnectionFactory expireMapConnectionFactory(
+    @ConditionalOnMissingBean({ExpireHelperFactory.class})
+    public ExpireHelperFactory expireMapConnectionFactory(
             ObjectProvider<ExpireMapClientConfigurationCustomizer> buildCustomizer) {
         ExpireMapClientConfiguration.ExpireMapClientConfigurationBuilder builder = ExpireMapClientConfiguration.builder();
         buildCustomizer.orderedStream()
                 .forEach((customizer) -> customizer.customize(builder));
-        return new ExpireMapConnectionFactory(builder.build());
+        return new ExpireMapHelperFactory(builder.build());
     }
 
     @Bean("expireMap::expireMapClientCustomizer")

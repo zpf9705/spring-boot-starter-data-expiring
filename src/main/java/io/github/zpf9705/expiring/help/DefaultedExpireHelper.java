@@ -1,4 +1,4 @@
-package io.github.zpf9705.expiring.connection;
+package io.github.zpf9705.expiring.help;
 
 import org.springframework.lang.Nullable;
 
@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Default Expire Connection for interface
+ * Default Expire Helper for interface
  *
  * @author zpf
  * @since 3.0.0
  */
-public interface DefaultedExpireConnection extends ExpireConnection {
+public interface DefaultedExpireHelper extends ExpireHelper {
 
     @Nullable
     @Override

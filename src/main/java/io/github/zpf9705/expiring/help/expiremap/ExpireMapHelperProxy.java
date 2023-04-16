@@ -1,18 +1,18 @@
-package io.github.zpf9705.expiring.connection.expiremap;
+package io.github.zpf9705.expiring.help.expiremap;
 
-import io.github.zpf9705.expiring.connection.ExpireConnection;
+import io.github.zpf9705.expiring.help.ExpireHelper;
 import org.springframework.lang.Nullable;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The expiry - connection broker interface map main to Convenient the
+ * The expiry Helper broker interface map main to Convenient the
  * JDK dynamic proxy approach to the operation of the persistent object
  *
  * @author zpf
  * @since 3.0.0
  */
-public interface ExpireMapConnectionProxy extends ExpireConnection {
+public interface ExpireMapHelperProxy extends ExpireHelper {
 
     /**
      * Proxy for {@link net.jodah.expiringmap.ExpiringMap#put(Object, Object)}

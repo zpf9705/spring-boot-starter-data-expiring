@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.core;
 
-import io.github.zpf9705.expiring.connection.ExpireConnection;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializer;
+import io.github.zpf9705.expiring.help.ExpireHelper;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
@@ -26,16 +26,16 @@ public abstract class AbstractOperations<K, V> {
         }
 
         @Override
-        public V doInExpire(ExpireConnection connection) {
+        public V doInExpire(ExpireHelper helper) {
             /*
              * How to have a special transformation of key/value demand, can be operated in this department
              */
-            byte[] bytes = inExpire(rawKey(this.key), connection);
+            byte[] bytes = inExpire(rawKey(this.key), helper);
             return deserializeValue(bytes);
         }
 
         @Nullable
-        protected abstract byte[] inExpire(byte[] rawKey, ExpireConnection connection);
+        protected abstract byte[] inExpire(byte[] rawKey, ExpireHelper helper);
     }
 
     final ExpireTemplate<K, V> template;

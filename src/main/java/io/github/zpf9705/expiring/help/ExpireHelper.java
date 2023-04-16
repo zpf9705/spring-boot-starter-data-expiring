@@ -1,17 +1,17 @@
-package io.github.zpf9705.expiring.connection;
+package io.github.zpf9705.expiring.help;
 
 import io.github.zpf9705.expiring.command.ExpireCommands;
 import io.github.zpf9705.expiring.command.ExpireKeyCommands;
 import io.github.zpf9705.expiring.command.ExpireStringCommands;
 
 /**
- * To simulate redis client connection abstract way, carry out a redis - spring encapsulation of learning
+ * To simulate expire client helper abstract way, carry out a redis - spring encapsulation of learning
  * Here will command the classification, respectively for the implementation of the cache to better operation
  *
  * @author zpf
  * @since 3.0.0
  */
-public interface ExpireConnection extends ExpireCommands, AutoCloseable {
+public interface ExpireHelper extends ExpireCommands, AutoCloseable {
 
     /**
      * Get {@link ExpireStringCommands}.

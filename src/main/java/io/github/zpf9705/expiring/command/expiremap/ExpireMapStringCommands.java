@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.command.expiremap;
 
 import io.github.zpf9705.expiring.command.ExpireStringCommands;
-import io.github.zpf9705.expiring.connection.expiremap.ExpireMapConnectionProxy;
+import io.github.zpf9705.expiring.help.expiremap.ExpireMapHelperProxy;
 
 import java.util.concurrent.TimeUnit;
 
@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExpireMapStringCommands implements ExpireStringCommands {
 
-    private final ExpireMapConnectionProxy delegate;
+    private final ExpireMapHelperProxy delegate;
 
-    public ExpireMapStringCommands(ExpireMapConnectionProxy delegate) {
+    public ExpireMapStringCommands(ExpireMapHelperProxy delegate) {
         this.delegate = delegate;
     }
 

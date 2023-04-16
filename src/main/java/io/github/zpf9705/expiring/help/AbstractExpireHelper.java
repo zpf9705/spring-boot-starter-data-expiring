@@ -1,20 +1,16 @@
-package io.github.zpf9705.expiring.connection;
+package io.github.zpf9705.expiring.help;
 
 import io.github.zpf9705.expiring.util.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.SerializationUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
 
 /**
- * Link the abstract template for {@link ExpireConnection}
+ * Link the abstract template for {@link ExpireHelper}
  *
  * @author zpf
  * @since 3.0.0
  */
-public abstract class AbstractExpireConnection implements DefaultedExpireConnection {
+public abstract class AbstractExpireHelper implements DefaultedExpireHelper {
 
     /**
      * Similar object key and object value  check function expression

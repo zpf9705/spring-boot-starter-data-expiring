@@ -4,12 +4,12 @@ import io.github.zpf9705.expiring.banner.ExpireStartUpBannerExecutor;
 import io.github.zpf9705.expiring.banner.ExpireStarterBanner;
 import io.github.zpf9705.expiring.banner.StartUpBanner;
 import io.github.zpf9705.expiring.banner.Version;
-import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
 import io.github.zpf9705.expiring.core.*;
 import io.github.zpf9705.expiring.core.persistence.ExpireGlobePersistenceRenewFactory;
 import io.github.zpf9705.expiring.core.persistence.PersistenceRenewFactory;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializerAdapter;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
+import io.github.zpf9705.expiring.help.ExpireHelperFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,9 +45,9 @@ import java.util.List;
  * <p>
  * Now according to Spring - the boot - starters - data - redis encapsulation mode
  * Open in the form of the client to build Expiring, each is implemented in the client.
- * Such as {@link io.github.zpf9705.expiring.connection.expiremap.ExpireMapClientConfiguration}
- * All the operation will be placed on the Connection and simulate the join operation
- * Such as {@link io.github.zpf9705.expiring.connection.ExpireConnection} .
+ * Such as {@link io.github.zpf9705.expiring.help.expiremap.ExpireMapClientConfiguration}
+ * All the operation will be placed on the Helper and simulate the join operation
+ * Such as {@link io.github.zpf9705.expiring.help.ExpireHelper} .
  * This layer is {@link net.jodah.expiringmap.ExpiringMap}
  * Additional data on the bottom will adopt a byte type for storage in order to enhance
  * the cache restart recovery
@@ -114,9 +114,9 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
 
     @Bean(DEFAULT_SO_TEMPLATE)
     @ConditionalOnMissingBean(name = DEFAULT_SO_TEMPLATE)
-    public ExpireTemplate<String, Object> expireTemplate(ExpireConnectionFactory connectionFactory) {
+    public ExpireTemplate<String, Object> expireTemplate(ExpireHelperFactory helperFactory) {
         ExpireTemplate<String, Object> template = new ExpireTemplate<>();
-        template.setConnectionFactory(connectionFactory);
+        template.setHelperFactory(helperFactory);
         template.setFactoryBeanName(DEFAULT_SO_TEMPLATE);
         template.setKeySerializer(new GenericStringExpiringSerializer());
         template.setValueSerializer(new ExpiringSerializerAdapter<>(Object.class));
@@ -125,9 +125,9 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
 
     @Bean(DEFAULT_SS_TEMPLATE)
     @ConditionalOnMissingBean(name = DEFAULT_SS_TEMPLATE)
-    public StringExpireTemplate stringExpireTemplate(ExpireConnectionFactory connectionFactory) {
+    public StringExpireTemplate stringExpireTemplate(ExpireHelperFactory helperFactory) {
         StringExpireTemplate template = new StringExpireTemplate();
-        template.setConnectionFactory(connectionFactory);
+        template.setHelperFactory(helperFactory);
         template.setFactoryBeanName(DEFAULT_SS_TEMPLATE);
         return template;
     }

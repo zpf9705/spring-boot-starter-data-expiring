@@ -137,8 +137,8 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
         Object key = template.getKeySerializer().deserialize(entry.getKey());
         //serializer value restore
         Object value = template.getValueSerializer().deserialize(entry.getValue());
-        //use connection restore byte
-        template.getConnectionFactory().getConnection()
+        //use help restore byte
+        template.getHelperFactory().getHelper()
                 .restoreByteType(entry.getKey(), entry.getValue());
         //Remaining time is less than the standard not trigger persistence
         template.opsForValue().set(key, value,

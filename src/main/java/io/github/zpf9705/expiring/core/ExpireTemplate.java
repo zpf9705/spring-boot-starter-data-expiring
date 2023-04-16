@@ -1,18 +1,14 @@
 package io.github.zpf9705.expiring.core;
 
 import io.github.zpf9705.expiring.command.ExpireKeyCommands;
-import io.github.zpf9705.expiring.connection.ExpireConnection;
-import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
+import io.github.zpf9705.expiring.core.error.ExpiringException;
 import io.github.zpf9705.expiring.core.error.OperationsException;
 import io.github.zpf9705.expiring.core.logger.Console;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializer;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
+import io.github.zpf9705.expiring.help.ExpireHelper;
+import io.github.zpf9705.expiring.help.ExpireHelperFactory;
 import io.github.zpf9705.expiring.util.AssertUtils;
-import io.reactivex.rxjava3.core.BackpressureStrategy;
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-import net.jodah.expiringmap.ExpiringMap;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -47,7 +43,6 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     private @Nullable ExpiringSerializer defaultSerializer;
     private boolean enableDefaultSerializer = true;
     private boolean initialized = false;
-    private int errorRetry = 1;
 
     private ExpiringSerializer<K> keySerialize;
     private ExpiringSerializer<V> valueSerialize;
@@ -95,70 +90,71 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
     @Override
     public <T> T execute(ExpireValueCallback<T> action, boolean holdFactoryName, boolean composeException) {
-        return execute(action, holdFactoryName, composeException, this.errorRetry);
+        AssertUtils.Operation.isTrue(initialized, "Execute must before initialized");
+        return execute(action, holdFactoryName, composeException, getFactoryBeanName());
     }
 
     /**
      * Execute the plan had to adjust parameter calibration
      *
      * @param action           Expiry do action
-     * @param retryTime        When exception retry times
      * @param holdFactoryName  Set template ioc name in hold
      * @param composeException Whether to merge exception
-     * @param <T>              return paradigm
+     * @param factoryBeanName  Template factory bean name
+     * @param <T>              Return paradigm
      * @return return value be changed
      */
     public <T> T execute(ExpireValueCallback<T> action, boolean holdFactoryName, boolean composeException,
-                         int retryTime) {
-        AssertUtils.Operation.isTrue(initialized, "Execute must before initialized");
+                         String factoryBeanName) {
 
-        AssertUtils.Operation.hasText(this.factoryBeanName, "FactoryBeanName no be null");
+        AssertUtils.Operation.hasText(factoryBeanName, "FactoryBeanName no be null");
 
         /*
          * Because may be executed asynchronously, clean up where you need to perform
          */
-        if (holdFactoryName) ExpireFactoryNameHolder.setFactoryName(this.factoryBeanName);
+        if (holdFactoryName) ExpireFactoryNameHolder.setFactoryName(factoryBeanName);
 
-        if (retryTime == 0) retryTime = 1;
-
-        ExpireConnectionFactory factory = getConnectionFactory();
+        ExpireHelperFactory factory = getHelperFactory();
 
         AssertUtils.Operation.notNull(factory, "ExpireConnectionFactory no be null");
 
-        return execute(action, factory.getConnection(), composeException, retryTime);
+        return execute(action, factory.getHelper(), composeException);
     }
 
     /**
-     * Unified execute callback scheme, using a {@link io.reactivex.rxjava3.core.Flowable} to perform process monitoring,
+     * Unified execute callback scheme, using try catch and handle exception to perform process monitoring,
      * once found to have abnormal situation a timely manner according to the number of times for a retry, if still
      * cannot successfully after retries,will prompt is given
      *
      * @param action           Expiry do action
-     * @param connection       Expiry connection
-     * @param retryTime        When exception retry times
+     * @param helper           Expiry helper
      * @param composeException Whether to merge exception
      * @param <T>              return paradigm
      * @return return value be changed
      */
-    public <T> T execute(ExpireValueCallback<T> action, ExpireConnection connection, boolean composeException,
-                         int retryTime) {
+    public <T> T execute(ExpireValueCallback<T> action, ExpireHelper helper, boolean composeException) {
         /*
          * The callback encapsulation
          */
-        Supplier<T> supplierRunner = () -> action.doInExpire(connection);
-        /*
-         * @see io.reactivex.rxjava3.core.Flowable#create(FlowableOnSubscribe, BackpressureStrategy)
-         */
-        return Flowable.<T>create(
-                        click -> {
-                            click.onNext(supplierRunner.get());
-                            click.onComplete();
-                        }, BackpressureStrategy.LATEST)
-                .observeOn(Schedulers.trampoline())
-                .retry(retryTime)
-                // Here are abnormal logger record abnormal and whether the merger
-                .doOnError(e -> handFailException(e, composeException))
-                .blockingSingle();
+        Supplier<T> supplierRunner = () -> action.doInExpire(helper);
+        //expiry apis runtime exception need throw
+        T value;
+        try {
+            value = supplierRunner.get();
+        } catch (Throwable e) {
+            Console.error("Expiry abnormal operating the callback error [{}]", e.getMessage());
+            if (composeException) {
+                //Deviate from the custom exception exception thrown
+                if (!(e instanceof ExpiringException)) {
+                    throw new OperationsException(e);
+                }
+            }
+            value = null;
+        } finally {
+            //Release the template name of factory
+            ExpireFactoryNameHolder.restFactoryNamedContent();
+        }
+        return value;
     }
 
     /**
@@ -169,15 +165,6 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
      */
     public void setEnableDefaultSerializer(boolean enableDefaultSerializer) {
         this.enableDefaultSerializer = enableDefaultSerializer;
-    }
-
-    /**
-     * When you perform logic when an exception occurs retries
-     *
-     * @param errorRetry retry times
-     */
-    public void setErrorRetry(int errorRetry) {
-        this.errorRetry = errorRetry;
     }
 
     /**
@@ -299,19 +286,6 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
         return this.execute((connection) -> connection.hasKey(
                 this.rawKey(key)
         ), false, true);
-    }
-
-    /**
-     * Merge Print abnormal tip log
-     *
-     * @param e                exception
-     * @param composeException Whether to merge exception
-     */
-    private void handFailException(@NonNull Throwable e, boolean composeException) throws OperationsException {
-        Console.info("Expiry API abnormal operating the callback error [{}]", e.getMessage());
-        if (composeException) {
-            throw new OperationsException(e);
-        }
     }
 
     private byte[] rawKey(K key) {

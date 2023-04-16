@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.core;
 
-import io.github.zpf9705.expiring.connection.ExpireConnection;
+import io.github.zpf9705.expiring.help.ExpireHelper;
 import org.springframework.lang.Nullable;
 
 /**
@@ -14,11 +14,11 @@ public interface ExpireValueCallback<T> {
 
     /**
      * Gets called by {@link ExpireTemplate} with an active Expire connection. Does not need to care about activating or
-     * closing the connection or handling exceptions.
+     * closing the Helper or handling exceptions.
      *
-     * @param connection Expire connection
+     * @param connection Expire Helper
      * @return a result object or {@code null} if none
      */
     @Nullable
-    T doInExpire(ExpireConnection connection);
+    T doInExpire(ExpireHelper connection);
 }

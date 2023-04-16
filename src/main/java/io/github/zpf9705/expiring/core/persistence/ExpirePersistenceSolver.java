@@ -20,10 +20,9 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
     public void putPersistence(@NonNull K key, @NonNull V value,
                                @Nullable Long duration,
                                @Nullable TimeUnit timeUnit) {
-        //get current thread factory name
-        String factoryName = ExpireFactoryNameHolder.getFactoryName();
-        //async
         run(() -> {
+            //get current thread factory name
+            String factoryName = ExpireFactoryNameHolder.getFactoryName();
             AssertUtils.Persistence.hasText(factoryName, "factoryName no be null");
             @SuppressWarnings("unchecked")
             ExpireSimpleGlobePersistence<K, V> put =

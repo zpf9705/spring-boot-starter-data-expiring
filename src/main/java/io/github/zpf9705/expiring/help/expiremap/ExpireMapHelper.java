@@ -1,10 +1,10 @@
-package io.github.zpf9705.expiring.connection.expiremap;
+package io.github.zpf9705.expiring.help.expiremap;
 
 import io.github.zpf9705.expiring.command.ExpireKeyCommands;
 import io.github.zpf9705.expiring.command.ExpireStringCommands;
 import io.github.zpf9705.expiring.command.expiremap.ExpireMapKeyCommands;
 import io.github.zpf9705.expiring.command.expiremap.ExpireMapStringCommands;
-import io.github.zpf9705.expiring.connection.AbstractExpireConnection;
+import io.github.zpf9705.expiring.help.AbstractExpireHelper;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.lang.Nullable;
@@ -13,18 +13,18 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
- * {@code ExpireConnection} implementation of expire_map.
+ * {@code ExpireHelper} implementation of expire map.
  *
  * @author zpf
  * @since 3.0.0
  */
-public class ExpireMapConnection extends AbstractExpireConnection implements ExpireMapConnectionProxy {
+public class ExpireMapHelper extends AbstractExpireHelper implements ExpireMapHelperProxy {
 
     private final ExpiringMap<byte[], byte[]> expiringMap;
 
     private final ExpireMapByteContain contain;
 
-    public ExpireMapConnection(ExpiringMap<byte[], byte[]> expiringMap) {
+    public ExpireMapHelper(ExpiringMap<byte[], byte[]> expiringMap) {
         AssertUtils.Operation.notNull(expiringMap, "ExpiringMap init no be null");
         this.expiringMap = expiringMap;
         this.contain = new ExpireMapByteContain(100);

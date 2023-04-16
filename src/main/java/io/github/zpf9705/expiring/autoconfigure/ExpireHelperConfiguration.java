@@ -3,16 +3,16 @@ package io.github.zpf9705.expiring.autoconfigure;
 import io.github.zpf9705.expiring.core.ExpireProperties;
 
 /**
- * Base Expire connection configuration.
+ * Base Expire helper configuration.
  *
  * @author zpf
  * @since 3.0.0
  */
-public class ExpireConnectionConfiguration {
+public class ExpireHelperConfiguration {
 
     public final ExpireProperties properties;
 
-    public ExpireConnectionConfiguration(ExpireProperties properties) {
+    public ExpireHelperConfiguration(ExpireProperties properties) {
         this.properties = properties;
     }
 

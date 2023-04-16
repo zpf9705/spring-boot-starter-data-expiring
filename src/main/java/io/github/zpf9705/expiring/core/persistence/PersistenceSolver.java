@@ -4,7 +4,6 @@ import io.github.zpf9705.expiring.core.logger.Console;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -89,9 +88,12 @@ public interface PersistenceSolver<K, V> {
      * @param method   method name
      */
     default void run(@NonNull Runnable runnable, @NonNull String method) {
-        CompletableFuture.runAsync(runnable)
-                .whenComplete((v, e) -> Console.exceptionOfDebugOrWare(method, e,
-                        "Run the cache Persistence method [{}] An exception occurs [{}]"));
+        try {
+            runnable.run();
+        } catch (Throwable e) {
+            Console.exceptionOfDebugOrWare(method, e,
+                    "Run the cache Persistence method [{}] An exception occurs [{}]");
+        }
     }
 
     /**

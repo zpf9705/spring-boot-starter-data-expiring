@@ -21,10 +21,10 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
     public void putPersistence(@NonNull byte[] key, @NonNull byte[] value,
                                @Nullable Long duration,
                                @Nullable TimeUnit timeUnit) {
-        //get current thread factory name
-        String factoryName = ExpireFactoryNameHolder.getFactoryName();
-        //async
+
         run(() -> {
+            //get current thread factory name
+            String factoryName = ExpireFactoryNameHolder.getFactoryName();
             AssertUtils.Persistence.hasText(factoryName, "factoryName no be null");
             ExpireByteGlobePersistence put =
                     ExpireByteGlobePersistence
@@ -33,8 +33,6 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
             AssertUtils.Persistence.isTrue(!put.persistenceExist(), "persistence already exist ");
             put.serial();
         }, "putPersistence");
-        //after reset current thread Expire Factory Name
-        ExpireFactoryNameHolder.restFactoryNamedContent();
     }
 
     @Override
