@@ -32,7 +32,7 @@ public final class ExpireMapCenter {
 
     private final ExpireMapByteContain contain;
 
-    public ExpireMapCenter(ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton,
+    private ExpireMapCenter(ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton,
                            ExpireMapByteContain contain) {
         this.solveDifferentialGenericSingleton = solveDifferentialGenericSingleton;
         this.contain = contain;
