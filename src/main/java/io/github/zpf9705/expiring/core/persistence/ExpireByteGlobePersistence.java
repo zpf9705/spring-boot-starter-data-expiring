@@ -6,6 +6,7 @@ import com.alibaba.fastjson.TypeReference;
 import io.github.zpf9705.expiring.core.ExpireTemplate;
 import io.github.zpf9705.expiring.core.error.PersistenceException;
 import io.github.zpf9705.expiring.core.logger.Console;
+import io.github.zpf9705.expiring.help.expiremap.ExpireMapCenter;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -20,7 +21,6 @@ import java.util.*;
  * @author zpf
  * @since 3.0.0
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byte[], byte[]> {
 
     private static final long serialVersionUID = 5518995337588214891L;
@@ -37,13 +37,11 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
      * Set in cache map {@code ExpireByteGlobePersistence} with {@code Entry<byte[], byte[]>} and {@code FactoryBeanName}
      * Whether you need to query in the cache
      *
-     * @param entry           must not be {@literal null}
-     * @param factoryBeanName must not be {@literal null}
+     * @param entry must not be {@literal null}
      * @return {@link ExpireByteGlobePersistence}
      */
-    public static ExpireByteGlobePersistence ofSetBytes(@NonNull Entry<byte[], byte[]> entry,
-                                                        @NonNull String factoryBeanName) {
-        return ofSet(ExpireByteGlobePersistence.class, BytePersistence.class, entry, factoryBeanName);
+    public static ExpireByteGlobePersistence ofSetBytes(@NonNull Entry<byte[], byte[]> entry) {
+        return ofSet(ExpireByteGlobePersistence.class, BytePersistence.class, entry);
     }
 
     /**
@@ -94,31 +92,8 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
     }
 
     @Override
-    public void deserializeWithString(@NonNull StringBuilder buffer) {
-        String json = buffer.toString();
-        //check json
-        AssertUtils.Persistence.isTrue(JSON.isValid(json), "Buffer data [" + json + "] no a valid json");
-        //parse json
-        BytePersistence persistence;
-        try {
-            persistence = JSONObject.parseObject(json, new TypeReference<BytePersistence>() {
-            });
-        } catch (Exception e) {
-            throw new PersistenceException("Buffer data [" + json + " ] parse Persistence error " +
-                    "[" + e.getMessage() + "]");
-        }
-        //No cache in the cache
-        ExpireByteGlobePersistence of = ofSetPersistenceBytes(persistence);
-        AssertUtils.Persistence.notNull(of, "ExpireGlobePersistence no be null");
-        //record [op bean]
-        ExpireTemplate template = accessToTheCacheTemplate(persistence.getFactoryBeanName());
-        this.deserializeWithTemplate(template, persistence, of.getWritePath());
-    }
-
-    @Override
-    public void deserializeWithTemplate(@NonNull ExpireTemplate template,
-                                        @NonNull Persistence<byte[], byte[]> persistence,
-                                        @NonNull String writePath) {
+    public void deserializeWithEntry(@NonNull Persistence<byte[], byte[]> persistence,
+                                     @NonNull String writePath) {
         //current time
         LocalDateTime now = LocalDateTime.now();
         //When the time is equal to or judged failure after now in record time
@@ -133,19 +108,10 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
         Entry<byte[], byte[]> entry = persistence.getEntry();
         //check entry
         checkEntry(entry);
-        //serializer key restore
-        Object key = template.getKeySerializer().deserialize(entry.getKey());
-        //serializer value restore
-        Object value = template.getValueSerializer().deserialize(entry.getValue());
-        //use help restore byte
-        template.getHelperFactory().getHelper()
-                .restoreByteType(entry.getKey(), entry.getValue());
         //Remaining time is less than the standard not trigger persistence
-        template.opsForValue().set(key, value,
+        ExpireMapCenter.getExpireMapCenter().reload(entry.getKey(), entry.getValue(),
                 condition(now, persistence.getExpire(), entry.getTimeUnit()),
                 entry.getTimeUnit());
-        //Print successfully restore cached information
-        Console.info("Cache Key [{}] operation has been restored to the memory", key);
     }
 
     public static class BytePersistence extends Persistence<byte[], byte[]> {
@@ -158,30 +124,6 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
 
         public BytePersistence(Entry<byte[], byte[]> entry) {
             super(entry);
-        }
-
-        public BytePersistence(Entry<byte[], byte[]> entry, String factoryBeanName) {
-            super(entry, factoryBeanName);
-        }
-
-        @Override
-        public Persistence<byte[], byte[]> expireOn(@Nullable String factoryBeanName) {
-            setFactoryBeanNameAndCheck(factoryBeanName);
-            byte[] key = this.getEntry().getKey();
-            //get template
-            ExpireTemplate template = accessToTheCacheTemplate(getFactoryBeanName());
-            //The underlying the use of basic data types in upper byte type
-            Object deKey = template.getKeySerializer().deserialize(key);
-            AssertUtils.Persistence.isTrue(template.exist(deKey),
-                    "Key [" + Arrays.toString(key) + "] no exist in cache");
-            //For the rest of the due millisecond value
-            Long expectedExpiration = template.opsExpirationOperations().getExpectedExpiration(deKey);
-            AssertUtils.Persistence.isTrue(expectedExpiration != null && expectedExpiration != 0,
-                    "Expected Expiration null or be zero");
-            //give expire
-            this.setExpire(LocalDateTime.now().plus(expectedExpiration, ChronoUnit.MILLIS));
-            this.setFactoryBeanName(factoryBeanName);
-            return this;
         }
     }
 }

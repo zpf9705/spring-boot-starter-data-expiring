@@ -46,7 +46,6 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
     private ExpiringSerializer<K> keySerialize;
     private ExpiringSerializer<V> valueSerialize;
-    private String factoryBeanName;
 
     private final ValueOperations<K, V> valueOperations = new DefaultValueOperations<>(this);
     private final ExpirationOperations<K, V> expirationOperations = new DefaultExpirationOperations<>(this);
@@ -89,32 +88,21 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     }
 
     @Override
-    public <T> T execute(ExpireValueCallback<T> action, boolean holdFactoryName, boolean composeException) {
+    public <T> T execute(ExpireValueCallback<T> action, boolean composeException) {
         AssertUtils.Operation.isTrue(initialized, "Execute must before initialized");
-        return execute(action, holdFactoryName, composeException, getFactoryBeanName());
+        return execute(action, getHelperFactory(), composeException);
     }
 
     /**
      * Execute the plan had to adjust parameter calibration
      *
      * @param action           Expiry do action
-     * @param holdFactoryName  Set template ioc name in hold
+     * @param factory          help factory
      * @param composeException Whether to merge exception
-     * @param factoryBeanName  Template factory bean name
      * @param <T>              Return paradigm
      * @return return value be changed
      */
-    public <T> T execute(ExpireValueCallback<T> action, boolean holdFactoryName, boolean composeException,
-                         String factoryBeanName) {
-
-        AssertUtils.Operation.hasText(factoryBeanName, "FactoryBeanName no be null");
-
-        /*
-         * Because may be executed asynchronously, clean up where you need to perform
-         */
-        if (holdFactoryName) ExpireFactoryNameHolder.setFactoryName(factoryBeanName);
-
-        ExpireHelperFactory factory = getHelperFactory();
+    public <T> T execute(ExpireValueCallback<T> action, ExpireHelperFactory factory, boolean composeException) {
 
         AssertUtils.Operation.notNull(factory, "ExpireConnectionFactory no be null");
 
@@ -150,9 +138,6 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
                 }
             }
             value = null;
-        } finally {
-            //Release the template name of factory
-            ExpireFactoryNameHolder.restFactoryNamedContent();
         }
         return value;
     }
@@ -165,24 +150,6 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
      */
     public void setEnableDefaultSerializer(boolean enableDefaultSerializer) {
         this.enableDefaultSerializer = enableDefaultSerializer;
-    }
-
-    /**
-     * setting factory bean name
-     *
-     * @param factoryBeanName ioc bean name
-     */
-    public void setFactoryBeanName(String factoryBeanName) {
-        this.factoryBeanName = factoryBeanName;
-    }
-
-    /**
-     * get factory bean name
-     *
-     * @return ioc bean name
-     */
-    public String getFactoryBeanName() {
-        return this.factoryBeanName;
     }
 
     /**
@@ -242,7 +209,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     public Boolean delete(K key) {
         Long result = execute((connection) -> connection.delete(
                 this.rawKey(key)
-        ), false, true);
+        ), true);
         return result != null && result.intValue() == 1;
     }
 
@@ -254,7 +221,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
         }
         return this.execute((connection) -> connection.delete(
                 this.rawKeys(keys)
-        ), false, true);
+        ), true);
     }
 
     @Override
@@ -262,7 +229,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
         Map<byte[], byte[]> map = this.execute((connection) -> connection.deleteType(
                 this.rawKey(key)
-        ), false, true);
+        ), true);
 
         if (CollectionUtils.isEmpty(map)) {
             return Collections.emptyMap();
@@ -278,14 +245,14 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
     @Override
     public Boolean deleteAll() {
-        return this.execute(ExpireKeyCommands::deleteAll, false, true);
+        return this.execute(ExpireKeyCommands::deleteAll, true);
     }
 
     @Override
     public Boolean exist(K key) {
         return this.execute((connection) -> connection.hasKey(
                 this.rawKey(key)
-        ), false, true);
+        ), true);
     }
 
     private byte[] rawKey(K key) {

@@ -117,7 +117,6 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
     public ExpireTemplate<String, Object> expireTemplate(ExpireHelperFactory helperFactory) {
         ExpireTemplate<String, Object> template = new ExpireTemplate<>();
         template.setHelperFactory(helperFactory);
-        template.setFactoryBeanName(DEFAULT_SO_TEMPLATE);
         template.setKeySerializer(new GenericStringExpiringSerializer());
         template.setValueSerializer(new ExpiringSerializerAdapter<>(Object.class));
         return template;
@@ -128,7 +127,6 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
     public StringExpireTemplate stringExpireTemplate(ExpireHelperFactory helperFactory) {
         StringExpireTemplate template = new StringExpireTemplate();
         template.setHelperFactory(helperFactory);
-        template.setFactoryBeanName(DEFAULT_SS_TEMPLATE);
         return template;
     }
 

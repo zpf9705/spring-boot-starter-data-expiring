@@ -21,9 +21,8 @@ public class Entry<K, V> implements Serializable {
     private Long duration;
     private TimeUnit timeUnit;
 
-    public boolean ofDuration() {
-        return (duration != null && duration != 0L)
-                && timeUnit != null;
+    public boolean haveDuration() {
+        return duration != null && duration != 0L && timeUnit != null;
     }
 
     public Entry(K key, V value) {

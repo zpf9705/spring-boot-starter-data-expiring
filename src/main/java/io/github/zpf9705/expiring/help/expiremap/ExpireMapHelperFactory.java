@@ -5,10 +5,7 @@ import io.github.zpf9705.expiring.core.persistence.PersistenceExec;
 import io.github.zpf9705.expiring.core.proxy.JdkProxy;
 import io.github.zpf9705.expiring.help.ExpireHelper;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
-import net.jodah.expiringmap.ExpirationListener;
-import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.lang.NonNull;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Connection factory creating {@link ExpireMapHelperFactory}
@@ -19,13 +16,10 @@ import org.springframework.util.CollectionUtils;
  */
 public class ExpireMapHelperFactory implements ExpireHelperFactory {
 
-    private final ExpireMapClientConfiguration clientConfiguration;
-
-    private final ExpireMapRealHelper helper;
+    private final ExpireMapHelper helper;
 
     public ExpireMapHelperFactory(@NonNull ExpireMapClientConfiguration clientConfiguration) {
-        this.clientConfiguration = clientConfiguration;
-        this.helper = doCreateExpireMapHelp(this.clientConfiguration);
+        this.helper = doCreateExpireMapHelp(clientConfiguration);
     }
 
     @Override
@@ -40,30 +34,12 @@ public class ExpireMapHelperFactory implements ExpireHelperFactory {
      * @param clientConfiguration {@link ExpireMapClientConfiguration}
      * @return return a {@link ExpireMapHelper}
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public ExpireMapRealHelper doCreateExpireMapHelp(ExpireMapClientConfiguration clientConfiguration) {
-        ExpiringMap<byte[], byte[]> expiringMap = ExpiringMap.builder()
-                .maxSize(this.clientConfiguration.getMaxSize())
-                .expiration(this.clientConfiguration.getDefaultExpireTime(),
-                        this.clientConfiguration.getDefaultExpireTimeUnit())
-                .expirationPolicy(this.clientConfiguration.getExpirationPolicy())
-                .variableExpiration()
-                .build();
-        if (!CollectionUtils.isEmpty(clientConfiguration.getSyncExpirationListeners())) {
-            for (ExpirationListener expirationListener : clientConfiguration.getSyncExpirationListeners()) {
-                //sync
-                expiringMap.addExpirationListener(expirationListener);
-
-            }
-        }
-        if (!CollectionUtils.isEmpty(clientConfiguration.getASyncExpirationListeners())){
-            for (ExpirationListener expirationListener : clientConfiguration.getASyncExpirationListeners()) {
-                //async
-                expiringMap.addAsyncExpirationListener(expirationListener);
-
-            }
-        }
-        return JdkProxy.createProxy(
-                new ExpirePersistenceAfterHandle(new ExpireMapHelper(expiringMap), PersistenceExec.class));
+    public ExpireMapHelper doCreateExpireMapHelp(ExpireMapClientConfiguration clientConfiguration) {
+        ExpirePersistenceAfterHandle afterHandle = new ExpirePersistenceAfterHandle(
+                new ExpireMapRealHelper(
+                        () -> ExpireMapCenter.singletonWithConfiguration(clientConfiguration)
+                ), PersistenceExec.class
+        );
+        return JdkProxy.createProxy(afterHandle);
     }
 }

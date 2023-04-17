@@ -1,165 +1,269 @@
 package io.github.zpf9705.expiring.help.expiremap;
 
-import io.github.zpf9705.expiring.help.ExpireHelper;
+import io.github.zpf9705.expiring.command.ExpireKeyCommands;
+import io.github.zpf9705.expiring.command.ExpireStringCommands;
+import io.github.zpf9705.expiring.command.expiremap.ExpireMapKeyCommands;
+import io.github.zpf9705.expiring.command.expiremap.ExpireMapStringCommands;
+import io.github.zpf9705.expiring.core.error.OperationsException;
+import io.github.zpf9705.expiring.help.AbstractExpireHelper;
+import net.jodah.expiringmap.ExpiringMap;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import java.util.Map;
+
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
- * The expiry Helper broker interface map main to Convenient the
- * JDK dynamic proxy approach to the operation of the persistent object
+ * {@code ExpireMapRealHelper} implementation of ExpireMapHelper.
  *
  * @author zpf
  * @since 3.0.0
  */
-public interface ExpireMapRealHelper extends ExpireHelper {
+public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireMapHelper {
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#put(Object, Object)}
-     *
-     * @param key   must not be {@literal null}
-     * @param value must not be {@literal null}
-     * @return set result
+    private final ExpireMapCenter center;
+
+    public ExpireMapRealHelper(@NonNull Supplier<ExpireMapCenter> centerSupplier) {
+        this.center = centerSupplier.get();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see io.github.zpf9705.expiring.connection.ExpireConnection#stringCommands()
      */
-    Boolean put(byte[] key, byte[] value);
+    @Override
+    public ExpireStringCommands stringCommands() {
+        return new ExpireMapStringCommands(this);
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#put(Object, Object, long, TimeUnit)}}
-     *
-     * @param key      must not be {@literal null}
-     * @param value    must not be {@literal null}
-     * @param duration must not be {@literal null}
-     * @param unit     must not be {@literal null}
-     * @return set result
+    /*
+     * (non-Javadoc)
+     * @see io.github.zpf9705.expiring.connection.ExpireConnection#keyCommands()
      */
-    Boolean putDuration(byte[] key, byte[] value, Long duration, TimeUnit unit);
+    @Override
+    public ExpireKeyCommands keyCommands() {
+        return new ExpireMapKeyCommands(this);
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#putIfAbsent(Object, Object)}}
-     *
-     * @param key   must not be {@literal null}
-     * @param value must not be {@literal null}
-     * @return set result
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#put(Object, Object)
      */
-    Boolean putIfAbsent(byte[] key, byte[] value);
+    @Override
+    public Boolean put(byte[] key, byte[] value) {
+        contain().addBytes(key, value);
+        expire().put(key, value);
+        return true;
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#put(Object, Object, long, TimeUnit)}}
-     *
-     * @param key      must not be {@literal null}
-     * @param value    must not be {@literal null}
-     * @param duration must not be {@literal null}
-     * @param unit     must not be {@literal null}
-     * @return set result
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#put(Object, Object, long, TimeUnit)
      */
-    Boolean putIfAbsentDuration(byte[] key, byte[] value, Long duration, TimeUnit unit);
+    @Override
+    public Boolean putDuration(byte[] key, byte[] value, Long duration, TimeUnit unit) {
+        contain().addBytes(key, value);
+        expire().put(key, value, duration, unit);
+        return true;
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#get(Object)}
-     *
-     * @param key must not be {@literal null}
-     * @return key in value
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#putIfAbsent(Object, Object)
      */
-    byte[] getVal(byte[] key);
+    @Override
+    public Boolean putIfAbsent(byte[] key, byte[] value) {
+        if (contain().existKey(key)) return false;
+        contain().addBytes(key, value);
+        return expire().put(key, value) == null;
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#replace(Object, Object)}
-     *
-     * @param key      must not be {@literal null}
-     * @param newValue must not be {@literal null}
-     * @return The old value is replaced
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#put(Object, Object)
+     * @see net.jodah.expiringmap.ExpiringMap#setExpiration(Object, long, TimeUnit)
      */
-    byte[] replace(byte[] key, byte[] newValue);
+    @Override
+    public Boolean putIfAbsentDuration(byte[] key, byte[] value, Long duration, TimeUnit unit) {
+        if (contain().existKey(key)) return false;
+        contain().addBytes(key, value);
+        return expire().put(key, value, duration, unit) == null;
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#remove(Object)}
-     *
-     * @param keys must not be {@literal null}
-     * @return deleted number
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#get(Object)
+     */
+    @Override
+    public byte[] getVal(byte[] key) {
+        byte[] simpleBytesKey = contain().getSimilarBytesForKey(key);
+        if (simpleBytesKey == null) return null;
+        return expire().get(simpleBytesKey);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#replace(Object, Object)
+     */
+    @Override
+    public byte[] replace(byte[] key, byte[] newValue) {
+        byte[] similarKey = contain().getSimilarBytesForKey(key);
+        if (similarKey == null) return null;
+        contain().put(similarKey, newValue);
+        return expire().replace(similarKey, newValue);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#remove(Object)
      */
     @Nullable
-    Long deleteReturnSuccessNum(byte[]... keys);
+    @Override
+    public Long deleteReturnSuccessNum(byte[]... keys) {
+        long count = 0L;
+        for (byte[] key : keys) {
+            byte[] similarKey = contain().getSimilarBytesForKey(key);
+            if (similarKey == null) {
+                continue;
+            }
+            contain().remove(similarKey);
+            if (expire().remove(similarKey) != null) {
+                count++;
+            }
+        }
+        return count;
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#remove(Object)}}
-     *
-     * @param key must not be {@literal null}
-     * @return removed key/value
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#remove(Object, Object)
      */
-    Map<byte[], byte[]> deleteSimilarKey(byte[] key);
+    @Override
+    public Map<byte[], byte[]> deleteSimilarKey(byte[] key) {
+        Map<byte[], byte[]> map = new HashMap<>();
+        List<byte[]> delKeys = new ArrayList<>();
+        expire().forEach((k, v) -> {
+            if (this.SimilarJudgeOfBytes(k, key)) {
+                map.put(k, v);
+                delKeys.add(k);
+            }
+        });
+        delKeys.forEach(expire()::remove);
+        return map;
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#clear()}
-     *
-     * @return clear result
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#clear()
      */
-    Boolean reboot();
+    @Override
+    public Boolean reboot() {
+        contain().clear();
+        expire().clear();
+        return true;
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#containsKey(Object)}
-     *
-     * @param key must not be {@literal null}
-     * @return contains result
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#containsKey(Object)
      */
-    Boolean containsKey(byte[] key);
+    @Override
+    public Boolean containsKey(byte[] key) {
+        key = contain().getSimilarBytesForKey(key);
+        if (key == null) return false;
+        return expire().containsKey(key);
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#containsValue(Object)}}
-     *
-     * @param value must not be {@literal null}
-     * @return contains result
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#containsValue(Object)
      */
-    Boolean containsValue(byte[] value);
+    @Override
+    public Boolean containsValue(byte[] value) {
+        value = contain().getSimilarBytesForValue(value);
+        if (value == null) return false;
+        return expire().containsValue(value);
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#getExpiration(Object)}
-     *
-     * @param key must not be {@literal null}
-     * @return Set the time with key
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#getExpiration(Object)
      */
-    Long getExpirationWithKey(byte[] key);
+    @Override
+    public Long getExpirationWithKey(byte[] key) {
+        key = contain().getSimilarBytesForKey(key);
+        if (key == null) return null;
+        return expire().getExpiration(key);
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#getExpiration(Object)}}
-     *
-     * @param key  must not be {@literal null}
-     * @param unit must not be {@literal null}
-     * @return Set the time with unit
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#getExpiration(Object)
      */
-    Long getExpirationWithUnit(byte[] key, TimeUnit unit);
+    @Override
+    public Long getExpirationWithUnit(byte[] key, TimeUnit unit) {
+        Long expiration = this.getExpirationWithKey(key);
+        if (expiration == null) return null;
+        return TimeUnit.MICROSECONDS.convert(expiration, unit);
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#getExpectedExpiration(Object)}}
-     *
-     * @param key must not be {@literal null}
-     * @return For the rest with key
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#getExpectedExpiration(Object)
      */
-    Long getExpectedExpirationWithKey(byte[] key);
+    @Override
+    public Long getExpectedExpirationWithKey(byte[] key) {
+        key = contain().getSimilarBytesForKey(key);
+        if (key == null) return null;
+        return expire().getExpectedExpiration(key);
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#getExpectedExpiration(Object)}}
-     *
-     * @param key  must not be {@literal null}
-     * @param unit must not be {@literal null}
-     * @return For the rest with unit
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#getExpectedExpiration(Object)
      */
-    Long getExpectedExpirationWithUnit(byte[] key, TimeUnit unit);
+    @Override
+    public Long getExpectedExpirationWithUnit(byte[] key, TimeUnit unit) {
+        Long expectedExpiration = this.getExpectedExpirationWithKey(key);
+        if (expectedExpiration == null) return null;
+        return TimeUnit.MICROSECONDS.convert(expectedExpiration, unit);
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#setExpiration(Object, long, TimeUnit)}
-     *
-     * @param key      must not be {@literal null}
-     * @param duration must not be {@literal null}
-     * @param timeUnit must not be {@literal null}
-     * @return replace duration result
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#setExpiration(Object, long, TimeUnit)
      */
-    Boolean setExpirationDuration(byte[] key, Long duration, TimeUnit timeUnit);
+    @Override
+    public Boolean setExpirationDuration(byte[] key, Long duration, TimeUnit timeUnit) {
+        key = contain().getSimilarBytesForKey(key);
+        if (key == null) return false;
+        expire().setExpiration(key, duration, timeUnit);
+        return true;
+    }
 
-    /**
-     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#resetExpiration(Object)}
-     *
-     * @param key must not be {@literal null}
-     * @return rest result
+    /*
+     * (non-Javadoc)
+     * @see net.jodah.expiringmap.ExpiringMap#resetExpiration(Object)
      */
-    Boolean resetExpirationWithKey(byte[] key);
+    @Override
+    public Boolean resetExpirationWithKey(byte[] key) {
+        key = contain().getSimilarBytesForKey(key);
+        if (key == null) return false;
+        expire().resetExpiration(key);
+        return true;
+    }
+
+    @Override
+    public void restoreByteType(byte[] key, byte[] value) {
+        throw new OperationsException();
+    }
+
+    public ExpiringMap<byte[], byte[]> expire() {
+        return this.center.getExpiringMap();
+    }
+
+    public ExpireMapByteContain contain() {
+        return this.center.getContain();
+    }
 }

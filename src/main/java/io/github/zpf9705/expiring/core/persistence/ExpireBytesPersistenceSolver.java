@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.core.persistence;
 
-import io.github.zpf9705.expiring.core.ExpireFactoryNameHolder;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -23,13 +22,9 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
                                @Nullable TimeUnit timeUnit) {
 
         run(() -> {
-            //get current thread factory name
-            String factoryName = ExpireFactoryNameHolder.getFactoryName();
-            AssertUtils.Persistence.hasText(factoryName, "factoryName no be null");
             ExpireByteGlobePersistence put =
                     ExpireByteGlobePersistence
-                            .ofSetBytes(Entry.of(key, value, duration, timeUnit), factoryName);
-            //判断是否已经写入
+                            .ofSetBytes(Entry.of(key, value, duration, timeUnit));
             AssertUtils.Persistence.isTrue(!put.persistenceExist(), "persistence already exist ");
             put.serial();
         }, "putPersistence");

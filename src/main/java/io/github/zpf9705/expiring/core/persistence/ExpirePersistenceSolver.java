@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.core.persistence;
 
-import io.github.zpf9705.expiring.core.ExpireFactoryNameHolder;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -21,21 +20,16 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
                                @Nullable Long duration,
                                @Nullable TimeUnit timeUnit) {
         run(() -> {
-            //get current thread factory name
-            String factoryName = ExpireFactoryNameHolder.getFactoryName();
-            AssertUtils.Persistence.hasText(factoryName, "factoryName no be null");
             @SuppressWarnings("unchecked")
             ExpireSimpleGlobePersistence<K, V> put =
                     ExpireSimpleGlobePersistence.ofSet(
                             ExpireSimpleGlobePersistence.class,
                             ExpireSimpleGlobePersistence.Persistence.class,
-                            Entry.of(key, value, duration, timeUnit), factoryName);
+                            Entry.of(key, value, duration, timeUnit));
             //判断是否已经写入
             AssertUtils.Persistence.isTrue(!put.persistenceExist(), "persistence already exist ");
             put.serial();
         }, "putPersistence");
-        //after reset current thread Expire Factory Name
-        ExpireFactoryNameHolder.restFactoryNamedContent();
     }
 
     @Override

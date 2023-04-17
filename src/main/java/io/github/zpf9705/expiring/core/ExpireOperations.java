@@ -21,12 +21,11 @@ public interface ExpireOperations<K, V> {
      *
      * @param action           expiry do action must not be {@literal null}.
      * @param composeException {@literal true} Whether to merge exception
-     * @param holdFactoryName  {@literal true} Set template ioc name in hold
      * @param <T>              return paradigm
      * @return return value be changed
      */
     @Nullable
-    <T> T execute(ExpireValueCallback<T> action, boolean holdFactoryName, boolean composeException);
+    <T> T execute(ExpireValueCallback<T> action, boolean composeException);
 
     /**
      * Delete given {@code key}.

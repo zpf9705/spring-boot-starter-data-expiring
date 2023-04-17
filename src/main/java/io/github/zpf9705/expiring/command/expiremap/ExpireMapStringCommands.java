@@ -1,8 +1,7 @@
 package io.github.zpf9705.expiring.command.expiremap;
 
 import io.github.zpf9705.expiring.command.ExpireStringCommands;
-import io.github.zpf9705.expiring.help.expiremap.ExpireMapRealHelper;
-
+import io.github.zpf9705.expiring.help.expiremap.ExpireMapHelper;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -13,9 +12,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExpireMapStringCommands implements ExpireStringCommands {
 
-    private final ExpireMapRealHelper delegate;
+    private final ExpireMapHelper delegate;
 
-    public ExpireMapStringCommands(ExpireMapRealHelper delegate) {
+    public ExpireMapStringCommands(ExpireMapHelper delegate) {
         this.delegate = delegate;
     }
 

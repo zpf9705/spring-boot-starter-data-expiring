@@ -45,8 +45,8 @@ public abstract class AbstractOperations<K, V> {
     }
 
     @Nullable
-    <T> T execute(ExpireValueCallback<T> callback, boolean holdFactoryName, boolean composeException) {
-        return template.execute(callback, holdFactoryName, composeException);
+    <T> T execute(ExpireValueCallback<T> callback, boolean composeException) {
+        return template.execute(callback, composeException);
     }
 
     /**

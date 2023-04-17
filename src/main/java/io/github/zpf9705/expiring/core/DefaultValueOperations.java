@@ -1,6 +1,7 @@
 package io.github.zpf9705.expiring.core;
 
 import io.github.zpf9705.expiring.help.ExpireHelper;
+
 import java.util.concurrent.TimeUnit;
 
 
@@ -29,7 +30,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
                 helper.set(rawKey, rawValue);
                 return null;
             }
-        }, true,false);
+        }, false);
     }
 
     /*
@@ -45,7 +46,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
                 helper.setE(rawKey, rawValue, duration, unit);
                 return null;
             }
-        }, true,false);
+        }, false);
     }
 
     /*
@@ -56,8 +57,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
     public Boolean setIfAbsent(K key, V value) {
         byte[] rawKey = this.rawKey(key);
         byte[] rawValue = this.rawValue(value);
-        return this.execute((connection) -> connection.setNX(rawKey, rawValue),
-                true,true);
+        return this.execute((connection) -> connection.setNX(rawKey, rawValue), true);
     }
 
     /*
@@ -69,8 +69,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
 
         byte[] rawKey = this.rawKey(key);
         byte[] rawValue = this.rawValue(value);
-        return this.execute((connection) -> connection.setEX(rawKey, rawValue, duration, unit),
-                true,true);
+        return this.execute((connection) -> connection.setEX(rawKey, rawValue, duration, unit), true);
     }
 
     /*
@@ -84,7 +83,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
             protected byte[] inExpire(byte[] rawKey, ExpireHelper helper) {
                 return helper.get(rawKey);
             }
-        }, false,true);
+        }, true);
     }
 
     /*
@@ -100,6 +99,6 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
             protected byte[] inExpire(byte[] rawKey, ExpireHelper helper) {
                 return helper.getAndSet(rawKey, rawValue);
             }
-        }, false,true);
+        }, true);
     }
 }

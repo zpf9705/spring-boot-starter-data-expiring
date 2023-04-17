@@ -6,6 +6,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * By {@link ApplicationContextAware} to the spring context,
  * in the injection classes under the environment of use
@@ -47,12 +51,29 @@ public class Application implements ApplicationContextAware {
         if (beanClass == null) {
             return null;
         }
-        T properties;
+        T bean;
         try {
-            properties = context.getBean(beanClass);
+            bean = context.getBean(beanClass);
         } catch (Throwable e) {
-            properties = null;
+            bean = null;
         }
-        return properties;
+        return bean;
+    }
+
+    /*
+     * (non-javadoc)
+     * @see org.springframework.context.ApplicationContext#getBeansOfType(Class)
+     */
+    public static <T> Map<String, T> findAnyBean(Class<T> beanClass) {
+        if (beanClass == null) {
+            return null;
+        }
+        Map<String,T> beanMap;
+        try {
+            beanMap = context.getBeansOfType(beanClass);
+        }catch (Throwable e){
+            beanMap = Collections.emptyMap();
+        }
+        return beanMap;
     }
 }
