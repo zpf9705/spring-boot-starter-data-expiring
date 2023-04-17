@@ -4,7 +4,7 @@ import io.github.zpf9705.expiring.command.ExpireKeyCommands;
 import io.github.zpf9705.expiring.command.ExpireStringCommands;
 import io.github.zpf9705.expiring.command.expiremap.ExpireMapKeyCommands;
 import io.github.zpf9705.expiring.command.expiremap.ExpireMapStringCommands;
-import io.github.zpf9705.expiring.core.error.OperationsException;
+import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.help.AbstractExpireHelper;
 import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.lang.NonNull;

@@ -1,9 +1,6 @@
 package io.github.zpf9705.expiring.core;
 
 import io.github.zpf9705.expiring.command.ExpireKeyCommands;
-import io.github.zpf9705.expiring.core.error.ExpiringException;
-import io.github.zpf9705.expiring.core.error.OperationsException;
-import io.github.zpf9705.expiring.core.logger.Console;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializer;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
 import io.github.zpf9705.expiring.help.ExpireHelper;

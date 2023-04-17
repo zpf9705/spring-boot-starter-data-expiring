@@ -1,4 +1,4 @@
-package io.github.zpf9705.expiring.core.error;
+package io.github.zpf9705.expiring.core;
 
 /**
  * Cache abnormal parent body

@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.core.persistence;
 
-import io.github.zpf9705.expiring.core.error.PersistenceException;
+import io.github.zpf9705.expiring.core.PersistenceException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 

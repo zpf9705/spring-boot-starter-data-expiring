@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.core.persistence;
 
-import io.github.zpf9705.expiring.core.logger.Console;
+import io.github.zpf9705.expiring.core.Console;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 

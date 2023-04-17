@@ -1,4 +1,4 @@
-package io.github.zpf9705.expiring.core.logger;
+package io.github.zpf9705.expiring.core;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
