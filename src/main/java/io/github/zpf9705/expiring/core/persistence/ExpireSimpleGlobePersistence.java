@@ -4,8 +4,6 @@ import ch.qos.logback.core.util.CloseUtil;
 import cn.hutool.core.exceptions.InvocationTargetRuntimeException;
 import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 import io.github.zpf9705.expiring.autoconfigure.Application;
 import io.github.zpf9705.expiring.core.ExpireProperties;
 import io.github.zpf9705.expiring.core.ExpiringException;
@@ -799,19 +797,6 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         String json = buffer.toString();
         //check json
         AssertUtils.Persistence.isTrue(JSON.isValid(json), "Buffer data [" + json + "] no a valid json");
-        //parse json
-        Persistence<K, V> persistence;
-        try {
-            persistence = JSONObject.parseObject(json, new TypeReference<Persistence<K, V>>() {
-            });
-        } catch (Exception e) {
-            throw new PersistenceException("Buffer data [" + json + " ] parse Persistence error " +
-                    "[" + e.getMessage() + "]");
-        }
-        //No cache in the cache
-        ExpireSimpleGlobePersistence<K, V> of = ofSetPersistence(this.getClass(), persistence);
-        AssertUtils.Persistence.notNull(of, "ExpireGlobePersistence no be null");
-        this.deserializeWithEntry(persistence, of.getWritePath());
     }
 
     /**

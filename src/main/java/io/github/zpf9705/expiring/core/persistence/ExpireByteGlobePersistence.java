@@ -1,7 +1,11 @@
 package io.github.zpf9705.expiring.core.persistence;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import io.github.zpf9705.expiring.core.PersistenceException;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapCenter;
+import io.github.zpf9705.expiring.util.AssertUtils;
+import org.checkerframework.checker.units.qual.K;
 import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
@@ -81,6 +85,24 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
     @Override
     public String getFactoryName() {
         return ExpireByteGlobePersistence.class.getName();
+    }
+
+    @Override
+    public void deserializeWithString(@NonNull StringBuilder buffer) {
+        super.deserializeWithString(buffer);
+        //parse json
+        Persistence<byte[], byte[]> persistence;
+        try {
+            persistence = JSONObject.parseObject(buffer.toString(), new TypeReference<BytePersistence>() {
+            });
+        } catch (Exception e) {
+            throw new PersistenceException("Buffer data [" + buffer + " ] parse Persistence error " +
+                    "[" + e.getMessage() + "]");
+        }
+        //No cache in the cache
+        ExpireSimpleGlobePersistence<byte[], byte[]> of = ofSetPersistence(this.getClass(), persistence);
+        AssertUtils.Persistence.notNull(of, "ExpireGlobePersistence no be null");
+        this.deserializeWithEntry(persistence, of.getWritePath());
     }
 
     @Override
