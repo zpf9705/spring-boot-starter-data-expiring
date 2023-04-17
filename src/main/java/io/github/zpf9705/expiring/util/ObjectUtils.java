@@ -23,8 +23,10 @@ public abstract class ObjectUtils {
     private static final String leftParenthesis_ = "{";
     private static final String rightParenthesis_ = "}";
     private static final String empty = "";
-    public static BiPredicate<String, String> simplerOfString = (s, s_) ->
-            s.startsWith(s_) || s.endsWith(s_) || s.contains(s_);
+    public static BiPredicate<String, String> simplerOfString =
+            (compare, target) -> compare.startsWith(target)
+                    || compare.endsWith(target)
+                    || compare.contains(target);
 
     /**
      * Calculate the hash mark with object param

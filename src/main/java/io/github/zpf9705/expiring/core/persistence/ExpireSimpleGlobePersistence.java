@@ -393,19 +393,22 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     public static <G extends ExpireSimpleGlobePersistence, K> List<G> ofGetSimilar(@NonNull K key) {
         checkOpenPersistence();
         String keySting = ObjectUtils.toStingWithMiddle(key);
-        return ObjectUtils.findStringSimilarElementStream(TO_STRING.keySet(), keySting)
-                .map(toStringKey -> {
-                    G g;
-                    Object keyObj = TO_STRING.get(toStringKey);
-                    String keyHash = ObjectUtils.rawHashWithType(keyObj);
-                    String valueHash = KEY_VALUE_HASH.get(ObjectUtils.rawHashWithType(keyObj));
-                    if (StringUtils.isNotBlank(valueHash)) {
-                        g = (G) CACHE_MAP.get(rawHashComb(keyHash, valueHash));
-                    } else {
-                        g = null;
-                    }
-                    return g;
-                }).filter(Objects::nonNull).collect(Collectors.toList());
+        List<String> similarElement = ObjectUtils.findStringSimilarElement(TO_STRING.keySet(), keySting);
+        if (CollectionUtils.isEmpty(similarElement)) {
+            return Collections.emptyList();
+        }
+        return similarElement.stream().map(toStringKey -> {
+            G g;
+            Object keyObj = TO_STRING.get(toStringKey);
+            String keyHash = ObjectUtils.rawHashWithType(keyObj);
+            String valueHash = KEY_VALUE_HASH.get(ObjectUtils.rawHashWithType(keyObj));
+            if (StringUtils.isNotBlank(valueHash)) {
+                g = (G) CACHE_MAP.get(rawHashComb(keyHash, valueHash));
+            } else {
+                g = null;
+            }
+            return g;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**
@@ -557,9 +560,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      *
      * @param key must not be {@literal null}.
      * @param <K> key generic
-     * @param <V> value generic
      */
-    static <K, V> void recordContentToKeyString(@NonNull K key) {
+    static <K> void recordContentToKeyString(@NonNull K key) {
         TO_STRING.putIfAbsent(ObjectUtils.toStingWithMiddle(key), key);
     }
 
