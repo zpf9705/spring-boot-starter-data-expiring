@@ -27,7 +27,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
                             .ofSetBytes(Entry.of(key, value, duration, timeUnit));
             AssertUtils.Persistence.isTrue(!put.persistenceExist(), "persistence already exist ");
             put.serial();
-        }, "putPersistence");
+        }, "ExpireBytesPersistenceSolver::putPersistence");
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
             ExpireByteGlobePersistence replace = ExpireByteGlobePersistence.ofGetBytes(key, value);
             AssertUtils.Persistence.isTrue(replace.persistenceExist(), "persistence no exist");
             replace.replacePersistence(newValue);
-        }, "replacePersistence");
+        }, "ExpireBytesPersistenceSolver::replacePersistence");
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
             ExpireByteGlobePersistence replaceDuration = ExpireByteGlobePersistence.ofGetBytes(key, value);
             AssertUtils.Persistence.isTrue(replaceDuration.persistenceExist(), "persistence no exist");
             replaceDuration.setExpirationPersistence(duration, timeUnit);
-        }, "setEPersistence");
+        }, "ExpireBytesPersistenceSolver::setEPersistence");
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
             ExpireByteGlobePersistence reset = ExpireByteGlobePersistence.ofGetBytes(key, value);
             AssertUtils.Persistence.isTrue(reset.persistenceExist(), "persistence no exist");
             reset.resetExpirationPersistence();
-        }, "restPersistence");
+        }, "ExpireBytesPersistenceSolver::restPersistence");
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
             ExpireByteGlobePersistence remove = ExpireByteGlobePersistence.ofGetBytes(key, value);
             AssertUtils.Persistence.isTrue(remove.persistenceExist(), "persistence no exist, no repeat del");
             remove.removePersistence();
-        }, "removePersistence");
+        }, "ExpireBytesPersistenceSolver::removePersistence");
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
                 return;
             }
             remove.removePersistence();
-        }, "removePersistenceWithKey");
+        }, "ExpireBytesPersistenceSolver::removePersistenceWithKey");
     }
 
     @Override
@@ -91,7 +91,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
                     s.removePersistence();
                 }
             });
-        }, "removePersistence");
+        }, "ExpireBytesPersistenceSolver::removePersistence");
     }
 
     @Override
