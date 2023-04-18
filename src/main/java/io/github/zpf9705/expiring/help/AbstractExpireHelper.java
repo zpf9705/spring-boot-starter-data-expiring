@@ -2,7 +2,6 @@ package io.github.zpf9705.expiring.help;
 
 import io.github.zpf9705.expiring.util.ObjectUtils;
 
-import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
