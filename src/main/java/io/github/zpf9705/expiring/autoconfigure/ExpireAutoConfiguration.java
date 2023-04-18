@@ -171,9 +171,9 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
 
     @Bean("expireMap::persistenceRegain")
     @Override
-    @ConditionalOnProperty(prefix = "expire.config", name = "open-persistence", havingValue = "true")
+    @ConditionalOnProperty(prefix = "spring.data.expiry", name = "open-persistence", havingValue = "true")
     @ConditionalOnBean(value = {ValueOperations.class}, name = {"application-ec"})
-    public String persistenceRegain(@Value("${expire.config.persistence-path:default}") String path) {
+    public String persistenceRegain(@Value("${spring.data.expiry.persistence-path:default}") String path) {
         Class<?> factoryClass = this.expireProperties.getPersistenceFactoryClass();
         if (factoryClass == null) {
             return "Open persistence now , but provider factoryClass is null so persistenceRegain failed";
