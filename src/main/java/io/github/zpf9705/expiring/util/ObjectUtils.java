@@ -1,14 +1,10 @@
 package io.github.zpf9705.expiring.util;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,7 +20,6 @@ public abstract class ObjectUtils {
     private static final String leftParenthesis_ = "{";
     private static final String rightParenthesis_ = "}";
     private static final String empty = "";
-    private static final String comma = ",";
 
     /**
      * Calculate the hash mark with object param
@@ -68,6 +63,9 @@ public abstract class ObjectUtils {
      * @return String mark
      */
     public static <T> String toStingWithMiddle(@NonNull T t) {
+        if (t instanceof String) {
+            return t.toString();
+        }
         String toString = null;
         if (t.getClass().isArray() || t instanceof Collection) {
             if (t instanceof byte[]) {
@@ -128,7 +126,7 @@ public abstract class ObjectUtils {
      */
     public static Stream<String> findStringSimilarElementStream(@NonNull Collection<String> source,
                                                                 @NonNull String target) {
-        return source.stream().filter(findPredicate(changeListWithComma(target)));
+        return source.stream().filter(findPredicate(target));
     }
 
     /**
@@ -147,32 +145,7 @@ public abstract class ObjectUtils {
      * @param target must not be {@literal null}
      * @return if {@code Predicate.test() == true} contain all
      */
-    public static Predicate<String> findPredicate(@NonNull List<String> target) {
-        return s -> CollUtil.containsAll(changeListWithComma(s), target);
-    }
-
-    /**
-     * Converts an array collection according to the comma
-     *
-     * @param s must not be {@literal null}
-     * @return Converts of list not support {@link List} apis
-     */
-    public static List<String> changeListWithComma(@NonNull String s) {
-        String[] array = changeArrayWithComma(s);
-        /*
-         * Do not support the deletion
-         */
-        return Arrays.asList(array);
-    }
-
-    private static String[] changeArrayWithComma(@NonNull String s) {
-        String[] sub;
-        if (s.contains(comma)) {
-            sub = s.split(comma);
-        } else {
-            sub = new String[3];
-            sub[0] = s;
-        }
-        return sub;
+    public static Predicate<String> findPredicate(@NonNull String target) {
+        return s -> s.contains(target);
     }
 }

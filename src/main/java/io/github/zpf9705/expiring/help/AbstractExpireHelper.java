@@ -19,9 +19,9 @@ public abstract class AbstractExpireHelper implements DefaultedExpireHelper {
      */
     private final BiFunction<Object, Object, Boolean> compare = (b, c) -> {
         if (b != null && c != null) {
-            List<String> source =
-                    ObjectUtils.changeListWithComma(ObjectUtils.toStingWithMiddle(c));
-            Predicate<String> predicate = ObjectUtils.findPredicate(source);
+            Predicate<String> predicate = ObjectUtils.findPredicate(
+                    ObjectUtils.toStingWithMiddle(c)
+            );
             return predicate.test(ObjectUtils.toStingWithMiddle(c));
         }
         return false;
