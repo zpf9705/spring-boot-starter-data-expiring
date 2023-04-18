@@ -13,6 +13,7 @@ import net.jodah.expiringmap.ExpiringMap;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * {@code ExpireMapRealHelper} implementation of ExpireMapHelper.
@@ -102,6 +103,18 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
         return expire().get(simpleBytesKey);
     }
 
+    @Override
+    public List<byte[]> getKeysByKeys(byte[] key) {
+        byte[] simpleBytesKey = contain().getSimilarBytesForKey(key);
+        if (simpleBytesKey == null) return null;
+        return expire().keySet().stream().map(dai -> {
+            if (this.similarJudgeOfBytes(dai, key)) {
+                return dai;
+            }
+            return null;
+        }).collect(Collectors.toList());
+    }
+
     /*
      * (non-Javadoc)
      * @see net.jodah.expiringmap.ExpiringMap#replace(Object, Object)
@@ -144,7 +157,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
         Map<byte[], byte[]> map = new HashMap<>();
         List<byte[]> delKeys = new ArrayList<>();
         expire().forEach((k, v) -> {
-            if (this.SimilarJudgeOfBytes(k, key)) {
+            if (this.similarJudgeOfBytes(k, key)) {
                 map.put(k, v);
                 delKeys.add(k);
             }

@@ -2,6 +2,7 @@ package io.github.zpf9705.expiring.help;
 
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -89,6 +90,11 @@ public interface DefaultedExpireHelper extends ExpireHelper {
     @Override
     default Boolean setEX(byte[] key, byte[] value, Long duration, TimeUnit unit) {
         return stringCommands().setEX(key, value, duration, unit);
+    }
+
+    @Override
+    default List<byte[]> getSimilarKeys(byte[] rawKey){
+        return stringCommands().getSimilarKeys(rawKey);
     }
 
     @CanNull

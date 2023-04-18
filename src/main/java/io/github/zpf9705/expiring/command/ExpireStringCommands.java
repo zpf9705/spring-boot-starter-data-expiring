@@ -3,6 +3,8 @@ package io.github.zpf9705.expiring.command;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.persistence.PersistenceExec;
 import io.github.zpf9705.expiring.core.persistence.PersistenceExecTypeEnum;
+
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -68,6 +70,15 @@ public interface ExpireStringCommands {
      */
     @CanNull
     byte[] get(byte[] key);
+
+    /**
+     * Get Similar keys of {@code key}.
+     *
+     * @param rawKey must not be {@literal null}.
+     * @return {@literal null}
+     */
+    @CanNull
+    List<byte[]> getSimilarKeys(byte[] rawKey);
 
     /**
      * Set {@code value} of {@code key} and return its old value.

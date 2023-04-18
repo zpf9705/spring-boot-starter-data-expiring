@@ -2,6 +2,8 @@ package io.github.zpf9705.expiring.command.expiremap;
 
 import io.github.zpf9705.expiring.command.ExpireStringCommands;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapHelper;
+
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -61,6 +63,11 @@ public class ExpireMapStringCommands implements ExpireStringCommands {
     @Override
     public byte[] get(byte[] key) {
         return this.delegate.getVal(key);
+    }
+
+    @Override
+    public List<byte[]> getSimilarKeys(byte[] rawKey) {
+        return this.delegate.getKeysByKeys(rawKey);
     }
 
     /*

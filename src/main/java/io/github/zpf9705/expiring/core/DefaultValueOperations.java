@@ -1,7 +1,9 @@
 package io.github.zpf9705.expiring.core;
 
 import io.github.zpf9705.expiring.help.ExpireHelper;
+import io.github.zpf9705.expiring.util.SerialUtils;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -84,6 +86,14 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
                 return helper.get(rawKey);
             }
         }, true);
+    }
+
+    @Override
+    public List<?> getSimilarKeys(K key) {
+
+        byte[] rawKey = this.rawKey(key);
+        List<byte[]> execute = this.execute((connection) -> connection.getSimilarKeys(rawKey), true);
+        return SerialUtils.deserializeAny(execute);
     }
 
     /*

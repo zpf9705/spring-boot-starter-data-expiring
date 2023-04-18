@@ -2,6 +2,8 @@ package io.github.zpf9705.expiring.help.expiremap;
 
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.help.ExpireHelper;
+
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -61,6 +63,14 @@ public interface ExpireMapHelper extends ExpireHelper {
      * @return key in value
      */
     byte[] getVal(byte[] key);
+
+    /**
+     * Proxy for {@link net.jodah.expiringmap.ExpiringMap#get(Object)}
+     *
+     * @param key must not be {@literal null}
+     * @return Similar keys with a key
+     */
+    List<byte[]> getKeysByKeys(byte[] key);
 
     /**
      * Proxy for {@link net.jodah.expiringmap.ExpiringMap#replace(Object, Object)}

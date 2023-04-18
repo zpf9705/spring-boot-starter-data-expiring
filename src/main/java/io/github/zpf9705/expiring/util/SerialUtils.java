@@ -4,6 +4,9 @@ import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 
 import java.io.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A static tool for serialization and deserialization
@@ -52,5 +55,18 @@ public abstract class SerialUtils {
         } catch (Throwable e) {
             throw new OperationsException("Failed to deserialize bytes with ex msg" + e.getMessage());
         }
+    }
+
+    /**
+     * Deserialized object into any byte array.
+     *
+     * @param bytesList any serialized object
+     * @return The results of the deserialization bytes
+     */
+    public static List<?> deserializeAny(@CanNull List<byte[]> bytesList) {
+        if (bytesList == null || bytesList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return bytesList.stream().map(SerialUtils::deserialize).collect(Collectors.toList());
     }
 }

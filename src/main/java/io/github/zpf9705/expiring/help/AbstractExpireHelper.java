@@ -32,7 +32,7 @@ public abstract class AbstractExpireHelper implements DefaultedExpireHelper {
      * @param compare_ must not be {@literal null}.
      * @return if {@literal true} prove that similar
      */
-    public boolean SimilarJudgeOfBytes(byte[] compare, byte[] compare_) {
+    public boolean similarJudgeOfBytes(byte[] compare, byte[] compare_) {
         return this.compare.apply(compare, compare_);
     }
 }

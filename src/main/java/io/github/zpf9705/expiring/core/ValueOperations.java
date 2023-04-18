@@ -2,6 +2,7 @@ package io.github.zpf9705.expiring.core;
 
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,23 +58,32 @@ public interface ValueOperations<K, V> {
      * Get the value of {@code key}.
      *
      * @param key must not be {@literal null}.
-     * @return {@literal null} get in memory with {@code key} , when used in pipeline / transaction.
+     * @return {@literal null} get in memory with {@code key}.
      */
     @CanNull
     V get(K key);
+
+    /**
+     * Get Similar keys of {@code key}.
+     *
+     * @param key must not be {@literal null}.
+     * @return {@literal null} get keys in memory with {@code key}.
+     */
+    @CanNull
+    List<?> getSimilarKeys(K key);
 
     /**
      * Set {@code value} of {@code newValue} and return its old value.
      *
      * @param key      must not be {@literal null}.
      * @param newValue must not be {@literal null}.
-     * @return {@literal null} when used in pipeline / transaction.
+     * @return if {@literal null} prove first set
      */
     @CanNull
     V getAndSet(K key, V newValue);
 
     /**
-     * To get the operator
+     * To get the operator {@code ExpireOperations}
      *
      * @return Expire Operations
      */
