@@ -177,19 +177,19 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
 
 
     //-----------------------------------Bean name example-------------------------------------
-    static final String DEFAULT_SO_TEMPLATE = "DEFAULT_SO_TEMPLATE";
+    public static final String DEFAULT_SO_TEMPLATE = "DEFAULT_SO_TEMPLATE";
 
-    static final String OPERATION = "_OPERATION";
+    public static final String OPERATION = "_OPERATION";
 
-    static final String OPERATION_E = "_OPERATION_E";
+    public static final String OPERATION_E = "_OPERATION_E";
 
-    static final String DEFAULT_SO_TEMPLATE_OPERATION = DEFAULT_SO_TEMPLATE + OPERATION;
+    public static final String DEFAULT_SO_TEMPLATE_OPERATION = DEFAULT_SO_TEMPLATE + OPERATION;
 
-    static final String DEFAULT_SO_TEMPLATE_OPERATION_E = DEFAULT_SO_TEMPLATE + OPERATION_E;
+    public static final String DEFAULT_SO_TEMPLATE_OPERATION_E = DEFAULT_SO_TEMPLATE + OPERATION_E;
 
-    static final String DEFAULT_SS_TEMPLATE = "DEFAULT_SS_TEMPLATE";
+    public static final String DEFAULT_SS_TEMPLATE = "DEFAULT_SS_TEMPLATE";
 
-    static final String DEFAULT_SS_TEMPLATE_OPERATION = DEFAULT_SS_TEMPLATE + OPERATION;
+    public static final String DEFAULT_SS_TEMPLATE_OPERATION = DEFAULT_SS_TEMPLATE + OPERATION;
 
-    static final String DEFAULT_SS_TEMPLATE_OPERATION_E = DEFAULT_SS_TEMPLATE + OPERATION_E;
+    public static final String DEFAULT_SS_TEMPLATE_OPERATION_E = DEFAULT_SS_TEMPLATE + OPERATION_E;
 }
