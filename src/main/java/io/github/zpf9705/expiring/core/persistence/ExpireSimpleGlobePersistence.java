@@ -182,11 +182,6 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
                             reflectForInstance(globePersistenceClass, persistenceClass, entry, expired(entry),
                                     writePath);
                     CACHE_MAP.putIfAbsent(rawHash, persistence);
-                    /*
-                     * CACHE_MAP.putIfAbsent(rawHash,
-                     *     new ExpireSimpleGlobePersistence<>(() -> Persistence.of(entry).expireOn(factoryBeanName)
-                     *              , writePath));
-                     */
                     persistence = CACHE_MAP.get(rawHash);
                 }
             }
