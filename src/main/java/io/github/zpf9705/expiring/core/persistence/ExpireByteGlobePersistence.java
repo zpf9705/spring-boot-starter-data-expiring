@@ -5,14 +5,13 @@ import com.alibaba.fastjson.TypeReference;
 import io.github.zpf9705.expiring.core.PersistenceException;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapCenter;
 import io.github.zpf9705.expiring.util.AssertUtils;
-import org.checkerframework.checker.units.qual.K;
 import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 /**
- * Special extend for {@link ExpireSimpleGlobePersistence} with generic {@code byte[]}
+ * The only Special extend for {@link ExpireSimpleGlobePersistence} with generic {@code byte[]}
  *
  * @author zpf
  * @since 3.0.0
