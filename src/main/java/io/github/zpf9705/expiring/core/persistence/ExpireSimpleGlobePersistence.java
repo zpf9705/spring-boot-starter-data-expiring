@@ -4,11 +4,11 @@ import ch.qos.logback.core.util.CloseUtil;
 import cn.hutool.core.exceptions.InvocationTargetRuntimeException;
 import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.JSON;
-import io.github.zpf9705.expiring.autoconfigure.Application;
-import io.github.zpf9705.expiring.core.ExpireProperties;
 import io.github.zpf9705.expiring.core.ExpiringException;
 import io.github.zpf9705.expiring.core.PersistenceException;
 import io.github.zpf9705.expiring.core.Console;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import io.github.zpf9705.expiring.util.CompatibleUtils;
 import io.reactivex.rxjava3.core.Single;
@@ -16,8 +16,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
 import java.io.*;
@@ -49,8 +47,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
 
     private static final long serialVersionUID = 7755214068683107950L;
 
-    @Getter
-    private static ExpireProperties cacheProperties;
+    private static Configuration configuration;
 
     public static final String PREFIX_BEFORE = ".aof";
 
@@ -99,8 +96,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * load static cacheProperties
      */
     static void resolveCacheProperties() {
-        cacheProperties = Application.findBean(ExpireProperties.class);
-        OPEN_PERSISTENCE = cacheProperties.getOpenPersistence();
+        configuration = Configuration.getConfiguration();
+        OPEN_PERSISTENCE = configuration.getOpenPersistence();
         //if you open persistence will auto create directory
         if (OPEN_PERSISTENCE) {
             checkDirectory();
@@ -111,7 +108,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * Check provider persistence path
      */
     static void checkDirectory() {
-        String persistencePath = cacheProperties.getPersistencePath();
+        String persistencePath = configuration.getPersistencePath();
         if (StringUtils.isNotBlank(persistencePath)) {
             //Determine whether to native folders and whether the folder
             if (!isDirectory(persistencePath)) {
@@ -167,9 +164,9 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @return {@link ExpireByteGlobePersistence}
      */
     public static <G extends ExpireSimpleGlobePersistence, P extends Persistence, K, V> G ofSet
-    (@Nullable Class<G> globePersistenceClass, // construct have default value can nullable
-     @Nullable Class<P> persistenceClass, // construct have default value can nullable
-     @NonNull Entry<K, V> entry) {
+    (@CanNull Class<G> globePersistenceClass, // construct have default value can nullable
+     @CanNull Class<P> persistenceClass, // construct have default value can nullable
+     @NotNull Entry<K, V> entry) {
         checkOf(entry);
         String rawHash = rawHash(entry.getKey(), entry.getValue());
         String writePath = rawWritePath(entry.getKey());
@@ -209,11 +206,11 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @return Inherit the instantiation singleton
      */
     public static <G extends ExpireSimpleGlobePersistence, P extends Persistence, K, V> G reflectForInstance
-    (@Nullable Class<G> globePersistenceClass, // construct have default value can nullable
-     @Nullable Class<P> persistenceClass, // construct have default value can nullable
-     @NonNull Entry<K, V> entry,
-     @NonNull LocalDateTime expired,
-     @NonNull String writePath) {
+    (@CanNull Class<G> globePersistenceClass, // construct have default value can nullable
+     @CanNull Class<P> persistenceClass, // construct have default value can nullable
+     @NotNull Entry<K, V> entry,
+     @NotNull LocalDateTime expired,
+     @NotNull String writePath) {
         G globePersistence;
         try {
             /*
@@ -279,8 +276,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @return {@link ExpireByteGlobePersistence}
      */
     public static <G extends ExpireSimpleGlobePersistence, K, V> G ofSetPersistence(
-            @NonNull Class<G> globePersistenceClass,
-            @NonNull Persistence<K, V> persistence) {
+            @NotNull Class<G> globePersistenceClass,
+            @NotNull Persistence<K, V> persistence) {
         checkPersistence(persistence);
         Entry<K, V> entry = persistence.entry;
         ExpireSimpleGlobePersistence<K, V> globePersistence =
@@ -305,9 +302,9 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @return Inherit the instantiation singleton
      */
     public static <G extends ExpireSimpleGlobePersistence, P extends Persistence> G reflectForInstance
-    (@NonNull Class<G> globePersistenceClass, // construct have default value can nullable
-     @NonNull P persistence,
-     @NonNull String writePath) {
+    (@NotNull Class<G> globePersistenceClass, // construct have default value can nullable
+     @NotNull P persistence,
+     @NotNull String writePath) {
         G globePersistence;
         try {
             /*
@@ -345,8 +342,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <G>                   Inherit generic
      * @return {@link ExpireSimpleGlobePersistence}
      */
-    public static <G extends ExpireSimpleGlobePersistence, K, V> G ofGet(@NonNull K key, @Nullable V value,
-                                                                         @Nullable Class<G> globePersistenceClass) {
+    public static <G extends ExpireSimpleGlobePersistence, K, V> G ofGet(@NotNull K key, @CanNull V value,
+                                                                         @CanNull Class<G> globePersistenceClass) {
         checkOpenPersistence();
         AssertUtils.Persistence.notNull(key, "Key no be null");
         String persistenceKey;
@@ -373,7 +370,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <G> Inherit generic
      * @return {@link ExpireSimpleGlobePersistence}
      */
-    public static <G extends ExpireSimpleGlobePersistence, K> G ofGet(@NonNull K key) {
+    public static <G extends ExpireSimpleGlobePersistence, K> G ofGet(@NotNull K key) {
         return ofGet(key, null, null);
     }
 
@@ -385,7 +382,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <G> Inherit generic
      * @return {@link ExpireSimpleGlobePersistence}
      */
-    public static <G extends ExpireSimpleGlobePersistence, K> List<G> ofGetSimilar(@NonNull K key) {
+    public static <G extends ExpireSimpleGlobePersistence, K> List<G> ofGetSimilar(@NotNull K key) {
         checkOpenPersistence();
         String realKey = CompatibleUtils.toStingBeReal(key);
         List<String> similarElement = CompatibleUtils.findSimilarElement(TO_STRING.keySet(), realKey);
@@ -416,10 +413,10 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <V>                    value generic
      * @return extend ExpireSimpleGlobePersistence instance
      */
-    public static <G extends ExpireSimpleGlobePersistence, K, V> G convert(@NonNull ExpireSimpleGlobePersistence<K, V>
+    public static <G extends ExpireSimpleGlobePersistence, K, V> G convert(@NotNull ExpireSimpleGlobePersistence<K, V>
                                                                                    expireGlobePersistence,
                                                                            //can have no value and default value be this class
-                                                                           @Nullable Class<G> globePersistenceClass) {
+                                                                           @CanNull Class<G> globePersistenceClass) {
         try {
             if (globePersistenceClass == null) return (G) expireGlobePersistence;
             return Single.just(expireGlobePersistence).ofType(globePersistenceClass).blockingGet();
@@ -439,7 +436,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <K>   key generic
      * @param <V>   value generic
      */
-    static <V, K> void checkOf(@NonNull Entry<K, V> entry) {
+    static <V, K> void checkOf(@NotNull Entry<K, V> entry) {
         checkOpenPersistence();
         checkEntry(entry);
         //empty just pass
@@ -447,14 +444,14 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
             return;
         }
         if ((entry.getDuration() != null && entry.getDuration() >=
-                cacheProperties.getNoPersistenceOfExpireTime())
+                configuration.getNoPersistenceOfExpireTime())
                 && (entry.getTimeUnit() != null && entry.getTimeUnit()
-                .equals(cacheProperties.getNoPersistenceOfExpireTimeUnit()))) {
+                .equals(configuration.getNoPersistenceOfExpireTimeUnit()))) {
             return;
         }
         throw new PersistenceException("Only more than or == " +
-                cacheProperties.getNoPersistenceOfExpireTime() + " " +
-                cacheProperties.getNoPersistenceOfExpireTimeUnit() +
+                configuration.getNoPersistenceOfExpireTime() + " " +
+                configuration.getNoPersistenceOfExpireTimeUnit() +
                 " can be persisted so key [" + entry.getKey() + "] value [" + entry.getValue() + "] no persisted ");
     }
 
@@ -465,7 +462,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <K>         key generic
      * @param <V>         value generic
      */
-    static <V, K> void checkPersistence(@NonNull Persistence<K, V> persistence) {
+    static <V, K> void checkPersistence(@NotNull Persistence<K, V> persistence) {
         AssertUtils.Persistence.notNull(persistence.getEntry(), "Persistence Entry no be null");
         AssertUtils.Persistence.notNull(persistence.getExpire(), "Expire no be null");
         checkEntry(persistence.getEntry());
@@ -478,7 +475,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <K>   key generic
      * @param <V>   value generic
      */
-    static <V, K> void checkEntry(@NonNull Entry<K, V> entry) {
+    static <V, K> void checkEntry(@NotNull Entry<K, V> entry) {
         AssertUtils.Persistence.notNull(entry.getKey(), "Key no be null");
         AssertUtils.Persistence.notNull(entry.getValue(), "Value no be null");
     }
@@ -497,9 +494,9 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <K> key generic
      * @return final write path
      */
-    static <K> String rawWritePath(@NonNull K key) {
+    static <K> String rawWritePath(@NotNull K key) {
         AssertUtils.Persistence.notNull(key, "Key no be null ");
-        return cacheProperties.getPersistencePath()
+        return configuration.getPersistencePath()
                 //md5 sign to prevent the file name is too long
                 + DigestUtils.md5Hex(getContentBytes(key))
                 + PREFIX_BEFORE;
@@ -512,7 +509,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <K> key generic
      * @return byte array
      */
-    static <K> byte[] getContentBytes(@NonNull K key) {
+    static <K> byte[] getContentBytes(@NotNull K key) {
         if (key instanceof byte[]) {
             return (byte[]) key;
         }
@@ -526,7 +523,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param hashValue must not be {@literal null}.
      * @return hash mark
      */
-    static String rawHashComb(@NonNull String hashKey, @NonNull String hashValue) {
+    static String rawHashComb(@NotNull String hashKey, @NotNull String hashValue) {
         return DEALT + hashKey + hashValue;
     }
 
@@ -539,7 +536,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <V>   value generic
      * @return hash mark
      */
-    static <K, V> String rawHash(@NonNull K key, @NonNull V value) {
+    static <K, V> String rawHash(@NotNull K key, @NotNull V value) {
         String rawHashKey = CompatibleUtils.rawHashWithType(key);
         String rawHashValue = KEY_VALUE_HASH.get(rawHashKey);
         if (StringUtils.isBlank(rawHashValue)) {
@@ -556,7 +553,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param key must not be {@literal null}.
      * @param <K> key generic
      */
-    static <K> void recordContentToKeyString(@NonNull K key) {
+    static <K> void recordContentToKeyString(@NotNull K key) {
         TO_STRING.putIfAbsent(CompatibleUtils.toStingBeReal(key), key);
     }
 
@@ -725,9 +722,9 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     @Override
-    public void deserializeWithPath(@Nullable String path) {
+    public void deserializeWithPath(@CanNull String path) {
         if (StringUtils.isBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
-            path = cacheProperties.getPersistencePath();
+            path = configuration.getPersistencePath();
         }
         List<File> files = null;
         if (StringUtils.isBlank(path)) {
@@ -760,7 +757,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     @Override
-    public void deserializeWithFile(@NonNull File file) {
+    public void deserializeWithFile(@NotNull File file) {
         AssertUtils.Persistence.notNull(file, "File no be null");
         InputStream in = null;
         BufferedReader read = null;
@@ -790,7 +787,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     @Override
-    public void deserializeWithString(@NonNull StringBuilder buffer) {
+    public void deserializeWithString(@NotNull StringBuilder buffer) {
         String json = buffer.toString();
         //check json
         AssertUtils.Persistence.isTrue(JSON.isValid(json), "Buffer data [" + json + "] no a valid json");
@@ -802,8 +799,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param persistence must not be {@literal null}
      * @param writePath   must not be {@literal null}
      */
-    public void deserializeWithEntry(@NonNull Persistence<K, V> persistence,
-                                     @NonNull String writePath) {
+    public void deserializeWithEntry(@NotNull Persistence<K, V> persistence,
+                                     @NotNull String writePath) {
     }
 
     /**
@@ -814,7 +811,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param unit   must not be {@literal null}
      * @return long result
      */
-    public Long condition(@NonNull LocalDateTime now, @NonNull LocalDateTime expire, @NonNull TimeUnit unit) {
+    public Long condition(@NotNull LocalDateTime now, @NotNull LocalDateTime expire, @NotNull TimeUnit unit) {
         long value;
         switch (unit) {
             case SECONDS:
@@ -845,7 +842,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <V>   value generic
      * @return result
      */
-    private static <V, K> LocalDateTime expired(@NonNull Entry<K, V> entry) {
+    private static <V, K> LocalDateTime expired(@NotNull Entry<K, V> entry) {
         LocalDateTime expired;
         if (entry.haveDuration()) {
             expired = plusCurrent(entry.getDuration(), entry.getTimeUnit());
@@ -862,12 +859,12 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param timeUnit must not be {@literal null}
      * @return result
      */
-    private static LocalDateTime plusCurrent(@Nullable Long duration, @Nullable TimeUnit timeUnit) {
+    private static LocalDateTime plusCurrent(@CanNull Long duration, @CanNull TimeUnit timeUnit) {
         if (duration == null) {
-            duration = cacheProperties.getDefaultExpireTime();
+            duration = configuration.getDefaultExpireTime();
         }
         if (timeUnit == null) {
-            timeUnit = cacheProperties.getDefaultExpireTimeUnit();
+            timeUnit = configuration.getDefaultExpireTimeUnit();
         }
         ChronoUnit unit;
         switch (timeUnit) {
@@ -913,15 +910,15 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
             AssertUtils.Persistence.notNull(entry.getKey(), "Key no be null");
             AssertUtils.Persistence.notNull(entry.getValue(), "Value no be null");
             if (entry.getDuration() == null) {
-                entry.setDuration(cacheProperties.getDefaultExpireTime());
+                entry.setDuration(configuration.getDefaultExpireTime());
             }
             if (entry.getTimeUnit() == null) {
-                entry.setTimeUnit(cacheProperties.getDefaultExpireTimeUnit());
+                entry.setTimeUnit(configuration.getDefaultExpireTimeUnit());
             }
             return new Persistence<>(entry);
         }
 
-        public Persistence<K, V> expireOn(@NonNull LocalDateTime expire) {
+        public Persistence<K, V> expireOn(@NotNull LocalDateTime expire) {
             this.expire = expire;
             return this;
         }

@@ -1,8 +1,8 @@
 package io.github.zpf9705.expiring.core.persistence;
 
 import io.github.zpf9705.expiring.core.PersistenceException;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 
 import java.io.File;
 
@@ -26,7 +26,7 @@ public interface PersistenceRenewFactory {
      *
      * @param path Persistence path
      */
-    void deserializeWithPath(@Nullable String path) throws PersistenceException;
+    void deserializeWithPath(@CanNull String path) throws PersistenceException;
 
     /**
      * Restore memory within a file
@@ -34,7 +34,7 @@ public interface PersistenceRenewFactory {
      * @param file Persistence file
      * @throws PersistenceException Persistence ex
      */
-    void deserializeWithFile(@NonNull File file) throws PersistenceException;
+    void deserializeWithFile(@NotNull File file) throws PersistenceException;
 
     /**
      * Restore memory of read file buff
@@ -42,5 +42,5 @@ public interface PersistenceRenewFactory {
      * @param buffer file read buff
      * @throws PersistenceException Persistence ex
      */
-    void deserializeWithString(@NonNull StringBuilder buffer) throws PersistenceException;
+    void deserializeWithString(@NotNull StringBuilder buffer) throws PersistenceException;
 }

@@ -1,8 +1,8 @@
 package io.github.zpf9705.expiring.core.persistence;
 
+import io.github.zpf9705.expiring.core.annotation.CanNull;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.AssertUtils;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -16,9 +16,9 @@ import java.util.concurrent.TimeUnit;
 public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
 
     @Override
-    public void putPersistence(@NonNull K key, @NonNull V value,
-                               @Nullable Long duration,
-                               @Nullable TimeUnit timeUnit) {
+    public void putPersistence(@NotNull K key, @NotNull V value,
+                               @CanNull Long duration,
+                               @CanNull TimeUnit timeUnit) {
         run(() -> {
             @SuppressWarnings("unchecked")
             ExpireSimpleGlobePersistence<K, V> put =
@@ -33,7 +33,7 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
     }
 
     @Override
-    public void replaceValuePersistence(@NonNull K key, @NonNull V value, @NonNull V newValue) {
+    public void replaceValuePersistence(@NotNull K key, @NotNull V value, @NotNull V newValue) {
         run(() -> {
             ExpireSimpleGlobePersistence<K, V> replace = ExpireSimpleGlobePersistence.ofGet(key, value, null);
             AssertUtils.Persistence.isTrue(replace.persistenceExist(), "persistence no exist");
@@ -42,8 +42,8 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
     }
 
     @Override
-    public void replaceDurationPersistence(@NonNull K key, @NonNull V value,
-                                           @NonNull Long duration, @NonNull TimeUnit timeUnit) {
+    public void replaceDurationPersistence(@NotNull K key, @NotNull V value,
+                                           @NotNull Long duration, @NotNull TimeUnit timeUnit) {
         run(() -> {
             ExpireSimpleGlobePersistence<K, V> replaceDuration = ExpireSimpleGlobePersistence.ofGet(key, value, null);
             AssertUtils.Persistence.isTrue(replaceDuration.persistenceExist(), "persistence no exist");
@@ -52,7 +52,7 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
     }
 
     @Override
-    public void restDurationPersistence(@NonNull K key, @NonNull V value) {
+    public void restDurationPersistence(@NotNull K key, @NotNull V value) {
         run(() -> {
             ExpireSimpleGlobePersistence<K, V> reset = ExpireSimpleGlobePersistence.ofGet(key, value, null);
             AssertUtils.Persistence.isTrue(reset.persistenceExist(), "persistence no exist");
@@ -61,7 +61,7 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
     }
 
     @Override
-    public void removePersistence(@NonNull K key, @NonNull V value) {
+    public void removePersistence(@NotNull K key, @NotNull V value) {
         run(() -> {
             ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.ofGet(key, value, null);
             AssertUtils.Persistence.isTrue(remove.persistenceExist(), "persistence no exist");
@@ -70,7 +70,7 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
     }
 
     @Override
-    public void removePersistenceWithKey(@NonNull K key) {
+    public void removePersistenceWithKey(@NotNull K key) {
         run(() -> {
                 ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.ofGet(key);
                 if (!remove.persistenceExist()) {
@@ -81,7 +81,7 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
     }
 
     @Override
-    public void removeSimilarKeyPersistence(@NonNull K key) {
+    public void removeSimilarKeyPersistence(@NotNull K key) {
         run(() -> {
             AssertUtils.Persistence.notNull(key, "key no be null");
             List<ExpireSimpleGlobePersistence<K, V>> similar = ExpireSimpleGlobePersistence.ofGetSimilar(key);

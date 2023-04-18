@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
-import io.github.zpf9705.expiring.banner.StartUpBanner;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.Banner;
 import org.springframework.core.env.Environment;

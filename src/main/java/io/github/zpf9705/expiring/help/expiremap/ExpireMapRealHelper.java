@@ -5,10 +5,10 @@ import io.github.zpf9705.expiring.command.ExpireStringCommands;
 import io.github.zpf9705.expiring.command.expiremap.ExpireMapKeyCommands;
 import io.github.zpf9705.expiring.command.expiremap.ExpireMapStringCommands;
 import io.github.zpf9705.expiring.core.OperationsException;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.help.AbstractExpireHelper;
 import net.jodah.expiringmap.ExpiringMap;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +24,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
 
     private final ExpireMapCenter center;
 
-    public ExpireMapRealHelper(@NonNull Supplier<ExpireMapCenter> centerSupplier) {
+    public ExpireMapRealHelper(@NotNull Supplier<ExpireMapCenter> centerSupplier) {
         this.center = centerSupplier.get();
     }
 
@@ -118,7 +118,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
      * (non-Javadoc)
      * @see net.jodah.expiringmap.ExpiringMap#remove(Object)
      */
-    @Nullable
+    @CanNull
     @Override
     public Long deleteReturnSuccessNum(byte[]... keys) {
         long count = 0L;

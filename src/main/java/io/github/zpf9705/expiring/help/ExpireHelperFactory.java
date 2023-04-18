@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.help;
 
-import org.springframework.lang.NonNull;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 
 /**
  * Thread-safe factory of Expire helpers
@@ -15,6 +15,6 @@ public interface ExpireHelperFactory {
      *
      * @return Helper for interacting with expiry.
      */
-    @NonNull
+    @NotNull
     ExpireHelper getHelper();
 }

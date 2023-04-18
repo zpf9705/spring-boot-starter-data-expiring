@@ -1,5 +1,6 @@
-package io.github.zpf9705.expiring.core;
+package io.github.zpf9705.expiring.autoconfigure;
 
+import io.github.zpf9705.expiring.core.persistence.Configuration;
 import io.github.zpf9705.expiring.core.persistence.PersistenceRenewFactory;
 import io.github.zpf9705.expiring.util.SystemUtils;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.Setter;
 import net.jodah.expiringmap.ExpirationPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import javax.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -81,5 +83,16 @@ public class ExpireProperties {
          * Set a {@code listening packages} for map
          */
         private String listeningPackages = "com";
+    }
+
+
+    @PostConstruct
+    public void init() {
+        System.setProperty(Configuration.open_persistence, String.valueOf(this.openPersistence));
+        System.setProperty(Configuration.persistence_path, this.persistencePath);
+        System.setProperty(Configuration.defaultExpireTime, String.valueOf(this.defaultExpireTime));
+        System.setProperty(Configuration.defaultExpireTimeUnit, String.valueOf(this.defaultExpireTimeUnit));
+        System.setProperty(Configuration.noPersistenceOfExpireTime, String.valueOf(this.noPersistenceOfExpireTime));
+        System.setProperty(Configuration.noPersistenceOfExpireTimeUnit, String.valueOf(this.noPersistenceOfExpireTimeUnit));
     }
 }

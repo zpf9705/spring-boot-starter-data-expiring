@@ -1,9 +1,8 @@
 package io.github.zpf9705.expiring.command.expiremap;
 
 import io.github.zpf9705.expiring.command.ExpireKeyCommands;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapHelper;
-import org.springframework.lang.Nullable;
-
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +24,7 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
      * (non-Javadoc)
      * @see io.github.zpf9705.expiring.command.ExpireKeyCommands#delete(byte[]...)
      */
-    @Nullable
+    @CanNull
     @Override
     public Long delete(byte[]... keys) {
         return this.delegate.deleteReturnSuccessNum(keys);

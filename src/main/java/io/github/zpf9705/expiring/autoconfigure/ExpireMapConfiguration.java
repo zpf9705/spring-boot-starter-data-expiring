@@ -2,13 +2,9 @@ package io.github.zpf9705.expiring.autoconfigure;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
-import io.github.zpf9705.expiring.banner.ExpireMapBanner;
-import io.github.zpf9705.expiring.banner.ExpireStartUpBannerExecutor;
-import io.github.zpf9705.expiring.banner.StartUpBanner;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapClientConfiguration;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapClientConfigurationCustomizer;
-import io.github.zpf9705.expiring.core.ExpireProperties;
 import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapHelperFactory;
 import io.github.zpf9705.expiring.listener.ExpiringAsyncListener;

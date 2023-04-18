@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.help;
 
-import org.springframework.lang.Nullable;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  */
 public interface DefaultedExpireHelper extends ExpireHelper {
 
-    @Nullable
+    @CanNull
     @Override
     default Long delete(byte[]... keys) {
         return keyCommands().delete(keys);
@@ -34,25 +34,25 @@ public interface DefaultedExpireHelper extends ExpireHelper {
         return keyCommands().hasKey(key);
     }
 
-    @Nullable
+    @CanNull
     @Override
     default Long getExpiration(byte[] key) {
         return keyCommands().getExpiration(key);
     }
 
-    @Nullable
+    @CanNull
     @Override
     default Long getExpiration(byte[] key, TimeUnit unit) {
         return keyCommands().getExpiration(key, unit);
     }
 
-    @Nullable
+    @CanNull
     @Override
     default Long getExpectedExpiration(byte[] key) {
         return keyCommands().getExpectedExpiration(key);
     }
 
-    @Nullable
+    @CanNull
     @Override
     default Long getExpectedExpiration(byte[] key, TimeUnit unit) {
         return keyCommands().getExpectedExpiration(key, unit);
@@ -68,7 +68,7 @@ public interface DefaultedExpireHelper extends ExpireHelper {
         return keyCommands().resetExpiration(key);
     }
 
-    @Nullable
+    @CanNull
     @Override
     default Boolean set(byte[] key, byte[] value) {
         return stringCommands().set(key, value);
@@ -79,25 +79,25 @@ public interface DefaultedExpireHelper extends ExpireHelper {
         return stringCommands().setE(key, value, duration, unit);
     }
 
-    @Nullable
+    @CanNull
     @Override
     default Boolean setNX(byte[] key, byte[] value) {
         return stringCommands().setNX(key, value);
     }
 
-    @Nullable
+    @CanNull
     @Override
     default Boolean setEX(byte[] key, byte[] value, Long duration, TimeUnit unit) {
         return stringCommands().setEX(key, value, duration, unit);
     }
 
-    @Nullable
+    @CanNull
     @Override
     default byte[] get(byte[] key) {
         return stringCommands().get(key);
     }
 
-    @Nullable
+    @CanNull
     @Override
     default byte[] getAndSet(byte[] key, byte[] newValue) {
         return stringCommands().getAndSet(key, newValue);

@@ -1,4 +1,4 @@
-package io.github.zpf9705.expiring.banner;
+package io.github.zpf9705.expiring.autoconfigure;
 
 /**
  * Using expire startup banner getting

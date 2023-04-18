@@ -1,9 +1,8 @@
 package io.github.zpf9705.expiring.command;
 
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.persistence.PersistenceExec;
 import io.github.zpf9705.expiring.core.persistence.PersistenceExecTypeEnum;
-import org.springframework.lang.Nullable;
-
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +20,7 @@ public interface ExpireKeyCommands {
      * @param keys must not be {@literal null}.
      * @return The number of keys that were removed.
      */
-    @Nullable
+    @CanNull
     @PersistenceExec(PersistenceExecTypeEnum.REMOVE_KEYS)
     Long delete(byte[]... keys);
 
@@ -56,7 +55,7 @@ public interface ExpireKeyCommands {
      * @param key must not be {@literal null}.
      * @return unit : ms
      */
-    @Nullable
+    @CanNull
     Long getExpiration(byte[] key);
 
     /**
@@ -66,7 +65,7 @@ public interface ExpireKeyCommands {
      * @param unit must not be {@literal null}.
      * @return specify unit
      */
-    @Nullable
+    @CanNull
     Long getExpiration(byte[] key, TimeUnit unit);
 
     /**
@@ -75,7 +74,7 @@ public interface ExpireKeyCommands {
      * @param key must not be {@literal null}.
      * @return unit : ms
      */
-    @Nullable
+    @CanNull
     Long getExpectedExpiration(byte[] key);
 
     /**
@@ -85,7 +84,7 @@ public interface ExpireKeyCommands {
      * @param unit must not be {@literal null}.
      * @return specify unit
      */
-    @Nullable
+    @CanNull
     Long getExpectedExpiration(byte[] key, TimeUnit unit);
 
     /**

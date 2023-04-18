@@ -1,9 +1,8 @@
 package io.github.zpf9705.expiring.core.persistence;
 
 import io.github.zpf9705.expiring.core.Console;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-
+import io.github.zpf9705.expiring.core.annotation.CanNull;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,9 +21,9 @@ public interface PersistenceSolver<K, V> {
      * @param duration can be {@literal null}.
      * @param timeUnit can be  {@literal null}.
      */
-    void putPersistence(@NonNull K key, @NonNull V value,
-                        @Nullable Long duration,
-                        @Nullable TimeUnit timeUnit);
+    void putPersistence(@NotNull K key, @NotNull V value,
+                        @CanNull Long duration,
+                        @CanNull TimeUnit timeUnit);
 
     /**
      * Replace the corresponding {@code  key} {@code value} the value of a {@code newValue}
@@ -33,7 +32,7 @@ public interface PersistenceSolver<K, V> {
      * @param value    must not be {@literal null}.
      * @param newValue must not be {@literal null}.
      */
-    void replaceValuePersistence(@NonNull K key, @NonNull V value, @NonNull V newValue);
+    void replaceValuePersistence(@NotNull K key, @NotNull V value, @NotNull V newValue);
 
     /**
      * Set a {@code key} and {@code value} with new duration , but if {@code key} exist
@@ -43,8 +42,8 @@ public interface PersistenceSolver<K, V> {
      * @param duration must not be {@literal null}.
      * @param timeUnit must not be {@literal null}.
      */
-    void replaceDurationPersistence(@NonNull K key, @NonNull V value,
-                                    @NonNull Long duration, @NonNull TimeUnit timeUnit);
+    void replaceDurationPersistence(@NotNull K key, @NotNull V value,
+                                    @NotNull Long duration, @NotNull TimeUnit timeUnit);
 
     /**
      * Rest a {@code key} and {@code value} combination of persistence
@@ -52,7 +51,7 @@ public interface PersistenceSolver<K, V> {
      * @param key   must not be {@literal null}.
      * @param value must not be {@literal null}.
      */
-    void restDurationPersistence(@NonNull K key, @NonNull V value);
+    void restDurationPersistence(@NotNull K key, @NotNull V value);
 
     /**
      * Remove a {@code key} and {@code value} persistence record
@@ -60,21 +59,21 @@ public interface PersistenceSolver<K, V> {
      * @param key   must not be {@literal null}.
      * @param value must not be {@literal null}.
      */
-    void removePersistence(@NonNull K key, @NonNull V value);
+    void removePersistence(@NotNull K key, @NotNull V value);
 
     /**
      * Remove a {@code key} and {@code value} persistence record
      *
      * @param key must not be {@literal null}.
      */
-    void removePersistenceWithKey(@NonNull K key);
+    void removePersistenceWithKey(@NotNull K key);
 
     /**
      * Remove a {@code key} Similar  persistence record
      *
      * @param key must not be {@literal null}.
      */
-    void removeSimilarKeyPersistence(@NonNull K key);
+    void removeSimilarKeyPersistence(@NotNull K key);
 
     /**
      * Remove all the cache files
@@ -87,7 +86,7 @@ public interface PersistenceSolver<K, V> {
      * @param runnable method runnable
      * @param method   method name
      */
-    default void run(@NonNull Runnable runnable, @NonNull String method) {
+    default void run(@NotNull Runnable runnable, @NotNull String method) {
         try {
             runnable.run();
         } catch (Throwable e) {

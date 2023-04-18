@@ -1,8 +1,8 @@
 package io.github.zpf9705.expiring.core.serializer;
 
 import io.github.zpf9705.expiring.util.AssertUtils;
+import io.github.zpf9705.expiring.util.SerialUtils;
 import io.reactivex.rxjava3.core.Single;
-import org.springframework.util.SerializationUtils;
 
 /**
  * Key/value pairs serialized adapter , Direct implementation {@link ExpiringSerializer}
@@ -20,7 +20,7 @@ public class ExpiringSerializerAdapter<T> implements ExpiringSerializer<T> {
 
     @Override
     public byte[] serialize(T t) {
-        byte[] serialize = SerializationUtils.serialize(t);
+        byte[] serialize = SerialUtils.serialize(t);
         AssertUtils.Operation.notNull(serialize,
                 "serialize failed ! t serialize is not null " + t);
         return serialize;
@@ -29,7 +29,7 @@ public class ExpiringSerializerAdapter<T> implements ExpiringSerializer<T> {
     @Override
     public T deserialize(byte[] bytes) {
         T t = null;
-        Object deserialize = SerializationUtils.deserialize(bytes);
+        Object deserialize = SerialUtils.deserialize(bytes);
         if (deserialize != null) {
             t = Single.just(deserialize).ofType(this.type).blockingGet();
         }

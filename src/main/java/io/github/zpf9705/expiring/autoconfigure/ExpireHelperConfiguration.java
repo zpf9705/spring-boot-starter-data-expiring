@@ -1,7 +1,5 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
-import io.github.zpf9705.expiring.core.ExpireProperties;
-
 /**
  * Base Expire helper configuration.
  *

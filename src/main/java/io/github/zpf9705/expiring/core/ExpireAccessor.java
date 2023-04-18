@@ -1,9 +1,9 @@
 package io.github.zpf9705.expiring.core;
 
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
+import io.github.zpf9705.expiring.util.AssertUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.lang.NonNull;
-import org.springframework.util.Assert;
 
 /**
  * Cache expiration project simulation Helper accessors ,
@@ -18,7 +18,7 @@ public class ExpireAccessor implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        Assert.isTrue(getHelperFactory() != null, "ExpireHelperFactory must required");
+        AssertUtils.Operation.isTrue(getHelperFactory() != null, "ExpireHelperFactory must required");
     }
 
     /**
@@ -35,7 +35,7 @@ public class ExpireAccessor implements InitializingBean {
      *
      * @param helperFactory The connectionFactory to set.
      */
-    public void setHelperFactory(@NonNull ExpireHelperFactory helperFactory) {
+    public void setHelperFactory(@NotNull ExpireHelperFactory helperFactory) {
         this.helperFactory = helperFactory;
     }
 }

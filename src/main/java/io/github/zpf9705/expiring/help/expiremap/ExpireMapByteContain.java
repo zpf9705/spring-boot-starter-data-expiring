@@ -1,8 +1,5 @@
 package io.github.zpf9705.expiring.help.expiremap;
 
-
-import org.springframework.util.CollectionUtils;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
@@ -99,7 +96,7 @@ public class ExpireMapByteContain extends ConcurrentHashMap<byte[], byte[]> {
      * @return similar element
      */
     private byte[] filter(Collection<byte[]> collection, byte[] newBytes) {
-        if (CollectionUtils.isEmpty(collection)) {
+        if (collection == null || collection.isEmpty()) {
             return null;
         }
         return collection.stream().filter(b -> Arrays.equals(b, newBytes))

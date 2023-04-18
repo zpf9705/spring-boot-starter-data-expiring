@@ -1,8 +1,7 @@
 package io.github.zpf9705.expiring.listener;
 
-import org.springframework.lang.NonNull;
-import org.springframework.util.SerializationUtils;
-
+import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.util.SerialUtils;
 import java.io.Serializable;
 
 /**
@@ -20,21 +19,21 @@ public final class Message implements Serializable {
     private final Object value;
 
     private Message(byte[] key, byte[] value) {
-        this.key = SerializationUtils.deserialize(key);
-        this.value = SerializationUtils.deserialize(value);
+        this.key = SerialUtils.deserialize(key);
+        this.value = SerialUtils.deserialize(value);
     }
 
-    @NonNull
+    @NotNull
     public Object getKey() {
         return key;
     }
 
-    @NonNull
+    @NotNull
     public Object getValue() {
         return value;
     }
 
-    public static Message serial(@NonNull byte[] key, @NonNull byte[] value) {
+    public static Message serial(@NotNull byte[] key, @NotNull byte[] value) {
         return new Message(key, value);
     }
 }

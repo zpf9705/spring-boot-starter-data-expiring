@@ -3,10 +3,9 @@ package io.github.zpf9705.expiring.core.persistence;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import io.github.zpf9705.expiring.core.PersistenceException;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapCenter;
 import io.github.zpf9705.expiring.util.AssertUtils;
-import org.springframework.lang.NonNull;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -35,7 +34,7 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
      * @param entry must not be {@literal null}
      * @return {@link ExpireByteGlobePersistence}
      */
-    public static ExpireByteGlobePersistence ofSetBytes(@NonNull Entry<byte[], byte[]> entry) {
+    public static ExpireByteGlobePersistence ofSetBytes(@NotNull Entry<byte[], byte[]> entry) {
         return ofSet(ExpireByteGlobePersistence.class, BytePersistence.class, entry);
     }
 
@@ -46,7 +45,7 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
      * @param persistence must not be {@literal null}
      * @return {@link ExpireByteGlobePersistence}
      */
-    public static ExpireByteGlobePersistence ofSetPersistenceBytes(@NonNull BytePersistence persistence) {
+    public static ExpireByteGlobePersistence ofSetPersistenceBytes(@NotNull BytePersistence persistence) {
         return ofSetPersistence(ExpireByteGlobePersistence.class, persistence);
     }
 
@@ -87,7 +86,7 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
     }
 
     @Override
-    public void deserializeWithString(@NonNull StringBuilder buffer) {
+    public void deserializeWithString(@NotNull StringBuilder buffer) {
         super.deserializeWithString(buffer);
         //parse json
         Persistence<byte[], byte[]> persistence;
@@ -105,8 +104,8 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
     }
 
     @Override
-    public void deserializeWithEntry(@NonNull Persistence<byte[], byte[]> persistence,
-                                     @NonNull String writePath) {
+    public void deserializeWithEntry(@NotNull Persistence<byte[], byte[]> persistence,
+                                     @NotNull String writePath) {
         //current time
         LocalDateTime now = LocalDateTime.now();
         //When the time is equal to or judged failure after now in record time

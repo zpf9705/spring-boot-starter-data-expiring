@@ -1,10 +1,9 @@
 package io.github.zpf9705.expiring.help.expiremap;
 
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
-import org.springframework.lang.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -83,13 +82,13 @@ public interface ExpireMapClientConfiguration {
      */
     class ExpireMapClientConfigurationBuilder {
 
-        @Nullable
+        @CanNull
         Integer maxSize;
-        @Nullable
+        @CanNull
         Long defaultExpireTime;
-        @Nullable
+        @CanNull
         TimeUnit defaultExpireTimeUnit;
-        @Nullable
+        @CanNull
         ExpirationPolicy expirationPolicy;
         static final Integer DEFAULT_MAX_SIZE = 20 * 50;
         static final Long DEFAULT_EXPIRE_TIME = 30L;

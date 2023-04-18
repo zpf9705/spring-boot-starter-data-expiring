@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.core.persistence;
 
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import lombok.Data;
-import lombok.NonNull;
 
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +36,7 @@ public class Entry<K, V> implements Serializable {
         this.timeUnit = timeUnit;
     }
 
-    public void refreshOfExpire(@NonNull Long duration, @NonNull TimeUnit timeUnit) {
+    public void refreshOfExpire(@NotNull Long duration, @NotNull TimeUnit timeUnit) {
         this.duration = duration;
         this.timeUnit = timeUnit;
     }

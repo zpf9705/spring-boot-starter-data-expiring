@@ -1,9 +1,7 @@
 package io.github.zpf9705.expiring.util;
 
 import cn.hutool.core.util.ArrayUtil;
-import org.springframework.lang.NonNull;
-import org.springframework.util.SerializationUtils;
-
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -21,7 +19,7 @@ public abstract class CompatibleUtils {
      * @param <T> obj generic
      * @return hash mark
      */
-    public static <T> String rawHashWithType(@NonNull T t) {
+    public static <T> String rawHashWithType(@NotNull T t) {
         int hashcode = 0;
         String className = t.getClass().getName();
         if (ArrayUtil.isArray(t)) {
@@ -39,7 +37,7 @@ public abstract class CompatibleUtils {
      * @param <T> obj generic
      * @return String mark
      */
-    public static <T> String toStingBeReal(@NonNull T t) {
+    public static <T> String toStingBeReal(@NotNull T t) {
         if (t instanceof String) {
             return t.toString();
         }
@@ -50,7 +48,7 @@ public abstract class CompatibleUtils {
                  * @see io.github.zpf9705.expiring.core.serializer.ExpiringSerializerAdapter
                  */
                 try {
-                    Object deserialize = SerializationUtils.deserialize((byte[]) t);
+                    Object deserialize = SerialUtils.deserialize((byte[]) t);
                     if (deserialize != null) {
                         toString = deserialize.toString();
                     }
@@ -69,7 +67,7 @@ public abstract class CompatibleUtils {
      * @param target must not be {@literal null}
      * @return result
      */
-    public static List<String> findSimilarElement(@NonNull Collection<String> source, @NonNull String target) {
+    public static List<String> findSimilarElement(@NotNull Collection<String> source, @NotNull String target) {
         return source.stream().filter(findPredicate(target)).collect(Collectors.toList());
     }
 
@@ -79,7 +77,7 @@ public abstract class CompatibleUtils {
      * @param target must not be {@literal null}
      * @return if {@code Predicate.test() == true} contain all
      */
-    public static Predicate<String> findPredicate(@NonNull String target) {
+    public static Predicate<String> findPredicate(@NotNull String target) {
         return s -> s.contains(target);
     }
 }

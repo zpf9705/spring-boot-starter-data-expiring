@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.core;
 
-import org.springframework.lang.Nullable;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +38,7 @@ public interface ValueOperations<K, V> {
      * @param value must not be {@literal null}.
      * @return {@literal null} If returns true, then add memory success, or false, indicates the key/value pair already exists
      */
-    @Nullable
+    @CanNull
     Boolean setIfAbsent(K key, V value);
 
     /**
@@ -50,7 +50,7 @@ public interface ValueOperations<K, V> {
      * @param unit     must not be {@literal null}.
      * @return {@literal null} If returns true, then add memory success, or false, indicates the key/value pair already exists
      */
-    @Nullable
+    @CanNull
     Boolean setIfAbsent(K key, V value, Long duration, TimeUnit unit);
 
     /**
@@ -59,7 +59,7 @@ public interface ValueOperations<K, V> {
      * @param key must not be {@literal null}.
      * @return {@literal null} get in memory with {@code key} , when used in pipeline / transaction.
      */
-    @Nullable
+    @CanNull
     V get(K key);
 
     /**
@@ -69,7 +69,7 @@ public interface ValueOperations<K, V> {
      * @param newValue must not be {@literal null}.
      * @return {@literal null} when used in pipeline / transaction.
      */
-    @Nullable
+    @CanNull
     V getAndSet(K key, V newValue);
 
     /**

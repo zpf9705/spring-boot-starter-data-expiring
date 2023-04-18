@@ -1,9 +1,8 @@
 package io.github.zpf9705.expiring.command;
 
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.persistence.PersistenceExec;
 import io.github.zpf9705.expiring.core.persistence.PersistenceExecTypeEnum;
-import org.springframework.lang.Nullable;
-
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,7 +20,7 @@ public interface ExpireStringCommands {
      * @param value must not be {@literal null}.
      * @return {@literal null}
      */
-    @Nullable
+    @CanNull
     @PersistenceExec(PersistenceExecTypeEnum.SET)
     Boolean set(byte[] key, byte[] value);
 
@@ -44,7 +43,7 @@ public interface ExpireStringCommands {
      * @param value must not be {@literal null}.
      * @return {@literal null}
      */
-    @Nullable
+    @CanNull
     @PersistenceExec(PersistenceExecTypeEnum.SET)
     Boolean setNX(byte[] key, byte[] value);
 
@@ -57,7 +56,7 @@ public interface ExpireStringCommands {
      * @param unit     must not be {@literal null}.
      * @return {@literal null}
      */
-    @Nullable
+    @CanNull
     @PersistenceExec(PersistenceExecTypeEnum.SET)
     Boolean setEX(byte[] key, byte[] value, Long duration, TimeUnit unit);
 
@@ -67,7 +66,7 @@ public interface ExpireStringCommands {
      * @param key must not be {@literal null}.
      * @return {@literal null}
      */
-    @Nullable
+    @CanNull
     byte[] get(byte[] key);
 
     /**
@@ -77,7 +76,7 @@ public interface ExpireStringCommands {
      * @param newValue must not be {@literal null}.
      * @return {@literal null}
      */
-    @Nullable
+    @CanNull
     @PersistenceExec(PersistenceExecTypeEnum.REPLACE_VALUE)
     byte[] getAndSet(byte[] key, byte[] newValue);
 }

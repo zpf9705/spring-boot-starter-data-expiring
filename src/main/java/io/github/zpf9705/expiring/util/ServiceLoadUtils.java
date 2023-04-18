@@ -1,7 +1,6 @@
 package io.github.zpf9705.expiring.util;
 
-import org.springframework.lang.NonNull;
-
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -31,7 +30,7 @@ public final class ServiceLoadUtils<T> {
      * @param <T>       load type
      * @return this instance
      */
-    public static <T> ServiceLoadUtils<T> load(@NonNull Class<T> faceClass) {
+    public static <T> ServiceLoadUtils<T> load(@NotNull Class<T> faceClass) {
         ServiceLoader serviceLoader = LOAD_CACHE.get(faceClass.getName());
         if (serviceLoader == null) {
             serviceLoader = ServiceLoader.load(faceClass);

@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.core;
 
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.help.ExpireHelper;
-import org.springframework.lang.Nullable;
 
 /**
  * Callback interface for Redis 'low level' code.
@@ -19,6 +19,6 @@ public interface ExpireValueCallback<T> {
      * @param connection Expire Helper
      * @return a result object or {@code null} if none
      */
-    @Nullable
+    @CanNull
     T doInExpire(ExpireHelper connection);
 }

@@ -1,8 +1,8 @@
 package io.github.zpf9705.expiring.core;
 
 
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializer;
-import org.springframework.lang.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
@@ -24,7 +24,7 @@ public interface ExpireOperations<K, V> {
      * @param <T>              return paradigm
      * @return return value be changed
      */
-    @Nullable
+    @CanNull
     <T> T execute(ExpireValueCallback<T> action, boolean composeException);
 
     /**
@@ -33,7 +33,7 @@ public interface ExpireOperations<K, V> {
      * @param key must not be {@literal null}.
      * @return {@literal true} if the key was removed.
      */
-    @Nullable
+    @CanNull
     Boolean delete(K key);
 
     /**
@@ -42,7 +42,7 @@ public interface ExpireOperations<K, V> {
      * @param keys must not be {@literal null}.
      * @return The number of keys that were removed. {@literal null}
      */
-    @Nullable
+    @CanNull
     Long delete(Collection<K> keys);
 
     /**

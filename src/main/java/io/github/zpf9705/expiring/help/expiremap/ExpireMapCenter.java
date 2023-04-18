@@ -1,9 +1,9 @@
 package io.github.zpf9705.expiring.help.expiremap;
 
 import io.github.zpf9705.expiring.core.OperationsException;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
-import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -44,7 +44,7 @@ public final class ExpireMapCenter {
      * @param configuration must no be {@literal null}
      * @return {@link net.jodah.expiringmap.ExpiringMap}
      */
-    public static ExpireMapCenter singletonWithConfiguration(@NonNull ExpireMapClientConfiguration configuration) {
+    public static ExpireMapCenter singletonWithConfiguration(@NotNull ExpireMapClientConfiguration configuration) {
         if (expireMapCenter == null) {
             synchronized (ExpireMapCenter.class) {
                 if (expireMapCenter == null) {
@@ -93,8 +93,8 @@ public final class ExpireMapCenter {
      * @param duration must no be {@literal null}
      * @param unit     must no be {@literal null}
      */
-    public void reload(@NonNull byte[] key, @NonNull byte[] value, @NonNull Long duration,
-                       @NonNull TimeUnit unit) {
+    public void reload(@NotNull byte[] key, @NotNull byte[] value, @NotNull Long duration,
+                       @NotNull TimeUnit unit) {
         if (this.solveDifferentialGenericSingleton == null || this.contain == null) {
             return;
         }
@@ -109,7 +109,7 @@ public final class ExpireMapCenter {
      * @return {@link net.jodah.expiringmap.ExpiringMap}
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static ExpireMapCenter buildSingleton(@NonNull ExpireMapClientConfiguration configuration) {
+    private static ExpireMapCenter buildSingleton(@NotNull ExpireMapClientConfiguration configuration) {
         ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton = ExpiringMap.builder()
                 .maxSize(configuration.getMaxSize())
                 .expiration(configuration.getDefaultExpireTime(), configuration.getDefaultExpireTimeUnit())

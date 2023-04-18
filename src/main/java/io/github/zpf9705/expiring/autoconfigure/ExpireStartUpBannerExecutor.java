@@ -1,4 +1,4 @@
-package io.github.zpf9705.expiring.banner;
+package io.github.zpf9705.expiring.autoconfigure;
 
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;

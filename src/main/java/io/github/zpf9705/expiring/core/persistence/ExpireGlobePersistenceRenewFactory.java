@@ -1,8 +1,8 @@
 package io.github.zpf9705.expiring.core.persistence;
 
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import io.github.zpf9705.expiring.util.ServiceLoadUtils;
-import org.springframework.lang.NonNull;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,7 +35,7 @@ public abstract class ExpireGlobePersistenceRenewFactory {
      * @param factoryClass factory class
      * @return implements {@code PersistenceFactory}
      */
-    private static PersistenceRenewFactory getPersistenceFRenewFactoryWithClass(@NonNull Class<?> factoryClass) {
+    private static PersistenceRenewFactory getPersistenceFRenewFactoryWithClass(@NotNull Class<?> factoryClass) {
         PersistenceRenewFactory factory = PersistenceFactoryProvider.findRenewFactory(factoryClass);
         AssertUtils.Persistence.notNull(factory, "Sorry , no found clint name [" + factoryClass.getName() + "] " +
                 "Persistence Factory");
@@ -76,7 +76,7 @@ public abstract class ExpireGlobePersistenceRenewFactory {
          * @param factoryClass factory class
          * @return implements {@code PersistenceFactory}
          */
-        public static PersistenceRenewFactory findRenewFactory(@NonNull Class<?> factoryClass) {
+        public static PersistenceRenewFactory findRenewFactory(@NotNull Class<?> factoryClass) {
             return PERSISTENCE_FACTORIES.stream()
                     .filter(f -> Objects.equals(factoryClass.getName(), f.getFactoryName()))
                     .findFirst()

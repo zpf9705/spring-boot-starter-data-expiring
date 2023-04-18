@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.help.expiremap;
 
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.help.ExpireHelper;
-import org.springframework.lang.Nullable;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -77,7 +77,7 @@ public interface ExpireMapHelper extends ExpireHelper {
      * @param keys must not be {@literal null}
      * @return deleted number
      */
-    @Nullable
+    @CanNull
     Long deleteReturnSuccessNum(byte[]... keys);
 
     /**

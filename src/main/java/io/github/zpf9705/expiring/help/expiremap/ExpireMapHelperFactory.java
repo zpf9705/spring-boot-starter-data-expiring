@@ -1,11 +1,11 @@
 package io.github.zpf9705.expiring.help.expiremap;
 
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.core.persistence.ExpirePersistenceAfterHandle;
 import io.github.zpf9705.expiring.core.persistence.PersistenceExec;
 import io.github.zpf9705.expiring.core.proxy.JdkProxy;
 import io.github.zpf9705.expiring.help.ExpireHelper;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
-import org.springframework.lang.NonNull;
 
 /**
  * Connection factory creating {@link ExpireMapHelperFactory}
@@ -18,12 +18,12 @@ public class ExpireMapHelperFactory implements ExpireHelperFactory {
 
     private final ExpireMapHelper helper;
 
-    public ExpireMapHelperFactory(@NonNull ExpireMapClientConfiguration clientConfiguration) {
+    public ExpireMapHelperFactory(@NotNull ExpireMapClientConfiguration clientConfiguration) {
         this.helper = doCreateExpireMapHelp(clientConfiguration);
     }
 
     @Override
-    @NonNull
+    @NotNull
     public ExpireHelper getHelper() {
         return this.helper;
     }

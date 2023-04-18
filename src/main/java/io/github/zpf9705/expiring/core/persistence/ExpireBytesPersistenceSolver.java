@@ -1,9 +1,8 @@
 package io.github.zpf9705.expiring.core.persistence;
 
+import io.github.zpf9705.expiring.core.annotation.CanNull;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.AssertUtils;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -17,9 +16,9 @@ import java.util.concurrent.TimeUnit;
 public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], byte[]> {
 
     @Override
-    public void putPersistence(@NonNull byte[] key, @NonNull byte[] value,
-                               @Nullable Long duration,
-                               @Nullable TimeUnit timeUnit) {
+    public void putPersistence(@NotNull byte[] key, @NotNull byte[] value,
+                               @CanNull Long duration,
+                               @CanNull TimeUnit timeUnit) {
 
         run(() -> {
             ExpireByteGlobePersistence put =
@@ -31,8 +30,8 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
     }
 
     @Override
-    public void replaceValuePersistence(@NonNull byte[] key, @NonNull byte[] value,
-                                        @NonNull byte[] newValue) {
+    public void replaceValuePersistence(@NotNull byte[] key, @NotNull byte[] value,
+                                        @NotNull byte[] newValue) {
         run(() -> {
             ExpireByteGlobePersistence replace = ExpireByteGlobePersistence.ofGetBytes(key, value);
             AssertUtils.Persistence.isTrue(replace.persistenceExist(), "persistence no exist");
@@ -41,8 +40,8 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
     }
 
     @Override
-    public void replaceDurationPersistence(@NonNull byte[] key, @NonNull byte[] value,
-                                           @NonNull Long duration, @NonNull TimeUnit timeUnit) {
+    public void replaceDurationPersistence(@NotNull byte[] key, @NotNull byte[] value,
+                                           @NotNull Long duration, @NotNull TimeUnit timeUnit) {
         run(() -> {
             ExpireByteGlobePersistence replaceDuration = ExpireByteGlobePersistence.ofGetBytes(key, value);
             AssertUtils.Persistence.isTrue(replaceDuration.persistenceExist(), "persistence no exist");
@@ -51,7 +50,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
     }
 
     @Override
-    public void restDurationPersistence(@NonNull byte[] key, @NonNull byte[] value) {
+    public void restDurationPersistence(@NotNull byte[] key, @NotNull byte[] value) {
         run(() -> {
             ExpireByteGlobePersistence reset = ExpireByteGlobePersistence.ofGetBytes(key, value);
             AssertUtils.Persistence.isTrue(reset.persistenceExist(), "persistence no exist");
@@ -60,7 +59,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
     }
 
     @Override
-    public void removePersistence(@NonNull byte[] key, @NonNull byte[] value) {
+    public void removePersistence(@NotNull byte[] key, @NotNull byte[] value) {
         run(() -> {
             ExpireByteGlobePersistence remove = ExpireByteGlobePersistence.ofGetBytes(key, value);
             AssertUtils.Persistence.isTrue(remove.persistenceExist(), "persistence no exist, no repeat del");
@@ -69,7 +68,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
     }
 
     @Override
-    public void removePersistenceWithKey(@NonNull byte[] key) {
+    public void removePersistenceWithKey(@NotNull byte[] key) {
         run(() -> {
             ExpireByteGlobePersistence remove = ExpireByteGlobePersistence.ofGetBytes(key);
             if (!remove.persistenceExist()) {
@@ -80,7 +79,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
     }
 
     @Override
-    public void removeSimilarKeyPersistence(@NonNull byte[] key) {
+    public void removeSimilarKeyPersistence(@NotNull byte[] key) {
         run(() -> {
             AssertUtils.Persistence.notNull(key, "key no be null");
             List<ExpireByteGlobePersistence> similar = ExpireByteGlobePersistence.ofGetSimilarBytes(key);

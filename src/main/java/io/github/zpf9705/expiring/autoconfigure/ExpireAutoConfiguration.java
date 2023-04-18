@@ -1,9 +1,5 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
-import io.github.zpf9705.expiring.banner.ExpireStartUpBannerExecutor;
-import io.github.zpf9705.expiring.banner.ExpireStarterBanner;
-import io.github.zpf9705.expiring.banner.StartUpBanner;
-import io.github.zpf9705.expiring.banner.Version;
 import io.github.zpf9705.expiring.core.*;
 import io.github.zpf9705.expiring.core.persistence.ExpireGlobePersistenceRenewFactory;
 import io.github.zpf9705.expiring.core.persistence.PersistenceRenewFactory;
@@ -162,17 +158,9 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
         return template.opsExpirationOperations();
     }
 
-    @Bean("application-ec")
-    @ConditionalOnMissingBean(name = {"application-ec"})
-    public Application application() {
-        return new Application();
-    }
-
-
     @Bean("expireMap::persistenceRegain")
     @Override
     @ConditionalOnProperty(prefix = "spring.data.expiry", name = "open-persistence", havingValue = "true")
-    @ConditionalOnBean(value = {ValueOperations.class}, name = {"application-ec"})
     public String persistenceRegain(@Value("${spring.data.expiry.persistence-path:default}") String path) {
         Class<?> factoryClass = this.expireProperties.getPersistenceFactoryClass();
         if (factoryClass == null) {

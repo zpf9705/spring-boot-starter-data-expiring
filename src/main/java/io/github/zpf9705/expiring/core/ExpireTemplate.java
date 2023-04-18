@@ -1,14 +1,12 @@
 package io.github.zpf9705.expiring.core;
 
 import io.github.zpf9705.expiring.command.ExpireKeyCommands;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializer;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
 import io.github.zpf9705.expiring.help.ExpireHelper;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
 import io.github.zpf9705.expiring.util.AssertUtils;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -37,7 +35,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
     private static final long serialVersionUID = -8020854200126293536L;
     @SuppressWarnings("rawtypes")
-    private @Nullable ExpiringSerializer defaultSerializer;
+    private @CanNull ExpiringSerializer defaultSerializer;
     private boolean enableDefaultSerializer = true;
     private boolean initialized = false;
 
@@ -78,7 +76,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
         }
 
         if (this.enableDefaultSerializer && defaultUsed) {
-            Assert.notNull(this.defaultSerializer, "defaultSerializer must initialized");
+            AssertUtils.Operation.notNull(this.defaultSerializer, "defaultSerializer must initialized");
         }
 
         this.initialized = true;
@@ -201,7 +199,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
         return this.expirationOperations;
     }
 
-    @Nullable
+    @CanNull
     @Override
     public Boolean delete(K key) {
         Long result = execute((connection) -> connection.delete(
@@ -210,10 +208,10 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
         return result != null && result.intValue() == 1;
     }
 
-    @Nullable
+    @CanNull
     @Override
     public Long delete(Collection<K> keys) {
-        if (CollectionUtils.isEmpty(keys)) {
+        if (keys == null || keys.isEmpty()) {
             return 0L;
         }
         return this.execute((connection) -> connection.delete(
@@ -228,7 +226,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
                 this.rawKey(key)
         ), true);
 
-        if (CollectionUtils.isEmpty(map)) {
+        if (map == null || map.isEmpty()) {
             return Collections.emptyMap();
         }
 
@@ -253,7 +251,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     }
 
     private byte[] rawKey(K key) {
-        Assert.notNull(key, "non null key required");
+        AssertUtils.Operation.notNull(key, "Non null key required");
         byte[] v;
         if (this.keySerialize != null) {
             v = this.keySerialize.serialize(key);
@@ -269,7 +267,6 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
     private byte[][] rawKeys(Collection<K> keys) {
         final byte[][] rawKeys = new byte[keys.size()][];
-
         int i = 0;
         for (K key : keys) {
             rawKeys[i++] = rawKey(key);
@@ -278,7 +275,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     }
 
     private byte[] rawValue(V value) {
-        Assert.notNull(value, "non null value required");
+        AssertUtils.Operation.notNull(value, "Non null value required");
         byte[] v;
         if (this.valueSerialize != null) {
             v = this.valueSerialize.serialize(value);
