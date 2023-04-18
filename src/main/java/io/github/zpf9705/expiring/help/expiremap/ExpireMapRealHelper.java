@@ -149,7 +149,10 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
                 delKeys.add(k);
             }
         });
-        delKeys.forEach(expire()::remove);
+        delKeys.forEach(k -> {
+            expire().remove(k);
+            contain().remove(k);
+        });
         return map;
     }
 

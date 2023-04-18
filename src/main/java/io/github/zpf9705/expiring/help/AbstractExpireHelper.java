@@ -1,7 +1,6 @@
 package io.github.zpf9705.expiring.help;
 
-import io.github.zpf9705.expiring.util.ObjectUtils;
-
+import io.github.zpf9705.expiring.util.CompatibleUtils;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
@@ -18,10 +17,10 @@ public abstract class AbstractExpireHelper implements DefaultedExpireHelper {
      */
     private final BiFunction<Object, Object, Boolean> compare = (b, c) -> {
         if (b != null && c != null) {
-            Predicate<String> predicate = ObjectUtils.findPredicate(
-                    ObjectUtils.toStingWithMiddle(c)
+            Predicate<String> predicate = CompatibleUtils.findPredicate(
+                    CompatibleUtils.toStingBeReal(c)
             );
-            return predicate.test(ObjectUtils.toStingWithMiddle(c));
+            return predicate.test(CompatibleUtils.toStingBeReal(c));
         }
         return false;
     };

@@ -10,7 +10,7 @@ import io.github.zpf9705.expiring.core.ExpiringException;
 import io.github.zpf9705.expiring.core.PersistenceException;
 import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.util.AssertUtils;
-import io.github.zpf9705.expiring.util.ObjectUtils;
+import io.github.zpf9705.expiring.util.CompatibleUtils;
 import io.reactivex.rxjava3.core.Single;
 import lombok.Getter;
 import lombok.Setter;
@@ -356,7 +356,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         AssertUtils.Persistence.notNull(key, "Key no be null");
         String persistenceKey;
         if (value == null) {
-            String hashKey = ObjectUtils.rawHashWithType(key);
+            String hashKey = CompatibleUtils.rawHashWithType(key);
             String hashValue = KEY_VALUE_HASH.getOrDefault(hashKey, null);
             AssertUtils.Persistence.hasText(hashValue, "Key [" + key + "] no be hash value");
             persistenceKey = rawHashComb(hashKey, hashValue);
@@ -392,16 +392,16 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      */
     public static <G extends ExpireSimpleGlobePersistence, K> List<G> ofGetSimilar(@NonNull K key) {
         checkOpenPersistence();
-        String keySting = ObjectUtils.toStingWithMiddle(key);
-        List<String> similarElement = ObjectUtils.findStringSimilarElement(TO_STRING.keySet(), keySting);
+        String realKey = CompatibleUtils.toStingBeReal(key);
+        List<String> similarElement = CompatibleUtils.findSimilarElement(TO_STRING.keySet(), realKey);
         if (CollectionUtils.isEmpty(similarElement)) {
             return Collections.emptyList();
         }
         return similarElement.stream().map(toStringKey -> {
             G g;
             Object keyObj = TO_STRING.get(toStringKey);
-            String keyHash = ObjectUtils.rawHashWithType(keyObj);
-            String valueHash = KEY_VALUE_HASH.get(ObjectUtils.rawHashWithType(keyObj));
+            String keyHash = CompatibleUtils.rawHashWithType(keyObj);
+            String valueHash = KEY_VALUE_HASH.get(CompatibleUtils.rawHashWithType(keyObj));
             if (StringUtils.isNotBlank(valueHash)) {
                 g = (G) CACHE_MAP.get(rawHashComb(keyHash, valueHash));
             } else {
@@ -545,10 +545,10 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @return hash mark
      */
     static <K, V> String rawHash(@NonNull K key, @NonNull V value) {
-        String rawHashKey = ObjectUtils.rawHashWithType(key);
+        String rawHashKey = CompatibleUtils.rawHashWithType(key);
         String rawHashValue = KEY_VALUE_HASH.get(rawHashKey);
         if (StringUtils.isBlank(rawHashValue)) {
-            rawHashValue = ObjectUtils.rawHashWithType(value);
+            rawHashValue = CompatibleUtils.rawHashWithType(value);
             KEY_VALUE_HASH.putIfAbsent(rawHashKey, rawHashValue);
             recordContentToKeyString(key);
         }
@@ -562,7 +562,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <K> key generic
      */
     static <K> void recordContentToKeyString(@NonNull K key) {
-        TO_STRING.putIfAbsent(ObjectUtils.toStingWithMiddle(key), key);
+        TO_STRING.putIfAbsent(CompatibleUtils.toStingBeReal(key), key);
     }
 
     @Override
@@ -684,7 +684,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
             del0(this.writePath);
             //Delete the cache
             CACHE_MAP.remove(rawHash(entry.getKey(), entry.getValue()));
-            KEY_VALUE_HASH.remove(ObjectUtils.rawHashWithType(entry.getKey()));
+            KEY_VALUE_HASH.remove(CompatibleUtils.rawHashWithType(entry.getKey()));
         } finally {
             writeLock.unlock();
         }
