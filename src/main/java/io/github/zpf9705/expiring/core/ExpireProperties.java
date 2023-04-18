@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 3.0.0
  */
-@ConfigurationProperties(prefix = "expire.config")
+@ConfigurationProperties(prefix = "spring.data.expiry")
 @Getter
 @Setter
 public class ExpireProperties {
