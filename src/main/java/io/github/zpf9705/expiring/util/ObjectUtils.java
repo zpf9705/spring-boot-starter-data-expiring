@@ -1,5 +1,6 @@
 package io.github.zpf9705.expiring.util;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
@@ -8,7 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,10 +24,7 @@ public abstract class ObjectUtils {
     private static final String leftParenthesis_ = "{";
     private static final String rightParenthesis_ = "}";
     private static final String empty = "";
-    public static BiPredicate<String, String> simplerOfString =
-            (compare, target) -> compare.startsWith(target)
-                    || compare.endsWith(target)
-                    || compare.contains(target);
+    private static final String comma = ",";
 
     /**
      * Calculate the hash mark with object param
@@ -130,7 +128,7 @@ public abstract class ObjectUtils {
      */
     public static Stream<String> findStringSimilarElementStream(@NonNull Collection<String> source,
                                                                 @NonNull String target) {
-        return source.stream().filter(v -> simplerOfString.test(v, target));
+        return source.stream().filter(findPredicate(changeListWithComma(target)));
     }
 
     /**
@@ -141,5 +139,40 @@ public abstract class ObjectUtils {
      */
     public static List<String> findStringSimilarElement(@NonNull Collection<String> source, @NonNull String target) {
         return findStringSimilarElementStream(source, target).collect(Collectors.toList());
+    }
+
+    /**
+     * Subset containing assertions
+     *
+     * @param target must not be {@literal null}
+     * @return if {@code Predicate.test() == true} contain all
+     */
+    public static Predicate<String> findPredicate(@NonNull List<String> target) {
+        return s -> CollUtil.containsAll(changeListWithComma(s), target);
+    }
+
+    /**
+     * Converts an array collection according to the comma
+     *
+     * @param s must not be {@literal null}
+     * @return Converts of list not support {@link List} apis
+     */
+    public static List<String> changeListWithComma(@NonNull String s) {
+        String[] array = changeArrayWithComma(s);
+        /*
+         * Do not support the deletion
+         */
+        return Arrays.asList(array);
+    }
+
+    private static String[] changeArrayWithComma(@NonNull String s) {
+        String[] sub;
+        if (s.contains(comma)) {
+            sub = s.split(comma);
+        } else {
+            sub = new String[3];
+            sub[0] = s;
+        }
+        return sub;
     }
 }

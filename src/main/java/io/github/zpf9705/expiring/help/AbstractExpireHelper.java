@@ -2,7 +2,9 @@ package io.github.zpf9705.expiring.help;
 
 import io.github.zpf9705.expiring.util.ObjectUtils;
 
+import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 /**
  * Link the abstract template for {@link ExpireHelper}
@@ -17,9 +19,10 @@ public abstract class AbstractExpireHelper implements DefaultedExpireHelper {
      */
     private final BiFunction<Object, Object, Boolean> compare = (b, c) -> {
         if (b != null && c != null) {
-            return ObjectUtils.simplerOfString.test(
-                    ObjectUtils.toStingWithMiddle(b),
-                    ObjectUtils.toStingWithMiddle(c));
+            List<String> source =
+                    ObjectUtils.changeListWithComma(ObjectUtils.toStingWithMiddle(c));
+            Predicate<String> predicate = ObjectUtils.findPredicate(source);
+            return predicate.test(ObjectUtils.toStingWithMiddle(c));
         }
         return false;
     };
@@ -27,8 +30,8 @@ public abstract class AbstractExpireHelper implements DefaultedExpireHelper {
     /**
      * Compare with byte[] of similar
      *
-     * @param compare  byte[] type
-     * @param compare_ byte[] type
+     * @param compare  must not be {@literal null}.
+     * @param compare_ must not be {@literal null}.
      * @return if {@literal true} prove that similar
      */
     public boolean SimilarJudgeOfBytes(byte[] compare, byte[] compare_) {
