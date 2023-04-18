@@ -162,8 +162,8 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
     @SuppressWarnings({"rawtypes"})
     public Map<String, List<ExpirationListener>> findExpirationListener() {
         //obtain listing packages path
-        String listeningPackages = getProperties().getExpiringMap().getListeningPackages();
-        if (StringUtils.isBlank(listeningPackages)) {
+        String[] listeningPackages = getProperties().getExpiringMap().getListeningPackages();
+        if (ArrayUtil.isEmpty(listeningPackages)) {
             Console.info(
                     "no provider listening scan path ," +
                             "so ec no can provider binding Expiration Listener !"

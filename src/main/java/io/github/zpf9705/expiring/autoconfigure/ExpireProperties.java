@@ -82,7 +82,7 @@ public class ExpireProperties {
         /**
          * Set a {@code listening packages} for map
          */
-        private String listeningPackages = "com";
+        private String[] listeningPackages = {"com"};
     }
 
 
