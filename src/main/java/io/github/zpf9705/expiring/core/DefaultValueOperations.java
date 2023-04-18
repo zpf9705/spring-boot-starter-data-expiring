@@ -89,11 +89,12 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
     }
 
     @Override
-    public List<?> getSimilarKeys(K key) {
+    @SuppressWarnings("unchecked")
+    public List<K> getSimilarKeys(K key) {
 
         byte[] rawKey = this.rawKey(key);
         List<byte[]> execute = this.execute((connection) -> connection.getSimilarKeys(rawKey), true);
-        return SerialUtils.deserializeAny(execute);
+        return (List<K>) SerialUtils.deserializeAny(execute);
     }
 
     /*

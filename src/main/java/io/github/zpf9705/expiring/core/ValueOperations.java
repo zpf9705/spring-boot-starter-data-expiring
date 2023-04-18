@@ -70,7 +70,7 @@ public interface ValueOperations<K, V> {
      * @return {@literal null} get keys in memory with {@code key}.
      */
     @CanNull
-    List<?> getSimilarKeys(K key);
+    List<K> getSimilarKeys(K key);
 
     /**
      * Set {@code value} of {@code newValue} and return its old value.
