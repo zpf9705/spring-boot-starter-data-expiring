@@ -1,7 +1,6 @@
 package io.github.zpf9705.expiring.core.persistence;
 
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 
 /**
  * The cache persistence operation type
@@ -14,58 +13,53 @@ public enum PersistenceExecTypeEnum implements Dispose {
 
     SET {
         @Override
-        public void dispose(PersistenceSolver solver, Object[] entry) {
-            if (entry.length == lengthSimple) {
-                solver.putPersistence(entry[indexOne], entry[indexTwo], null, null);
-            } else if (entry.length == lengthDlg) {
-                solver.putPersistence(entry[indexOne], entry[indexTwo],
-                        (Long) entry[indexThree], (TimeUnit) entry[indexFour]);
-            }
+        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
+            DisposeVariable variable = convert(this, entry);
+            solver.putPersistence(variable.getKey(),
+                    variable.getValue(),
+                    variable.getDuration(),
+                    variable.getUnit());
         }
     }, REPLACE_VALUE {
         @Override
-        public void dispose(PersistenceSolver solver, Object[] entry) {
-            if (entry.length == lengthGan) {
-                solver.replaceValuePersistence(entry[indexOne], entry[indexTwo], entry[indexThree]);
-            }
+        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
+            DisposeVariable convert = convert(this, entry);
+            solver.replaceValuePersistence(convert.getKey(),
+                    convert.getNewValue());
         }
     }, REPLACE_DURATION {
         @Override
-        public void dispose(PersistenceSolver solver, Object[] entry) {
-            if (entry.length == lengthDlg) {
-                solver.replaceDurationPersistence(entry[indexOne], entry[indexTwo],
-                        (Long) entry[indexThree], (TimeUnit) entry[indexFour]);
-            }
+        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
+            DisposeVariable convert = convert(this, entry);
+            solver.replaceDurationPersistence(convert.getKey(),
+                    convert.getDuration(),
+                    convert.getUnit());
         }
     }, REST_DURATION {
         @Override
-        public void dispose(PersistenceSolver solver, Object[] entry) {
-            if (entry.length == lengthSimple) {
-                solver.restDurationPersistence(entry[indexOne], entry[indexTwo]);
-            }
+        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
+            DisposeVariable convert = convert(this, entry);
+            solver.restDurationPersistence(convert.getKey());
         }
     }, REMOVE_KEYS {
         @Override
-        public void dispose(PersistenceSolver solver, Object[] entry) {
-            if (entry.length == lengthSi) {
-                Object o = entry[indexOne];
-                if (o.getClass().isArray()) {
-                    Object[] array = (Object[]) o;
-                    Arrays.stream(array).forEach(solver::removePersistenceWithKey);
-                } else solver.removePersistenceWithKey(o);
+        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
+            DisposeVariable convert = convert(this, entry);
+            for (Object key : convert.getAnyKeys()) {
+                solver.removePersistenceWithKey(key);
             }
         }
     }, REMOVE_TYPE {
         @Override
-        public void dispose(PersistenceSolver solver, Object[] entry) {
-            if (entry.length == lengthSi) {
-                solver.removeSimilarKeyPersistence(entry[indexOne]);
-            }
+        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
+            DisposeVariable convert = convert(this, entry);
+            solver.removeSimilarKeyPersistence(convert.getKey());
         }
     }, REMOVE_ALL {
         @Override
-        public void dispose(PersistenceSolver solver, Object[] entry) {
-            if (entry == null) {
+        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
+            DisposeVariable convert = convert(this, entry);
+            if (convert == null) {
                 solver.removeAllPersistence();
             }
         }

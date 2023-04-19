@@ -3,6 +3,7 @@ package io.github.zpf9705.expiring.core.persistence;
 import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,29 +30,25 @@ public interface PersistenceSolver<K, V> {
      * Replace the corresponding {@code  key} {@code value} the value of a {@code newValue}
      *
      * @param key      must not be {@literal null}.
-     * @param value    must not be {@literal null}.
      * @param newValue must not be {@literal null}.
      */
-    void replaceValuePersistence(@NotNull K key, @NotNull V value, @NotNull V newValue);
+    void replaceValuePersistence(@NotNull K key, @NotNull V newValue);
 
     /**
      * Set a {@code key} and {@code value} with new duration , but if {@code key} exist
      *
      * @param key      must not be {@literal null}.
-     * @param value    must not be {@literal null}.
      * @param duration must not be {@literal null}.
      * @param timeUnit must not be {@literal null}.
      */
-    void replaceDurationPersistence(@NotNull K key, @NotNull V value,
-                                    @NotNull Long duration, @NotNull TimeUnit timeUnit);
+    void replaceDurationPersistence(@NotNull K key, @NotNull Long duration, @NotNull TimeUnit timeUnit);
 
     /**
      * Rest a {@code key} and {@code value} combination of persistence
      *
      * @param key   must not be {@literal null}.
-     * @param value must not be {@literal null}.
      */
-    void restDurationPersistence(@NotNull K key, @NotNull V value);
+    void restDurationPersistence(@NotNull K key);
 
     /**
      * Remove a {@code key} and {@code value} persistence record

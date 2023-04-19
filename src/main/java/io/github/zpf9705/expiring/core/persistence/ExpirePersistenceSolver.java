@@ -33,28 +33,27 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
     }
 
     @Override
-    public void replaceValuePersistence(@NotNull K key, @NotNull V value, @NotNull V newValue) {
+    public void replaceValuePersistence(@NotNull K key, @NotNull V newValue) {
         run(() -> {
-            ExpireSimpleGlobePersistence<K, V> replace = ExpireSimpleGlobePersistence.ofGet(key, value, null);
+            ExpireSimpleGlobePersistence<K, V> replace = ExpireSimpleGlobePersistence.ofGet(key);
             AssertUtils.Persistence.isTrue(replace.persistenceExist(), "persistence no exist");
             replace.replacePersistence(newValue);
         }, "replacePersistence");
     }
 
     @Override
-    public void replaceDurationPersistence(@NotNull K key, @NotNull V value,
-                                           @NotNull Long duration, @NotNull TimeUnit timeUnit) {
+    public void replaceDurationPersistence(@NotNull K key, @NotNull Long duration, @NotNull TimeUnit timeUnit) {
         run(() -> {
-            ExpireSimpleGlobePersistence<K, V> replaceDuration = ExpireSimpleGlobePersistence.ofGet(key, value, null);
+            ExpireSimpleGlobePersistence<K, V> replaceDuration = ExpireSimpleGlobePersistence.ofGet(key);
             AssertUtils.Persistence.isTrue(replaceDuration.persistenceExist(), "persistence no exist");
             replaceDuration.setExpirationPersistence(duration, timeUnit);
         }, "setEPersistence");
     }
 
     @Override
-    public void restDurationPersistence(@NotNull K key, @NotNull V value) {
+    public void restDurationPersistence(@NotNull K key) {
         run(() -> {
-            ExpireSimpleGlobePersistence<K, V> reset = ExpireSimpleGlobePersistence.ofGet(key, value, null);
+            ExpireSimpleGlobePersistence<K, V> reset = ExpireSimpleGlobePersistence.ofGet(key);
             AssertUtils.Persistence.isTrue(reset.persistenceExist(), "persistence no exist");
             reset.resetExpirationPersistence();
         }, "restPersistence");
@@ -72,11 +71,11 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
     @Override
     public void removePersistenceWithKey(@NotNull K key) {
         run(() -> {
-                ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.ofGet(key);
-                if (!remove.persistenceExist()) {
-                    return;
-                }
-                remove.removePersistence();
+            ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.ofGet(key);
+            if (!remove.persistenceExist()) {
+                return;
+            }
+            remove.removePersistence();
         }, "removePersistenceWithKey");
     }
 

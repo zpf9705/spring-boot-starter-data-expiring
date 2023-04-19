@@ -30,29 +30,28 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
     }
 
     @Override
-    public void replaceValuePersistence(@NotNull byte[] key, @NotNull byte[] value,
-                                        @NotNull byte[] newValue) {
+    public void replaceValuePersistence(@NotNull byte[] key, @NotNull byte[] newValue) {
         run(() -> {
-            ExpireByteGlobePersistence replace = ExpireByteGlobePersistence.ofGetBytes(key, value);
+            ExpireByteGlobePersistence replace = ExpireByteGlobePersistence.ofGetBytes(key);
             AssertUtils.Persistence.isTrue(replace.persistenceExist(), "persistence no exist");
             replace.replacePersistence(newValue);
         }, "ExpireBytesPersistenceSolver::replacePersistence");
     }
 
     @Override
-    public void replaceDurationPersistence(@NotNull byte[] key, @NotNull byte[] value,
-                                           @NotNull Long duration, @NotNull TimeUnit timeUnit) {
+    public void replaceDurationPersistence(@NotNull byte[] key, @NotNull Long duration,
+                                           @NotNull TimeUnit timeUnit) {
         run(() -> {
-            ExpireByteGlobePersistence replaceDuration = ExpireByteGlobePersistence.ofGetBytes(key, value);
+            ExpireByteGlobePersistence replaceDuration = ExpireByteGlobePersistence.ofGetBytes(key);
             AssertUtils.Persistence.isTrue(replaceDuration.persistenceExist(), "persistence no exist");
             replaceDuration.setExpirationPersistence(duration, timeUnit);
         }, "ExpireBytesPersistenceSolver::setEPersistence");
     }
 
     @Override
-    public void restDurationPersistence(@NotNull byte[] key, @NotNull byte[] value) {
+    public void restDurationPersistence(@NotNull byte[] key) {
         run(() -> {
-            ExpireByteGlobePersistence reset = ExpireByteGlobePersistence.ofGetBytes(key, value);
+            ExpireByteGlobePersistence reset = ExpireByteGlobePersistence.ofGetBytes(key);
             AssertUtils.Persistence.isTrue(reset.persistenceExist(), "persistence no exist");
             reset.resetExpirationPersistence();
         }, "ExpireBytesPersistenceSolver::restPersistence");
