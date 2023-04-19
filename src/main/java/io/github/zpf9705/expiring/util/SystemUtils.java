@@ -1,9 +1,10 @@
 package io.github.zpf9705.expiring.util;
 
 import cn.hutool.core.io.FileUtil;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import org.apache.commons.lang3.StringUtils;
-
 import java.io.File;
+import java.util.function.Function;
 
 /**
  * Here is some tips on some API support system of Java classes
@@ -39,21 +40,23 @@ public abstract class SystemUtils {
     /**
      * Set system key and value constant or configuration or cache value
      *
-     * @param key   set a value as a key
-     * @param value set a value as a key of value
+     * @param key   must no be {@literal null}
+     * @param value must no be {@literal null}
+     * @param <K>   generic of {@code key}
+     * @param <V>   generic of {@code value}
      * @since 1.1.5
      */
-    public static void setProperty(String key, String value) {
+    public static <K, V> void setProperty(K key, V value) {
         if (key == null || value == null) {
             return;
         }
-        System.setProperty(key, value);
+        System.setProperty(key.toString(), value.toString());
     }
 
     /**
      * Get system key and value constant or configuration or cache value
      *
-     * @param key value of key
+     * @param key Value of {@code key}
      * @return You call parameter value of key value
      * @since 1.1.5
      */
@@ -62,6 +65,27 @@ public abstract class SystemUtils {
             return null;
         }
         return System.getProperty(key);
+    }
+
+    /**
+     * Get system key and value constant or configuration or cache value with convert
+     *
+     * @param key     value of {@code key}
+     * @param <C>     convert generic
+     * @param convert type
+     * @param def     {@literal null} with default value
+     * @return You call parameter value of key value
+     * @since 1.1.5
+     */
+    public static <C> C getPropertyWithConvert(String key, Function<String, C> convert, @CanNull C def) {
+        if (key == null) {
+            return def;
+        }
+        String property = getProperty(key);
+        if (property == null) {
+            return def;
+        }
+        return convert.apply(property);
     }
 
     /**

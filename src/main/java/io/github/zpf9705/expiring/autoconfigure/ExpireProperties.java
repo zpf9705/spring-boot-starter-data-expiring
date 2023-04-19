@@ -33,8 +33,7 @@ public class ExpireProperties {
     private Class<? extends PersistenceRenewFactory> persistenceFactoryClass;
 
     /**
-     * Persistent path
-     * attention : If you offer the persistent path ,
+     * Attention : If you offer the persistent path ,
      * Will automatically on your path to create persistent file ,
      * If not we will create in the root of your project directory
      *
@@ -62,7 +61,9 @@ public class ExpireProperties {
      */
     private TimeUnit defaultExpireTimeUnit = TimeUnit.SECONDS;
 
-
+    /**
+     * Expiry implement for {@link net.jodah.expiringmap.ExpiringMap}
+     */
     private ExpiringMap expiringMap = new ExpiringMap();
 
     @Getter
@@ -88,11 +89,11 @@ public class ExpireProperties {
 
     @PostConstruct
     public void init() {
-        System.setProperty(Configuration.open_persistence, String.valueOf(this.openPersistence));
-        System.setProperty(Configuration.persistence_path, this.persistencePath);
-        System.setProperty(Configuration.defaultExpireTime, String.valueOf(this.defaultExpireTime));
-        System.setProperty(Configuration.defaultExpireTimeUnit, String.valueOf(this.defaultExpireTimeUnit));
-        System.setProperty(Configuration.noPersistenceOfExpireTime, String.valueOf(this.noPersistenceOfExpireTime));
-        System.setProperty(Configuration.noPersistenceOfExpireTimeUnit, String.valueOf(this.noPersistenceOfExpireTimeUnit));
+        SystemUtils.setProperty(Configuration.open_persistence, this.openPersistence);
+        SystemUtils.setProperty(Configuration.persistence_path, this.persistencePath);
+        SystemUtils.setProperty(Configuration.defaultExpireTime, this.defaultExpireTime);
+        SystemUtils.setProperty(Configuration.defaultExpireTimeUnit, this.defaultExpireTimeUnit);
+        SystemUtils.setProperty(Configuration.noPersistenceOfExpireTime, this.noPersistenceOfExpireTime);
+        SystemUtils.setProperty(Configuration.noPersistenceOfExpireTimeUnit, this.noPersistenceOfExpireTimeUnit);
     }
 }

@@ -2,6 +2,7 @@ package io.github.zpf9705.expiring.core.persistence;
 
 import io.github.zpf9705.expiring.util.SystemUtils;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * Persistent files related configuration
@@ -17,6 +18,8 @@ public final class Configuration {
     public static final String noPersistenceOfExpireTimeUnit = "csp.expiry.noPersistenceOfExpireTimeUnit";
     public static final String defaultExpireTime = "csp.expiry.defaultExpireTime";
     public static final String defaultExpireTimeUnit = "csp.expiry.defaultExpireTimeUnit";
+    static final long defaultNoPersistenceExpireTimeExample = 10L;
+    static final long defaultExpireTimeExample = 20L;
 
     private static final Configuration CONFIGURATION = new Configuration();
 
@@ -28,50 +31,27 @@ public final class Configuration {
     }
 
     public boolean getOpenPersistence() {
-        String property = System.getProperty(open_persistence);
-        if (property == null) {
-            return false;
-        }
-        return Boolean.parseBoolean(property);
+        return SystemUtils.getPropertyWithConvert(open_persistence, Boolean::parseBoolean, false);
     }
 
     public String getPersistencePath() {
-        String property = System.getProperty(persistence_path);
-        if (property == null) {
-            return SystemUtils.getCurrentProjectPath();
-        }
-        return property;
+        return SystemUtils.getPropertyWithConvert(persistence_path, Function.identity(), null);
     }
 
-    public Long getNoPersistenceOfExpireTime() {
-        String property = System.getProperty(noPersistenceOfExpireTime);
-        if (property == null) {
-            return 10L;
-        }
-        return Long.parseLong(property);
+    public long getNoPersistenceOfExpireTime() {
+        return SystemUtils.getPropertyWithConvert(noPersistenceOfExpireTime, Long::parseLong,
+                defaultNoPersistenceExpireTimeExample);
     }
 
     public TimeUnit getNoPersistenceOfExpireTimeUnit() {
-        String property = System.getProperty(noPersistenceOfExpireTimeUnit);
-        if (property == null) {
-            return TimeUnit.SECONDS;
-        }
-        return TimeUnit.valueOf(property);
+        return SystemUtils.getPropertyWithConvert(noPersistenceOfExpireTimeUnit, TimeUnit::valueOf, null);
     }
 
-    public Long getDefaultExpireTime() {
-        String property = System.getProperty(defaultExpireTime);
-        if (property == null) {
-            return 20L;
-        }
-        return Long.parseLong(property);
+    public long getDefaultExpireTime() {
+        return SystemUtils.getPropertyWithConvert(defaultExpireTime, Long::parseLong, defaultExpireTimeExample);
     }
 
     public TimeUnit getDefaultExpireTimeUnit() {
-        String property = System.getProperty(defaultExpireTimeUnit);
-        if (property == null) {
-            return TimeUnit.SECONDS;
-        }
-        return TimeUnit.valueOf(property);
+        return SystemUtils.getPropertyWithConvert(defaultExpireTimeUnit, TimeUnit::valueOf, null);
     }
 }
