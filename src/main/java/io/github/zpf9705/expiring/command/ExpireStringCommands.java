@@ -23,7 +23,7 @@ public interface ExpireStringCommands {
      * @return {@literal null}
      */
     @CanNull
-    @PersistenceExec(PersistenceExecTypeEnum.SET)
+    @PersistenceExec(value = PersistenceExecTypeEnum.SET, expectValue = PersistenceExec.ValueExpectations.REALLY)
     Boolean set(byte[] key, byte[] value);
 
     /**
@@ -35,7 +35,7 @@ public interface ExpireStringCommands {
      * @param unit     must not be {@literal null}.
      * @return setE result
      */
-    @PersistenceExec(PersistenceExecTypeEnum.SET)
+    @PersistenceExec(value = PersistenceExecTypeEnum.SET, expectValue = PersistenceExec.ValueExpectations.REALLY)
     Boolean setE(byte[] key, byte[] value, Long duration, TimeUnit unit);
 
     /**
@@ -46,7 +46,7 @@ public interface ExpireStringCommands {
      * @return {@literal null}
      */
     @CanNull
-    @PersistenceExec(PersistenceExecTypeEnum.SET)
+    @PersistenceExec(value = PersistenceExecTypeEnum.SET, expectValue = PersistenceExec.ValueExpectations.REALLY)
     Boolean setNX(byte[] key, byte[] value);
 
     /**
@@ -59,7 +59,7 @@ public interface ExpireStringCommands {
      * @return {@literal null}
      */
     @CanNull
-    @PersistenceExec(PersistenceExecTypeEnum.SET)
+    @PersistenceExec(value = PersistenceExecTypeEnum.SET, expectValue = PersistenceExec.ValueExpectations.REALLY)
     Boolean setEX(byte[] key, byte[] value, Long duration, TimeUnit unit);
 
     /**
@@ -88,6 +88,7 @@ public interface ExpireStringCommands {
      * @return {@literal null}
      */
     @CanNull
-    @PersistenceExec(PersistenceExecTypeEnum.REPLACE_VALUE)
+    @PersistenceExec(value = PersistenceExecTypeEnum.REPLACE_VALUE,
+            expectValue = PersistenceExec.ValueExpectations.NOT_NULL)
     byte[] getAndSet(byte[] key, byte[] newValue);
 }

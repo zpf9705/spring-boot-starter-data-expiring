@@ -1,5 +1,7 @@
 package io.github.zpf9705.expiring.core.proxy;
 
+import io.github.zpf9705.expiring.core.annotation.NotNull;
+
 import java.lang.annotation.Annotation;
 
 /**
@@ -15,5 +17,6 @@ public interface ProxyAnnotationAware<A extends Annotation> {
      *
      * @return a class annotation
      */
+    @NotNull
     Class<A> getProxyAnnotation();
 }

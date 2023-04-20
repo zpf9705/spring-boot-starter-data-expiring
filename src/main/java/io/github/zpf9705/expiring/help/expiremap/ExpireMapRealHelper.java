@@ -122,8 +122,16 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     @Override
     public byte[] replace(byte[] key, byte[] newValue) {
         byte[] similarKey = contain().getSimilarBytesForKey(key);
-        if (similarKey == null) return null;
+        if (similarKey == null) {
+            // How did not directly put in
+            this.put(key, newValue);
+            return newValue;
+        }
+        //Delete the old value
+        contain().remove(similarKey);
+        //In the new value
         contain().put(similarKey, newValue);
+        //Replace the new value and return old value
         return expire().replace(similarKey, newValue);
     }
 
