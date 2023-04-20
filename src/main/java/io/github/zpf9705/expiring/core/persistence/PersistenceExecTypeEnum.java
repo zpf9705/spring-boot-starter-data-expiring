@@ -13,8 +13,7 @@ public enum PersistenceExecTypeEnum implements Dispose {
 
     SET {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
-            DisposeVariable variable = convert(this, entry);
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
             solver.putPersistence(variable.getKey(),
                     variable.getValue(),
                     variable.getDuration(),
@@ -22,46 +21,43 @@ public enum PersistenceExecTypeEnum implements Dispose {
         }
     }, REPLACE_VALUE {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
-            DisposeVariable convert = convert(this, entry);
-            solver.replaceValuePersistence(convert.getKey(),
-                    convert.getNewValue());
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+            solver.replaceValuePersistence(variable.getKey(),
+                    variable.getNewValue());
         }
     }, REPLACE_DURATION {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
-            DisposeVariable convert = convert(this, entry);
-            solver.replaceDurationPersistence(convert.getKey(),
-                    convert.getDuration(),
-                    convert.getUnit());
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+            solver.replaceDurationPersistence(variable.getKey(),
+                    variable.getDuration(),
+                    variable.getUnit());
         }
     }, REST_DURATION {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
-            DisposeVariable convert = convert(this, entry);
-            solver.restDurationPersistence(convert.getKey());
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+            solver.restDurationPersistence(variable.getKey());
         }
     }, REMOVE_KEYS {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
-            DisposeVariable convert = convert(this, entry);
-            for (Object key : convert.getAnyKeys()) {
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+            for (Object key : variable.getAnyKeys()) {
                 solver.removePersistenceWithKey(key);
             }
         }
     }, REMOVE_TYPE {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
-            DisposeVariable convert = convert(this, entry);
-            solver.removeSimilarKeyPersistence(convert.getKey());
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+            solver.removeSimilarKeyPersistence(variable.getKey());
         }
     }, REMOVE_ALL {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, Object[] entry) {
-            DisposeVariable convert = convert(this, entry);
-            if (convert == null) {
-                solver.removeAllPersistence();
-            }
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+            solver.removeAllPersistence();
         }
+    };
+
+    @Override
+    public PersistenceExecTypeEnum getExecType() {
+        return this;
     }
 }

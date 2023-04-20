@@ -1,16 +1,12 @@
 package io.github.zpf9705.expiring.core.persistence;
 
-import cn.hutool.core.util.ArrayUtil;
-import io.github.zpf9705.expiring.core.ExpireOperations;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -27,10 +23,65 @@ public interface Dispose {
     /**
      * Rear cache persistence operations
      *
-     * @param solver must not be {@literal null}
-     * @param args   can  be {@literal null}
+     * @param solver   must not be {@literal null}
+     * @param variable must not be {@literal null}
      */
-    void dispose(@NotNull PersistenceSolver solver, @CanNull Object[] args);
+    void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable);
+
+    /**
+     * Get enumerated type
+     *
+     * @return {@link PersistenceExecTypeEnum}
+     */
+    PersistenceExecTypeEnum getExecType();
+
+    /**
+     * Default Rear cache persistence operations
+     *
+     * @param solver must not be {@literal null}
+     * @param args   can be {@literal null}
+     */
+    default void dispose(@NotNull PersistenceSolver solver, @CanNull Object[] args) {
+        dispose(solver, convert(getExecType(), args));
+    }
+
+    /**
+     * Cut parameter conversion method by default
+     *
+     * @param execTypeEnum The specified enumeration class
+     * @param args         Need to transform the parameter set
+     * @return Transformation parameters object
+     */
+    default DisposeVariable convert(PersistenceExecTypeEnum execTypeEnum, Object[] args) {
+        DisposeVariable variable;
+        switch (execTypeEnum) {
+            case SET:
+                variable = DisposeVariable.analysisSet(args);
+                break;
+            case REPLACE_VALUE:
+                variable = DisposeVariable.analysisReplaceValue(args);
+                break;
+            case REPLACE_DURATION:
+                variable = DisposeVariable.analysisReplaceDuration(args);
+                break;
+            case REST_DURATION:
+                variable = DisposeVariable.analysisRestDuration(args);
+                break;
+            case REMOVE_KEYS:
+                variable = DisposeVariable.analysisRemoveKeys(args);
+                break;
+            case REMOVE_TYPE:
+                variable = DisposeVariable.analysisRemoveType(args);
+                break;
+            case REMOVE_ALL:
+                variable = DisposeVariable.analysisRemoveAll(args);
+                break;
+            default:
+                variable = DisposeVariable.init();
+                break;
+        }
+        return variable;
+    }
 
     @NoArgsConstructor
     class DisposeVariable implements Serializable {
@@ -49,6 +100,22 @@ public interface Dispose {
         private TimeUnit unit;
         @Getter
         private List<Object> anyKeys;
+
+        static int indexOne = 0;
+
+        static int indexTwo = 1;
+
+        static int indexThree = 2;
+
+        static int indexFour = 3;
+
+        static int lengthSi = 1;
+
+        static int lengthSimple = 2;
+
+        static int lengthGan = 3;
+
+        static int lengthDlg = 4;
 
         private void setKey(Object key) {
             this.key = key;
@@ -164,47 +231,7 @@ public interface Dispose {
          * @see ExpireOperations#deleteAll()
          */
         private static DisposeVariable analysisRemoveAll(@CanNull Object[] args) {
-            return args == null ? null : DisposeVariable.init();
+            return args == null ? DisposeVariable.init() : null;
         }
     }
-
-    default DisposeVariable convert(PersistenceExecTypeEnum execTypeEnum, Object[] args) {
-        DisposeVariable variable;
-        switch (execTypeEnum) {
-            case SET:
-                variable = DisposeVariable.analysisSet(args);
-                break;
-            case REPLACE_VALUE:
-                variable = DisposeVariable.analysisReplaceValue(args);
-                break;
-            case REPLACE_DURATION:
-                variable = DisposeVariable.analysisReplaceDuration(args);
-                break;
-            case REST_DURATION:
-                variable = DisposeVariable.analysisRestDuration(args);
-                break;
-            case REMOVE_KEYS:
-                variable = DisposeVariable.analysisRemoveKeys(args);
-                break;
-            case REMOVE_TYPE:
-                variable = DisposeVariable.analysisRemoveType(args);
-                break;
-            case REMOVE_ALL:
-                variable = DisposeVariable.analysisRemoveAll(args);
-                break;
-            default:
-                variable = DisposeVariable.init();
-                break;
-        }
-        return variable;
-    }
-
-    int indexOne = 0;
-    int indexTwo = 1;
-    int indexThree = 2;
-    int indexFour = 3;
-    int lengthSi = 1;
-    int lengthSimple = 2;
-    int lengthGan = 3;
-    int lengthDlg = 4;
 }
