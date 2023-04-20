@@ -1,8 +1,6 @@
 package io.github.zpf9705.expiring.core.persistence;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
