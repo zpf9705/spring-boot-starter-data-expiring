@@ -6,7 +6,7 @@ import io.github.zpf9705.expiring.core.annotation.NotNull;
  * Overdue message keys for interface
  *
  * @author zpf
- * @since 3.0.0
+ * @since 3.0.1
  */
 public interface MessageExpiryCapable {
 
