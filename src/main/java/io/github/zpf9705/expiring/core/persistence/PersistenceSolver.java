@@ -22,9 +22,7 @@ public interface PersistenceSolver<K, V> {
      * @param duration can be {@literal null}.
      * @param timeUnit can be  {@literal null}.
      */
-    void putPersistence(@NotNull K key, @NotNull V value,
-                        @CanNull Long duration,
-                        @CanNull TimeUnit timeUnit);
+    void putPersistence(@NotNull K key, @NotNull V value, @CanNull Long duration, @CanNull TimeUnit timeUnit);
 
     /**
      * Replace the corresponding {@code  key} {@code value} the value of a {@code newValue}
