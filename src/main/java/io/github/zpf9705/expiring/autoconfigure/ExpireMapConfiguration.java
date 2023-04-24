@@ -67,9 +67,7 @@ import java.util.function.Predicate;
 @ConditionalOnClass({ExpiringMap.class})
 @ConditionalOnProperty(
         name = "spring.data.expiry.operation-type",
-        havingValue = "expire_map",
-        matchIfMissing = true
-
+        havingValue = "expire_map"
 )
 public class ExpireMapConfiguration extends ExpireHelperConfiguration implements ExpireBannerDisplayDevice,
         EnvironmentAware {
