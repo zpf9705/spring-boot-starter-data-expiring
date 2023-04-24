@@ -61,9 +61,9 @@ public @interface PersistenceExec {
                 return false;
             }
             if (v instanceof Collection) {
-                return ((Collection) v).isEmpty();
+                return !((Collection) v).isEmpty();
             } else if (v instanceof Map) {
-                return ((Map) v).isEmpty();
+                return !((Map) v).isEmpty();
             }
             return false;
         }),
