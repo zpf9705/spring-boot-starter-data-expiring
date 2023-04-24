@@ -10,13 +10,13 @@ import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.AssertUtils;
+import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.CompatibleUtils;
+import io.github.zpf9705.expiring.util.StringUtils;
 import io.reactivex.rxjava3.core.Single;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -109,7 +109,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      */
     static void checkDirectory() {
         String persistencePath = configuration.getPersistencePath();
-        if (StringUtils.isNotBlank(persistencePath)) {
+        if (StringUtils.simpleNotBlank(persistencePath)) {
             //Determine whether to native folders and whether the folder
             if (!isDirectory(persistencePath)) {
                 File directory = mkdir(persistencePath);
@@ -131,7 +131,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
                 "[" + persistencePath + "] no a path");
         String line = "";
         for (String path : pathArray) {
-            if (StringUtils.isBlank(path)) {
+            if (StringUtils.simpleIsBlank(path)) {
                 continue;
             }
             line += "/" + path;
@@ -386,7 +386,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         checkOpenPersistence();
         String realKey = CompatibleUtils.toStingBeReal(key);
         List<String> similarElement = CompatibleUtils.findSimilarElement(TO_STRING.keySet(), realKey);
-        if (CollectionUtils.isEmpty(similarElement)) {
+        if (CollectionUtils.simpleIsEmpty(similarElement)) {
             return Collections.emptyList();
         }
         return similarElement.stream().map(toStringKey -> {
@@ -394,7 +394,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
             Object keyObj = TO_STRING.get(toStringKey);
             String keyHash = CompatibleUtils.rawHashWithType(keyObj);
             String valueHash = KEY_VALUE_HASH.get(CompatibleUtils.rawHashWithType(keyObj));
-            if (StringUtils.isNotBlank(valueHash)) {
+            if (StringUtils.simpleNotBlank(valueHash)) {
                 g = (G) CACHE_MAP.get(rawHashComb(keyHash, valueHash));
             } else {
                 g = null;
@@ -539,7 +539,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     static <K, V> String rawHash(@NotNull K key, @NotNull V value) {
         String rawHashKey = CompatibleUtils.rawHashWithType(key);
         String rawHashValue = KEY_VALUE_HASH.get(rawHashKey);
-        if (StringUtils.isBlank(rawHashValue)) {
+        if (StringUtils.simpleIsBlank(rawHashValue)) {
             rawHashValue = CompatibleUtils.rawHashWithType(value);
             KEY_VALUE_HASH.putIfAbsent(rawHashKey, rawHashValue);
             recordContentToKeyString(key);
@@ -557,14 +557,39 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         TO_STRING.putIfAbsent(CompatibleUtils.toStingBeReal(key), key);
     }
 
+    /**
+     * Get or default with ExpireSimpleGlobePersistence
+     *
+     * @return {@link ExpireSimpleGlobePersistence}
+     */
+    public Class<? extends ExpireSimpleGlobePersistence> getGlobePersistenceClass() {
+        if (this.globePersistenceClass == null) {
+            return ExpireSimpleGlobePersistence.class;
+        }
+        return this.globePersistenceClass;
+    }
+
+    /**
+     * Get or default with Persistence
+     *
+     * @return {@link Persistence}
+     */
+    public Class<? extends Persistence> getPersistenceClass() {
+        if (this.persistenceClass == null) {
+            return Persistence.class;
+        }
+        return persistenceClass;
+    }
+
     @Override
     public void serial() {
         //write
         writeLock.lock();
         try {
             File file = touch0(this.writePath);
-            appendLines(Collections.singletonList(this.persistence.toString()), file,
-                    StandardCharsets.UTF_8);
+            if (file != null) {
+                writeSingleFileLine(this.persistence.toString(), file);
+            }
         } finally {
             writeLock.unlock();
         }
@@ -643,30 +668,6 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         }
     }
 
-    /**
-     * Get or default with ExpireSimpleGlobePersistence
-     *
-     * @return {@link ExpireSimpleGlobePersistence}
-     */
-    public Class<? extends ExpireSimpleGlobePersistence> getGlobePersistenceClass() {
-        if (this.globePersistenceClass == null) {
-            return ExpireSimpleGlobePersistence.class;
-        }
-        return this.globePersistenceClass;
-    }
-
-    /**
-     * Get or default with Persistence
-     *
-     * @return {@link Persistence}
-     */
-    public Class<? extends Persistence> getPersistenceClass() {
-        if (this.persistenceClass == null) {
-            return Persistence.class;
-        }
-        return persistenceClass;
-    }
-
     @Override
     public void removePersistence() {
         Entry<K, V> entry = this.persistence.getEntry();
@@ -684,7 +685,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
 
     @Override
     public void removeAllPersistence() {
-        if (CollectionUtils.isEmpty(CACHE_MAP)) {
+        if (CollectionUtils.simpleIsEmpty(CACHE_MAP)) {
             return;
         }
         writeLock.lock();
@@ -723,23 +724,23 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
 
     @Override
     public void deserializeWithPath(@CanNull String path) {
-        if (StringUtils.isBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
+        if (StringUtils.simpleIsBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
             path = configuration.getPersistencePath();
         }
         List<File> files = null;
-        if (StringUtils.isBlank(path)) {
+        if (StringUtils.simpleIsBlank(path)) {
             Console.info("Path no be blank , but you provide null");
         } else {
             if (!isDirectory(path)) {
                 Console.info("This path [{}] belong file no a directory", path);
             } else {
                 files = loopFiles(path, v -> v.isFile() && v.getName().endsWith(PREFIX_BEFORE));
-                if (CollectionUtils.isEmpty(files)) {
+                if (CollectionUtils.simpleIsEmpty(files)) {
                     Console.info("This path [{}] no found files", path);
                 }
             }
         }
-        if (CollectionUtils.isEmpty(files)) {
+        if (CollectionUtils.simpleIsEmpty(files)) {
             return;
         }
         //Loop back
@@ -749,9 +750,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
                 this.deserializeWithFile(v);
             } catch (Throwable e) {
                 Console.exceptionOfDebugOrWare(
-                        v.getName(), e,
-                        "Restore cache file {} error : {}"
-                );
+                        v.getName(), e, "Restore cache file {} error : {}");
             }
         }));
     }

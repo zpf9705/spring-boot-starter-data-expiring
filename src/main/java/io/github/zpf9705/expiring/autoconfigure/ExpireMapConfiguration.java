@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
-import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapClientConfiguration;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapClientConfigurationCustomizer;
@@ -9,20 +9,20 @@ import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapHelperFactory;
 import io.github.zpf9705.expiring.listener.ExpiringAsyncListener;
 import io.github.zpf9705.expiring.listener.ExpiringSyncListener;
+import io.github.zpf9705.expiring.util.ArrayUtils;
+import io.github.zpf9705.expiring.util.CollectionUtils;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
-import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.lang.NonNull;
-import org.springframework.util.CollectionUtils;
 
 import java.io.PrintStream;
 import java.lang.reflect.Method;
@@ -34,7 +34,7 @@ import java.util.function.Predicate;
  * Expire connection configuration using expireMap
  * {@link net.jodah.expiringmap.ExpiringMap}
  * ------ english introduce -------
- * Max Size: the maximum length of the map, add the 1001th entry, can lead to the first expired
+ * Max Size: the maximum length of the map, add the 1001 th entry, can lead to the first expired
  * immediately (even if not to expiration time).
  * Expiration: expiration time and expired unit, set the expiration time, is permanent.
  * The use of expiration Policy: expiration policies.
@@ -63,10 +63,14 @@ import java.util.function.Predicate;
  * @author zpf
  * @since 3.0.0
  */
-@Configuration(
-        proxyBeanMethods = false
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass({ExpiringMap.class})
+@ConditionalOnProperty(
+        name = "spring.data.expiry.operation-type",
+        havingValue = "expire_map",
+        matchIfMissing = true
+
 )
-@EnableConfigurationProperties(ExpireProperties.class)
 public class ExpireMapConfiguration extends ExpireHelperConfiguration implements ExpireBannerDisplayDevice,
         EnvironmentAware {
 
@@ -78,15 +82,17 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
 
     static String EXPIRED_METHOD_NAME;
 
-    static final Predicate<Method> METHOD_PREDICATE = (s) -> EXPIRED_METHOD_NAME.equals(s.getName());
+    static Predicate<Method> METHOD_PREDICATE;
 
     static {
         /*
          * Take the default Expiration Listener the class name of the first method
          */
         Method[] methods = ExpirationListener.class.getMethods();
-        if (ArrayUtil.isNotEmpty(methods)) {
+        if (ArrayUtils.simpleNotEmpty(methods)) {
             EXPIRED_METHOD_NAME = methods[0].getName();
+            //Matching assertion method static load
+            METHOD_PREDICATE = (s) -> EXPIRED_METHOD_NAME.equals(s.getName());
         }
     }
 
@@ -103,24 +109,24 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
     }
 
     @Override
-    public void setEnvironment(@NonNull Environment environment) {
+    public void setEnvironment(@NotNull Environment environment) {
         this.environment = environment;
     }
 
     @Override
-    @NonNull
+    @NotNull
     public Environment getEnvironment() {
         return this.environment;
     }
 
     @Override
-    @NonNull
+    @NotNull
     public Class<?> getSourceClass() {
         return ExpiringMap.class;
     }
 
     @Override
-    @NonNull
+    @NotNull
     public StartUpBanner getStartUpBanner() {
         return new ExpireMapBanner();
     }
@@ -146,13 +152,13 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
                             .acquireDefaultExpireTimeUnit(expireProperties.getDefaultExpireTimeUnit())
                             .acquireDefaultExpirationPolicy(expireProperties.getExpiringMap().getExpirationPolicy());
             Map<String, List<ExpirationListener>> listenerMap = findExpirationListener();
-            if (!CollectionUtils.isEmpty(listenerMap)) {
+            if (CollectionUtils.simpleNotEmpty(listenerMap)) {
                 List<ExpirationListener> sync = listenerMap.get(SYNC_SIGN);
-                if (!CollectionUtils.isEmpty(sync)) {
+                if (CollectionUtils.simpleNotEmpty(sync)) {
                     sync.forEach(builder::addSyncExpiredListener);
                 }
                 List<ExpirationListener> async = listenerMap.get(ASYNC_SIGN);
-                if (!CollectionUtils.isEmpty(async)) {
+                if (CollectionUtils.simpleNotEmpty(async)) {
                     async.forEach(builder::addASyncExpiredListener);
                 }
             }
@@ -163,7 +169,7 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
     public Map<String, List<ExpirationListener>> findExpirationListener() {
         //obtain listing packages path
         String[] listeningPackages = getProperties().getExpiringMap().getListeningPackages();
-        if (ArrayUtil.isEmpty(listeningPackages)) {
+        if (ArrayUtils.simpleIsEmpty(listeningPackages)) {
             Console.info(
                     "no provider listening scan path ," +
                             "so ec no can provider binding Expiration Listener !"
@@ -177,7 +183,7 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
         //reflection find ExpiringLoadListener impl
         Set<Class<? extends ExpirationListener>> subTypesOf =
                 reflections.getSubTypesOf(ExpirationListener.class);
-        if (CollectionUtils.isEmpty(subTypesOf)) {
+        if (CollectionUtils.simpleIsEmpty(subTypesOf)) {
             Console.info(
                     "No provider implementation ExpiringLoadListener class ," +
                             "so ec no can provider binding Expiration Listener"
@@ -202,7 +208,13 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
             if (target == null) {
                 continue;
             }
-            ExpirationListener listener = doCreateExpirationListener(listenerClass);
+            ExpirationListener listener;
+            try {
+                listener = ReflectUtil.newInstance(listenerClass);
+            } catch (Throwable e) {
+                Console.warn("[" + listenerClass.getName() + "] newInstanceForNoArgs failed : [" + e.getMessage() + "]");
+                continue;
+            }
             //Synchronous monitoring is preferred
             ExpiringSyncListener syncListener = listenerClass.getAnnotation(ExpiringSyncListener.class);
             if (syncListener == null) {
@@ -217,17 +229,5 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
         listenerMap.put(SYNC_SIGN, sync);
         listenerMap.put(ASYNC_SIGN, async);
         return listenerMap;
-    }
-
-    @SuppressWarnings({"rawtypes"})
-    private ExpirationListener doCreateExpirationListener(Class<? extends ExpirationListener> listenerClass) {
-        if (listenerClass == null) return null;
-        ExpirationListener listener;
-        try {
-            listener = ReflectUtil.newInstance(listenerClass);
-        } catch (Throwable e) {
-            listener = null;
-        }
-        return listener;
     }
 }

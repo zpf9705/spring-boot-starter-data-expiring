@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
-import org.apache.commons.lang3.StringUtils;
+import io.github.zpf9705.expiring.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +55,7 @@ public final class Version {
     private static String getImplementationVersion(JarFile jarFile) throws IOException {
         Attributes attributes = jarFile.getManifest().getMainAttributes();
         String version = attributes.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
-        if (StringUtils.isBlank(version)) {
+        if (StringUtils.simpleIsBlank(version)) {
             version = attributes.getValue(BUNDLE_VERSION);
         }
         return version;

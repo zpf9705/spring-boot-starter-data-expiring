@@ -52,14 +52,19 @@ public class ExpireProperties {
     private TimeUnit noPersistenceOfExpireTimeUnit = TimeUnit.SECONDS;
 
     /**
-     * Set a {@code defaultExpireTime} for map
+     * Set a {@code defaultExpireTime} for default cache time
      */
     private Long defaultExpireTime = 30L;
 
     /**
-     * Set a {@code defaultExpireTimeUnit} for map
+     * Set a {@code defaultExpireTimeUnit} for default cache time unit
      */
     private TimeUnit defaultExpireTimeUnit = TimeUnit.SECONDS;
+
+    /**
+     * Set a {@code operationType} for help source
+     */
+    private OperationType operationType;
 
     /**
      * Expiry implement for {@link net.jodah.expiringmap.ExpiringMap}
@@ -86,6 +91,12 @@ public class ExpireProperties {
         private String[] listeningPackages = {"com", "io", "cn", "org", "top"};
     }
 
+    /**
+     * Cache operation type
+     */
+    public enum OperationType {
+        EXPIRE_MAP
+    }
 
     @PostConstruct
     public void init() {

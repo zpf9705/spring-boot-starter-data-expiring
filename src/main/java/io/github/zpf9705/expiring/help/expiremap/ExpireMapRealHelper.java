@@ -280,13 +280,23 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
 
     @Override
     public void restoreByteType(byte[] key, byte[] value) {
-        throw new OperationsException();
+        throw new OperationsException("Now no support");
     }
 
+    /**
+     * Get {@link ExpiringMap} operation
+     *
+     * @return {@link ExpiringMap}
+     */
     public ExpiringMap<byte[], byte[]> expire() {
         return this.center.getExpiringMap();
     }
 
+    /**
+     * Get {@link ExpireMapByteContain} operation adapter
+     *
+     * @return {@link ExpiringMap}
+     */
     public ExpireMapByteContain contain() {
         return this.center.getContain();
     }

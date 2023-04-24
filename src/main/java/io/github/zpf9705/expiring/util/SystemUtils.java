@@ -2,7 +2,6 @@ package io.github.zpf9705.expiring.util;
 
 import cn.hutool.core.io.FileUtil;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
-import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.util.function.Function;
 
@@ -104,7 +103,7 @@ public abstract class SystemUtils {
      * @return target folder
      */
     public static File createRelativePathSpecifyFolder(String specifyFolder) {
-        if (StringUtils.isBlank(specifyFolder)) return null;
+        if (StringUtils.simpleIsBlank(specifyFolder)) return null;
         String path;
         if (currentProjectPath.endsWith(SLASH) || specifyFolder.startsWith(SLASH)) {
             path = currentProjectPath + specifyFolder;

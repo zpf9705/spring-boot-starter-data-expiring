@@ -4,10 +4,10 @@ import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.core.persistence.ExpireBytesPersistenceSolver;
 import io.github.zpf9705.expiring.core.persistence.PersistenceSolver;
+import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.ServiceLoadUtils;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
-import org.springframework.util.CollectionUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 3.0.0
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({"unchecked", "rawtypes"})
 public final class ExpireMapCenter {
 
     /**
@@ -120,14 +120,14 @@ public final class ExpireMapCenter {
                 .variableExpiration()
                 .build();
         ExpireMapByteContain contain = new ExpireMapByteContain(configuration.getMaxSize());
-        if (!CollectionUtils.isEmpty(configuration.getSyncExpirationListeners())) {
+        if (CollectionUtils.simpleNotEmpty(configuration.getSyncExpirationListeners())) {
             for (ExpirationListener expirationListener : configuration.getSyncExpirationListeners()) {
                 //sync
                 solveDifferentialGenericSingleton.addExpirationListener(expirationListener);
 
             }
         }
-        if (!CollectionUtils.isEmpty(configuration.getASyncExpirationListeners())) {
+        if (CollectionUtils.simpleNotEmpty(configuration.getASyncExpirationListeners())) {
             for (ExpirationListener expirationListener : configuration.getASyncExpirationListeners()) {
                 //async
                 solveDifferentialGenericSingleton.addAsyncExpirationListener(expirationListener);
