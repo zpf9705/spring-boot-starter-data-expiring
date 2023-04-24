@@ -1,11 +1,13 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
 import io.github.zpf9705.expiring.core.*;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.core.persistence.ExpireGlobePersistenceRenewFactory;
 import io.github.zpf9705.expiring.core.persistence.PersistenceRenewFactory;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializerAdapter;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
+import io.github.zpf9705.expiring.util.CollectionUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +18,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-import org.springframework.lang.NonNull;
-import org.springframework.util.CollectionUtils;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -72,7 +72,7 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
     @Override
     public void afterPropertiesSet() {
         this.printBanner(this.environment, getSourceClass(), System.out);
-        if (!CollectionUtils.isEmpty(configurationCustomizers)) {
+        if (CollectionUtils.simpleNotEmpty(configurationCustomizers)) {
             configurationCustomizers.forEach(v -> v.customize(this.expireProperties));
         }
     }
@@ -86,24 +86,24 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
     }
 
     @Override
-    @NonNull
+    @NotNull
     public Environment getEnvironment() {
         return this.environment;
     }
 
     @Override
-    public void setEnvironment(@NonNull Environment environment) {
+    public void setEnvironment(@NotNull Environment environment) {
         this.environment = environment;
     }
 
     @Override
-    @NonNull
+    @NotNull
     public Class<?> getSourceClass() {
         return Version.class;
     }
 
     @Override
-    @NonNull
+    @NotNull
     public StartUpBanner getStartUpBanner() {
         return new ExpireStarterBanner();
     }
