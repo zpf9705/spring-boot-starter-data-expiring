@@ -4,7 +4,7 @@ package io.github.zpf9705.expiring.util;
  * @author zpf
  * @since 3.0.0
  */
-public class StringUtils {
+public abstract class StringUtils {
 
     static final String EMPTY = "";
 

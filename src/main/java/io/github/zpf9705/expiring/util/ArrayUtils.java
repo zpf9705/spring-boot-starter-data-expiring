@@ -6,7 +6,7 @@ import io.github.zpf9705.expiring.core.annotation.CanNull;
  * @author zpf
  * @since 3.0.0
  */
-public class ArrayUtils {
+public abstract class ArrayUtils {
 
     /**
      * Is Empty for {@code Array}

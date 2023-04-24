@@ -10,7 +10,7 @@ import java.util.Map;
  * @author zpf
  * @since 3.0.0
  */
-public class CollectionUtils {
+public abstract class CollectionUtils {
 
     static final Collection<?> EMPTY_COLL = Collections.EMPTY_LIST;
 
