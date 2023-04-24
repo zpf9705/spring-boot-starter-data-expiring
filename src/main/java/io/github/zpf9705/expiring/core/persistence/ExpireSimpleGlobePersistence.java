@@ -14,8 +14,6 @@ import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.CompatibleUtils;
 import io.github.zpf9705.expiring.util.StringUtils;
 import io.reactivex.rxjava3.core.Single;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.*;
@@ -103,13 +101,10 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
 
     private Persistence<K, V> persistence;
 
-    @Getter
     private String writePath;
 
-    @Setter
     private Class<? extends ExpireSimpleGlobePersistence> globePersistenceClass;
 
-    @Setter
     private Class<? extends Persistence> persistenceClass;
 
     private static final String DEALT = "$*&";
@@ -604,6 +599,33 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     /**
+     * Get current write file path
+     *
+     * @return file write path
+     */
+    public String getWritePath() {
+        return this.writePath;
+    }
+
+    /**
+     * Set a son for {@code ExpireSimpleGlobePersistence}
+     *
+     * @param globePersistenceClass {@link ExpireSimpleGlobePersistence}
+     */
+    public void setGlobePersistenceClass(Class<? extends ExpireSimpleGlobePersistence> globePersistenceClass) {
+        this.globePersistenceClass = globePersistenceClass;
+    }
+
+    /**
+     * Set a son for {@code Persistence}
+     *
+     * @param persistenceClass {@link Persistence}
+     */
+    public void setPersistenceClass(Class<? extends Persistence> persistenceClass) {
+        this.persistenceClass = persistenceClass;
+    }
+
+    /**
      * Get or default with ExpireSimpleGlobePersistence
      *
      * @return {@link ExpireSimpleGlobePersistence}
@@ -932,8 +954,12 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         return LocalDateTime.now().plus(duration, unit);
     }
 
-    @Getter
-    @Setter
+    /**
+     * The persistent attribute model
+     *
+     * @param <K> key generic
+     * @param <V> value generic
+     */
     public static class Persistence<K, V> implements Serializable {
         private static final long serialVersionUID = 5916681709307714445L;
         private Entry<K, V> entry;
@@ -965,6 +991,22 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         public Persistence<K, V> expireOn(@NotNull LocalDateTime expire) {
             this.expire = expire;
             return this;
+        }
+
+        public Entry<K, V> getEntry() {
+            return entry;
+        }
+
+        public void setEntry(Entry<K, V> entry) {
+            this.entry = entry;
+        }
+
+        public LocalDateTime getExpire() {
+            return expire;
+        }
+
+        public void setExpire(LocalDateTime expire) {
+            this.expire = expire;
         }
 
         @Override

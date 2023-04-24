@@ -1,7 +1,6 @@
 package io.github.zpf9705.expiring.core.persistence;
 
 import io.github.zpf9705.expiring.core.annotation.NotNull;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
@@ -12,7 +11,6 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 1.1.0
  **/
-@Data
 public class Entry<K, V> implements Serializable {
 
     private static final long serialVersionUID = -8927814512833346379L;
@@ -23,6 +21,38 @@ public class Entry<K, V> implements Serializable {
 
     public boolean haveDuration() {
         return duration != null && duration != 0L && timeUnit != null;
+    }
+
+    public K getKey() {
+        return key;
+    }
+
+    public void setKey(K key) {
+        this.key = key;
+    }
+
+    public V getValue() {
+        return value;
+    }
+
+    public void setValue(V value) {
+        this.value = value;
+    }
+
+    public Long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Long duration) {
+        this.duration = duration;
+    }
+
+    public TimeUnit getTimeUnit() {
+        return timeUnit;
+    }
+
+    public void setTimeUnit(TimeUnit timeUnit) {
+        this.timeUnit = timeUnit;
     }
 
     public Entry(K key, V value) {

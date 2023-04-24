@@ -3,8 +3,6 @@ package io.github.zpf9705.expiring.autoconfigure;
 import io.github.zpf9705.expiring.core.persistence.Configuration;
 import io.github.zpf9705.expiring.core.persistence.PersistenceRenewFactory;
 import io.github.zpf9705.expiring.util.SystemUtils;
-import lombok.Getter;
-import lombok.Setter;
 import net.jodah.expiringmap.ExpirationPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -18,8 +16,6 @@ import java.util.concurrent.TimeUnit;
  * @since 3.0.0
  */
 @ConfigurationProperties(prefix = "spring.data.expiry")
-@Getter
-@Setter
 public class ExpireProperties {
 
     /**
@@ -76,8 +72,87 @@ public class ExpireProperties {
      */
     private ExpiringMap expiringMap = new ExpiringMap();
 
-    @Getter
-    @Setter
+
+    public Boolean getOpenPersistence() {
+        return openPersistence;
+    }
+
+    public void setOpenPersistence(Boolean openPersistence) {
+        this.openPersistence = openPersistence;
+    }
+
+    public Boolean getPersistenceAsync() {
+        return persistenceAsync;
+    }
+
+    public void setPersistenceAsync(Boolean persistenceAsync) {
+        this.persistenceAsync = persistenceAsync;
+    }
+
+    public Class<? extends PersistenceRenewFactory> getPersistenceFactoryClass() {
+        return persistenceFactoryClass;
+    }
+
+    public void setPersistenceFactoryClass(Class<? extends PersistenceRenewFactory> persistenceFactoryClass) {
+        this.persistenceFactoryClass = persistenceFactoryClass;
+    }
+
+    public String getPersistencePath() {
+        return persistencePath;
+    }
+
+    public void setPersistencePath(String persistencePath) {
+        this.persistencePath = persistencePath;
+    }
+
+    public Long getNoPersistenceOfExpireTime() {
+        return noPersistenceOfExpireTime;
+    }
+
+    public void setNoPersistenceOfExpireTime(Long noPersistenceOfExpireTime) {
+        this.noPersistenceOfExpireTime = noPersistenceOfExpireTime;
+    }
+
+    public TimeUnit getNoPersistenceOfExpireTimeUnit() {
+        return noPersistenceOfExpireTimeUnit;
+    }
+
+    public void setNoPersistenceOfExpireTimeUnit(TimeUnit noPersistenceOfExpireTimeUnit) {
+        this.noPersistenceOfExpireTimeUnit = noPersistenceOfExpireTimeUnit;
+    }
+
+    public Long getDefaultExpireTime() {
+        return defaultExpireTime;
+    }
+
+    public void setDefaultExpireTime(Long defaultExpireTime) {
+        this.defaultExpireTime = defaultExpireTime;
+    }
+
+    public TimeUnit getDefaultExpireTimeUnit() {
+        return defaultExpireTimeUnit;
+    }
+
+    public void setDefaultExpireTimeUnit(TimeUnit defaultExpireTimeUnit) {
+        this.defaultExpireTimeUnit = defaultExpireTimeUnit;
+    }
+
+    public OperationType getOperationType() {
+        return operationType;
+    }
+
+    public void setOperationType(OperationType operationType) {
+        this.operationType = operationType;
+    }
+
+    public ExpiringMap getExpiringMap() {
+        return expiringMap;
+    }
+
+    public void setExpiringMap(ExpiringMap expiringMap) {
+        this.expiringMap = expiringMap;
+    }
+
     public static class ExpiringMap {
 
         /**
@@ -94,6 +169,30 @@ public class ExpireProperties {
          * Set a {@code listening packages} for map
          */
         private String[] listeningPackages = {"com", "io", "cn", "org", "top"};
+
+        public Integer getMaxSize() {
+            return maxSize;
+        }
+
+        public void setMaxSize(Integer maxSize) {
+            this.maxSize = maxSize;
+        }
+
+        public ExpirationPolicy getExpirationPolicy() {
+            return expirationPolicy;
+        }
+
+        public void setExpirationPolicy(ExpirationPolicy expirationPolicy) {
+            this.expirationPolicy = expirationPolicy;
+        }
+
+        public String[] getListeningPackages() {
+            return listeningPackages;
+        }
+
+        public void setListeningPackages(String[] listeningPackages) {
+            this.listeningPackages = listeningPackages;
+        }
     }
 
     /**

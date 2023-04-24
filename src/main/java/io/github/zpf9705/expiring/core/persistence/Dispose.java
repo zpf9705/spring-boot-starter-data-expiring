@@ -2,8 +2,6 @@ package io.github.zpf9705.expiring.core.persistence;
 
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -87,23 +85,18 @@ public interface Dispose {
         return variable;
     }
 
-    @NoArgsConstructor
     class DisposeVariable implements Serializable {
 
         private static final long serialVersionUID = -1809461008323016041L;
-
-        @Getter
         private Object key;
-        @Getter
         private Object value;
-        @Getter
         private Object newValue;
-        @Getter
         private Long duration;
-        @Getter
         private TimeUnit unit;
-        @Getter
         private List<Object> anyKeys;
+
+        public DisposeVariable() {
+        }
 
         static int indexOne = 0;
 
@@ -143,6 +136,30 @@ public interface Dispose {
 
         private void setUnit(Object unit) {
             this.unit = TimeUnit.valueOf(unit.toString());
+        }
+
+        public Long getDuration() {
+            return duration;
+        }
+
+        public List<Object> getAnyKeys() {
+            return anyKeys;
+        }
+
+        public Object getKey() {
+            return key;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public Object getNewValue() {
+            return newValue;
+        }
+
+        public TimeUnit getUnit() {
+            return unit;
         }
 
         private static DisposeVariable init() {

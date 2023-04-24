@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.core.persistence;
 
-import lombok.AllArgsConstructor;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -41,7 +40,6 @@ public @interface PersistenceExec {
     ValueExpectations expectValue() default ValueExpectations.NULL;
 
 
-    @AllArgsConstructor
     @SuppressWarnings("rawtypes")
     enum ValueExpectations implements Predicate<Object> {
 
@@ -84,6 +82,10 @@ public @interface PersistenceExec {
                 return true;
             }
             return pre.test(o);
+        }
+
+        ValueExpectations(Predicate<Object> predicate) {
+            this.predicate = predicate;
         }
     }
 }
