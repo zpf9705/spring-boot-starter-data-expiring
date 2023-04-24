@@ -44,7 +44,7 @@ public interface PersistenceSolver<K, V> {
     /**
      * Rest a {@code key} and {@code value} combination of persistence
      *
-     * @param key   must not be {@literal null}.
+     * @param key must not be {@literal null}.
      */
     void restDurationPersistence(@NotNull K key);
 
@@ -82,12 +82,10 @@ public interface PersistenceSolver<K, V> {
      * @param method   method name
      */
     default void run(@NotNull Runnable runnable, @NotNull String method) {
-        try {
-            runnable.run();
-        } catch (Throwable e) {
-            Console.exceptionOfDebugOrWare(method, e,
-                    "Run the cache Persistence method [{}] An exception occurs [{}]");
-        }
+        MethodRunnableCapable capable = PersistenceRunner.getCapable();
+        capable.run(runnable,
+                esg -> Console.warn("Run the cache Persistence method [{}] An exception occurs [{}]",
+                        method, esg));
     }
 
     /**

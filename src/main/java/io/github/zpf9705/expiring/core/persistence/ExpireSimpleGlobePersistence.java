@@ -749,8 +749,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
             try {
                 this.deserializeWithFile(v);
             } catch (Throwable e) {
-                Console.exceptionOfDebugOrWare(
-                        v.getName(), e, "Restore cache file {} error : {}");
+                Console.warn("Restore cache file {}  error : {}", v.getName(), e.getMessage());
             }
         }));
     }

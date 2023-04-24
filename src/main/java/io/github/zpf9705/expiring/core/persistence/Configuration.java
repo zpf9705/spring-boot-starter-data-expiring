@@ -14,6 +14,7 @@ import java.util.function.Function;
 public final class Configuration {
 
     public static final String open_persistence = "csp.expiry.openPersistence";
+    public static final String persistenceRunAsync = "csp.expiry.persistenceRunAsync";
     public static final String persistence_path = "csp.expiry.persistencePath";
     public static final String noPersistenceOfExpireTime = "csp.expiry.noPersistenceOfExpireTime";
     public static final String noPersistenceOfExpireTimeUnit = "csp.expiry.noPersistenceOfExpireTimeUnit";
@@ -33,6 +34,10 @@ public final class Configuration {
 
     public boolean getOpenPersistence() {
         return SystemUtils.getPropertyWithConvert(open_persistence, Boolean::parseBoolean, false);
+    }
+
+    public boolean getPersistenceAsync() {
+        return SystemUtils.getPropertyWithConvert(persistenceRunAsync, Boolean::parseBoolean, false);
     }
 
     public String getPersistencePath() {

@@ -143,6 +143,7 @@ public abstract class Console {
      * @param format format statement
      * @since 2.1.2-complete
      */
+    @Deprecated
     public static void exceptionOfDebugOrWare(String target, Throwable ex, String format) {
         if (StringUtils.simpleIsBlank(target) || ex == null) {
             return;

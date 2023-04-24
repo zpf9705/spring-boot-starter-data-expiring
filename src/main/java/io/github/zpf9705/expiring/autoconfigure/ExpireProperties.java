@@ -28,6 +28,11 @@ public class ExpireProperties {
     private Boolean openPersistence = false;
 
     /**
+     * Whether to run persistence async
+     */
+    private Boolean persistenceAsync = false;
+
+    /**
      * Persistence Renew factory class
      */
     private Class<? extends PersistenceRenewFactory> persistenceFactoryClass;
@@ -101,6 +106,7 @@ public class ExpireProperties {
     @PostConstruct
     public void init() {
         SystemUtils.setProperty(Configuration.open_persistence, this.openPersistence);
+        SystemUtils.setProperty(Configuration.persistenceRunAsync, this.persistenceAsync);
         SystemUtils.setProperty(Configuration.persistence_path, this.persistencePath);
         SystemUtils.setProperty(Configuration.defaultExpireTime, this.defaultExpireTime);
         SystemUtils.setProperty(Configuration.defaultExpireTimeUnit, this.defaultExpireTimeUnit);
