@@ -38,7 +38,8 @@
     <!--scm connection-->
     <scm>
         <connection>scm:git:https://github.com/zpf9705/spring-boot-starter-data-expiring.git</connection>
-        <developerConnection>scm:git:https://github.com/zpf9705/spring-boot-starter-data-expiring.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/zpf9705/spring-boot-starter-data-expiring.git
+        </developerConnection>
         <url>https://github.com/zpf9705/spring-boot-starter-data-expiring</url>
     </scm>
     <!--For the convenience of directly into spring here - parent depend on the version of the boot-->
@@ -53,10 +54,8 @@
         <java.version>1.8</java.version>
         <expiringmap.version>0.5.10</expiringmap.version>
         <hutool-all.version>5.8.15</hutool-all.version>
-        <guava.version>31.1-jre</guava.version>
         <fastJson.version>2.0.10.graal</fastJson.version>
         <druid.version>1.2.8</druid.version>
-        <collections4.version>4.4</collections4.version>
         <reflections.version>0.10.2</reflections.version>
         <rxjava3.version>3.1.6</rxjava3.version>
     </properties>
@@ -90,20 +89,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-            <version>${collections4.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
