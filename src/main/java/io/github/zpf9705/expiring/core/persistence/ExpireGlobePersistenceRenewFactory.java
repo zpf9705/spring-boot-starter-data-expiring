@@ -8,7 +8,11 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Persistent cache files to restore factory abstract class, through the collection of {@link ServiceLoader}
+ * Persistent cache files to restore factory abstract class, through the collection of
+ * <ul>
+ *     <li>{@link ServiceLoader}</li>
+ *     <li>{@link ServiceLoadUtils}</li>
+ * </ul>
  * in the factory,according to the different implementations for recovery plant selection
  *
  * @author zpf

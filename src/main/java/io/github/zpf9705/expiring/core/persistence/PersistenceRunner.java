@@ -23,6 +23,10 @@ public abstract class PersistenceRunner implements MethodRunnableCapable {
 
     /**
      * Get a Singleton {@code MethodRunnableCapable}
+     * <ul>
+     *     <li>{@link ASyncPersistenceRunner}</li>
+     *     <li>{@link SyncPersistenceRunner}</li>
+     * </ul>
      *
      * @return {@link MethodRunnableCapable}
      */

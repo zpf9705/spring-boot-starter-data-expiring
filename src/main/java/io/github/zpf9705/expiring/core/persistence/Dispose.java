@@ -13,6 +13,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * The cache persistence operation interface for {@link PersistenceSolver}
+ * <ul>
+ *     <li>{@link ExpireBytesPersistenceSolver}</li>
+ *     <li>{@link ExpirePersistenceSolver}</li>
+ * </ul>
  *
  * @author zpf
  * @since 3.0.0

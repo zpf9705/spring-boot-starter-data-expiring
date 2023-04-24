@@ -31,12 +31,58 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
 /**
- * Global cache persistent objects. Here, a cache object is provided for each key-value pair. When the cache fails,
- * the relevant information will be read from the cache persistent object for subsequent persistent operations
+ * Helper for the persistent cache And restart the reply , And the only implementation
+ * <ul>
+ *     <li>{@link ExpireByteGlobePersistence}</li>
+ * </ul>
+ * Here about key match byte array , Mainly to block out the Java more generic data of differences
+ * Here are about cache persistence of the whole process of life
+ * He all methods of the realization of all rely on this method, the generic content {@code byte[]}
+ * <ul>
+ *     <li>{@link GlobePersistenceWriteProcess}</li>
+ *     <li>{@link PersistenceRenewFactory}</li>
+ * </ul>
+ * Briefly describes the implementation process :
+ * <p>
+ *  1、By manipulating the data into , Proxy objects method execution may step in cache persistence method
+ *  <ul>
+ *      <li>{@link io.github.zpf9705.expiring.core.ValueOperations}</li>
+ *      <li>{@link PersistenceExec}</li>
+ *      <li>{@link ExpirePersistenceAfterHandle}</li>
+ *  </ul>
+ *  And provides a cache persistence mode of operation , Asynchronous and synchronous
+ *  <ul>
+ *      <li>{@link MethodRunnableCapable#run(Runnable, Consumer)}</li>
+ *      <li>{@link PersistenceRunner}</li>
+ *  </ul>
+ *  Its operation is completely thread-safe, because here is introduced into the read-write lock
+ *  {@link #readLock}
+ *  {@link #writeLock}
+ *  Read not write, write can't read, to ensure the safety of the file system of the thread
+ * <p>
+ *  2、Will, depending on the type of execution method after different persistence API calls
+ *  <ul>
+ *      <li>{@link PersistenceSolver}</li>
+ *      <li>{@link ExpirePersistenceSolver}</li>
+ *      <li>{@link ExpireBytesPersistenceSolver}</li>
+ *  </ul>
+ * <p>
+ *  3、Persistent cache will be stored in the form of a particular file
+ *  {@link #AT}
+ *  {@link #PREFIX_BEFORE}
+ *  {@link #configuration}
+ *  4、When attached project restart automatically read persistence file in memory
+ *  <ul>
+ *      <li>{@link PersistenceRenewFactory#deserializeWithString(StringBuilder)}</li>
+ *      <li>{@link PersistenceRenewFactory#deserializeWithPath(String)}</li>
+ *      <li>{@link PersistenceRenewFactory#deserializeWithFile(File)}</li>
+ *  </ul>
+ *  And provides asynchronous takes up the recovery of the main thread
  *
  * @author zpf
  * @since 1.1.0

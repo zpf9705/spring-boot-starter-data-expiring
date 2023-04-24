@@ -8,6 +8,10 @@ import io.github.zpf9705.expiring.util.ServiceLoadUtils;
 
 /**
  * Cache operation follow-up persistent class content method of unified processing method
+ * <ul>
+ *     <li>{@link io.github.zpf9705.expiring.core.proxy.JdkProxyInvocationHandler}</li>
+ *     <li>{@link JdkProxyInvocationTrace}</li>
+ * </ul>
  *
  * @author zpf
  * @since 3.0.0
