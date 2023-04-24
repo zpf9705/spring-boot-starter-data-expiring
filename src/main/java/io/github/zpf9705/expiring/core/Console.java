@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.core;
 
-import org.apache.commons.lang3.StringUtils;
+import io.github.zpf9705.expiring.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,7 +144,7 @@ public abstract class Console {
      * @since 2.1.2-complete
      */
     public static void exceptionOfDebugOrWare(String target, Throwable ex, String format) {
-        if (StringUtils.isBlank(target) || ex == null) {
+        if (StringUtils.simpleIsBlank(target) || ex == null) {
             return;
         }
         boolean print = false;
