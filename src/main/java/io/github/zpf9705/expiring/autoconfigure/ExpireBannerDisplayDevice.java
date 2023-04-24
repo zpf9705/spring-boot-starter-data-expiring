@@ -1,10 +1,10 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.Banner;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.EnvironmentCapable;
-import org.springframework.lang.NonNull;
 
 import java.io.PrintStream;
 
@@ -30,7 +30,7 @@ public interface ExpireBannerDisplayDevice extends InitializingBean, Banner, Env
     void printBanner(Environment environment, Class<?> sourceClass, PrintStream out);
 
     @Override
-    @NonNull
+    @NotNull
     Environment getEnvironment();
 
     /**
@@ -38,7 +38,7 @@ public interface ExpireBannerDisplayDevice extends InitializingBean, Banner, Env
      *
      * @return a using banner class type no be {@literal null}
      */
-    @NonNull
+    @NotNull
     Class<?> getSourceClass();
 
     /**
@@ -46,6 +46,6 @@ public interface ExpireBannerDisplayDevice extends InitializingBean, Banner, Env
      *
      * @return a {@link StartUpBanner} no be {@literal null}
      */
-    @NonNull
+    @NotNull
     StartUpBanner getStartUpBanner();
 }
