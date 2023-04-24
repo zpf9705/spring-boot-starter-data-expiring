@@ -1,11 +1,16 @@
 package io.github.zpf9705.expiring.core.persistence;
 
 import cn.hutool.core.io.FileUtil;
+import io.github.zpf9705.expiring.util.StringUtils;
+
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
 
 /**
- * Cache persistence operation file operations abstract classes and provides about persistent files to add and delete functions
+ * Cache persistence operation file operations abstract classes
+ * Provides about persistent files to add and delete functions
  * The main function of provider comes from {@link cn.hutool.Hutool}
  *
  * @author zpf
@@ -48,5 +53,18 @@ public abstract class AbstractPersistenceFileManager extends FileUtil {
             c = del(fileName);
         }
         return c;
+    }
+
+    /**
+     * Write single file line
+     *
+     * @param json write context
+     * @param file write file
+     */
+    public void writeSingleFileLine(String json, File file) {
+        if (StringUtils.simpleIsBlank(json)) {
+            return;
+        }
+        appendLines(Collections.singletonList(json), file, StandardCharsets.UTF_8);
     }
 }
