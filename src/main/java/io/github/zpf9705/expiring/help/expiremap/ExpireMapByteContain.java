@@ -1,5 +1,7 @@
 package io.github.zpf9705.expiring.help.expiremap;
 
+import io.github.zpf9705.expiring.util.CollectionUtils;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
@@ -96,7 +98,7 @@ public class ExpireMapByteContain extends ConcurrentHashMap<byte[], byte[]> {
      * @return similar element
      */
     private byte[] filter(Collection<byte[]> collection, byte[] newBytes) {
-        if (collection == null || collection.isEmpty()) {
+        if (CollectionUtils.simpleIsEmpty(collection)) {
             return null;
         }
         return collection.stream().filter(b -> Arrays.equals(b, newBytes))
