@@ -1,17 +1,14 @@
 package io.github.zpf9705.expiring.util;
 
-import cn.hutool.core.util.ArrayUtil;
 import io.github.zpf9705.expiring.core.ExpiringException;
 import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.PersistenceException;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Supplier;
-
 
 /**
  * Exception assertion utils types of {@link OperationsException} and {@link PersistenceException}
@@ -114,7 +111,7 @@ public abstract class AssertUtils {
      * @param supplier exception supplier
      */
     private static void hasText(@CanNull String text, @NotNull Supplier<ExpiringException> supplier) {
-        if (!StringUtils.isNotBlank(text)) {
+        if (StringUtils.simpleIsBlank(text)) {
             throw supplier.get();
         }
     }
@@ -126,7 +123,7 @@ public abstract class AssertUtils {
      * @param supplier   exception supplier
      */
     private static void notEmpty(@CanNull Collection<?> collection, @NotNull Supplier<ExpiringException> supplier) {
-        if (collection == null || collection.isEmpty()) {
+        if (CollectionUtils.simpleIsEmpty(collection)) {
             throw supplier.get();
         }
     }
@@ -138,7 +135,7 @@ public abstract class AssertUtils {
      * @param supplier exception supplier
      */
     private static void notEmpty(@CanNull Object[] array, @NotNull Supplier<ExpiringException> supplier) {
-        if (ArrayUtil.isEmpty(array)) {
+        if (ArrayUtils.simpleIsEmpty(array)) {
             throw supplier.get();
         }
     }
