@@ -1,6 +1,8 @@
 package io.github.zpf9705.expiring.util;
 
 /**
+ * A simple string calibration tool
+ *
  * @author zpf
  * @since 3.0.0
  */

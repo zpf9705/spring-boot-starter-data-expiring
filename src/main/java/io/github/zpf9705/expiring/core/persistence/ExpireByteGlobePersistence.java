@@ -7,8 +7,8 @@ import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapCenter;
 import io.github.zpf9705.expiring.util.AssertUtils;
 
-import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The only Special extend for {@link ExpireSimpleGlobePersistence} with generic {@code byte[]}
@@ -99,32 +99,14 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
                     "[" + e.getMessage() + "]");
         }
         //No cache in the cache
-        ExpireSimpleGlobePersistence<byte[], byte[]> of = ofSetPersistence(this.getClass(), persistence);
-        AssertUtils.Persistence.notNull(of, "ExpireGlobePersistence no be null");
-        this.deserializeWithEntry(persistence, of.getWritePath());
+        ExpireByteGlobePersistence globePersistence = ofSetPersistence(this.getClass(), persistence);
+        AssertUtils.Persistence.notNull(globePersistence, "GlobePersistence no be null");
+        this.deserializeWithEntry(globePersistence);
     }
 
     @Override
-    public void deserializeWithEntry(@NotNull Persistence<byte[], byte[]> persistence,
-                                     @NotNull String writePath) {
-        //current time
-        LocalDateTime now = LocalDateTime.now();
-        //When the time is equal to or judged failure after now in record time
-        if (persistence.getExpire() == null || now.isEqual(persistence.getExpire()) ||
-                now.isAfter(persistence.getExpire())) {
-            //Delete the persistent file
-            del0(writePath);
-            throw new PersistenceException("File [" + writePath + "] record time [" + persistence.getExpire() +
-                    "] before or equals now");
-        }
-        //save key/value with byte[]
-        Entry<byte[], byte[]> entry = persistence.getEntry();
-        //check entry
-        checkEntry(entry);
-        //Remaining time is less than the standard not trigger persistence
-        ExpireMapCenter.getExpireMapCenter().reload(entry.getKey(), entry.getValue(),
-                condition(now, persistence.getExpire(), entry.getTimeUnit()),
-                entry.getTimeUnit());
+    public void reload(@NotNull byte[] key, @NotNull byte[] value, @NotNull Long duration, @NotNull TimeUnit unit) {
+        ExpireMapCenter.getExpireMapCenter().reload(key, value, duration, unit);
     }
 
     public static class BytePersistence extends Persistence<byte[], byte[]> {

@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
+ * A collection of simple and map calibration tool
+ *
  * @author zpf
  * @since 3.0.0
  */

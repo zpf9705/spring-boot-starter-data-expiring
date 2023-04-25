@@ -3,6 +3,8 @@ package io.github.zpf9705.expiring.util;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 
 /**
+ * Simple array calibration tool
+ *
  * @author zpf
  * @since 3.0.0
  */

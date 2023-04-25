@@ -10,8 +10,8 @@ import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.AssertUtils;
+import io.github.zpf9705.expiring.util.CodecUtils;
 import io.github.zpf9705.expiring.util.CollectionUtils;
-import io.github.zpf9705.expiring.util.CompatibleUtils;
 import io.github.zpf9705.expiring.util.StringUtils;
 import io.reactivex.rxjava3.core.Single;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  *  <ul>
  *      <li>{@link io.github.zpf9705.expiring.core.ValueOperations}</li>
  *      <li>{@link PersistenceExec}</li>
- *      <li>{@link ExpirePersistenceAfterHandle}</li>
+ *      <li>{@link ExpirePersistenceProcessor}</li>
  *  </ul>
  *  And provides a cache persistence mode of operation , Asynchronous and synchronous
  *  <ul>
@@ -91,34 +91,45 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
 
     private static final long serialVersionUID = 7755214068683107950L;
 
+    //The system configuration
     private static Configuration configuration;
 
+    //The persistent file suffix
     public static final String PREFIX_BEFORE = ".aof";
 
+    //The file content difference between symbols
     public static final String AT = "@";
 
+    //The default configuration symbol
     public static final String DEFAULT_WRITE_PATH_SIGN = "default";
 
+    //Persistent information model
     private Persistence<K, V> persistence;
 
-    private String writePath;
-
+    //Implementation type object
     private Class<? extends ExpireSimpleGlobePersistence> globePersistenceClass;
 
+    //Realize persistent information type object
     private Class<? extends Persistence> persistenceClass;
 
     private static final String DEALT = "$*&";
 
+    //Open the persistent identifier
     private static boolean OPEN_PERSISTENCE;
 
+    //Global information persistent cache
     public static final Map<String, ExpireSimpleGlobePersistence> CACHE_MAP = new ConcurrentHashMap<>();
 
+    //Global removes single object
     public static final ExpireSimpleGlobePersistence<Object, Object> INSTANCE = new ExpireSimpleGlobePersistence<>();
 
+    //Key values of the hash value of the cache object
     public static final Map<String, String> KEY_VALUE_HASH = new ConcurrentHashMap<>();
 
+    //The key  toSting cache object
     public static final Map<String, Object> TO_STRING = new ConcurrentHashMap<>();
 
+    //Read-write lock
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     private final Lock readLock = readWriteLock.readLock();
@@ -141,43 +152,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         OPEN_PERSISTENCE = configuration.getOpenPersistence();
         //if you open persistence will auto create directory
         if (OPEN_PERSISTENCE) {
-            checkDirectory();
-        }
-    }
-
-    /**
-     * Check provider persistence path
-     */
-    static void checkDirectory() {
-        String persistencePath = configuration.getPersistencePath();
-        if (StringUtils.simpleNotBlank(persistencePath)) {
-            //Determine whether to native folders and whether the folder
-            if (!isDirectory(persistencePath)) {
-                File directory = mkdir(persistencePath);
-                if (!directory.exists()) {
-                    checkError(persistencePath);
-                }
-            }
-        }
-    }
-
-    /**
-     * If no found persistence path will check error path and give logger
-     *
-     * @param persistencePath persistence path
-     */
-    static void checkError(String persistencePath) {
-        String[] pathArray = persistencePath.split("/");
-        AssertUtils.Persistence.notEmpty(pathArray,
-                "[" + persistencePath + "] no a path");
-        String line = "";
-        for (String path : pathArray) {
-            if (StringUtils.simpleIsBlank(path)) {
-                continue;
-            }
-            line += "/" + path;
-            AssertUtils.Persistence.isTrue(isDirectory(line),
-                    "[" + line + "] no a Directory for your file system");
+            checkDirectory(configuration.getPersistencePath());
         }
     }
 
@@ -187,7 +162,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
 
     public ExpireSimpleGlobePersistence(Persistence<K, V> persistence, String writePath) {
         this.persistence = persistence;
-        this.writePath = writePath;
+        setWritePath(writePath);
     }
 
     /**
@@ -389,7 +364,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         AssertUtils.Persistence.notNull(key, "Key no be null");
         String persistenceKey;
         if (value == null) {
-            String hashKey = CompatibleUtils.rawHashWithType(key);
+            String hashKey = CodecUtils.rawHashWithType(key);
             String hashValue = KEY_VALUE_HASH.getOrDefault(hashKey, null);
             AssertUtils.Persistence.hasText(hashValue, "Key [" + key + "] no be hash value");
             persistenceKey = rawHashComb(hashKey, hashValue);
@@ -425,16 +400,16 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      */
     public static <G extends ExpireSimpleGlobePersistence, K> List<G> ofGetSimilar(@NotNull K key) {
         checkOpenPersistence();
-        String realKey = CompatibleUtils.toStingBeReal(key);
-        List<String> similarElement = CompatibleUtils.findSimilarElement(TO_STRING.keySet(), realKey);
+        String realKey = CodecUtils.toStingBeReal(key);
+        List<String> similarElement = CodecUtils.findSimilarElement(TO_STRING.keySet(), realKey);
         if (CollectionUtils.simpleIsEmpty(similarElement)) {
             return Collections.emptyList();
         }
         return similarElement.stream().map(toStringKey -> {
             G g;
             Object keyObj = TO_STRING.get(toStringKey);
-            String keyHash = CompatibleUtils.rawHashWithType(keyObj);
-            String valueHash = KEY_VALUE_HASH.get(CompatibleUtils.rawHashWithType(keyObj));
+            String keyHash = CodecUtils.rawHashWithType(keyObj);
+            String valueHash = KEY_VALUE_HASH.get(CodecUtils.rawHashWithType(keyObj));
             if (StringUtils.simpleNotBlank(valueHash)) {
                 g = (G) CACHE_MAP.get(rawHashComb(keyHash, valueHash));
             } else {
@@ -578,10 +553,10 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @return hash mark
      */
     static <K, V> String rawHash(@NotNull K key, @NotNull V value) {
-        String rawHashKey = CompatibleUtils.rawHashWithType(key);
+        String rawHashKey = CodecUtils.rawHashWithType(key);
         String rawHashValue = KEY_VALUE_HASH.get(rawHashKey);
         if (StringUtils.simpleIsBlank(rawHashValue)) {
-            rawHashValue = CompatibleUtils.rawHashWithType(value);
+            rawHashValue = CodecUtils.rawHashWithType(value);
             KEY_VALUE_HASH.putIfAbsent(rawHashKey, rawHashValue);
             recordContentToKeyString(key);
         }
@@ -595,16 +570,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <K> key generic
      */
     static <K> void recordContentToKeyString(@NotNull K key) {
-        TO_STRING.putIfAbsent(CompatibleUtils.toStingBeReal(key), key);
-    }
-
-    /**
-     * Get current write file path
-     *
-     * @return file write path
-     */
-    public String getWritePath() {
-        return this.writePath;
+        TO_STRING.putIfAbsent(CodecUtils.toStingBeReal(key), key);
     }
 
     /**
@@ -654,10 +620,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         //write
         writeLock.lock();
         try {
-            File file = touch0(this.writePath);
-            if (file != null) {
-                writeSingleFileLine(this.persistence.toString(), file);
-            }
+            writeSingleFileLine(this.persistence.toString());
         } finally {
             writeLock.unlock();
         }
@@ -667,7 +630,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     public boolean persistenceExist() {
         readLock.lock();
         try {
-            return exist0(this.writePath);
+            return existCurrentWritePath();
         } finally {
             readLock.unlock();
         }
@@ -685,7 +648,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         writeLock.lock();
         try {
             //Delete the old file to add a new file
-            del0(this.writePath);
+            delWithCurrentWritePath();
             //Refresh time due to the key value no change don't need to delete the application cache
             entry.refreshOfExpire(duration, timeUnit);
             //Redefine the cache
@@ -706,7 +669,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         writeLock.lock();
         try {
             //Delete the old file to add a new key value no change don't need to delete the application cache
-            del0(this.writePath);
+            delWithCurrentWritePath();
             //To write a cache file
             ofSet(getGlobePersistenceClass(), getPersistenceClass(), per.getEntry()).serial();
         } finally {
@@ -725,7 +688,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         writeLock.lock();
         try {
             //Delete the old file to add a new file
-            del0(this.writePath);
+            delWithCurrentWritePath();
             //Delete the cache because the value changes
             CACHE_MAP.remove(rawHash(entry.getKey(), entry.getValue()));
             //To write a cache file
@@ -742,10 +705,10 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         writeLock.lock();
         try {
             //Delete the persistent file
-            del0(this.writePath);
+            delWithCurrentWritePath();
             //Delete the cache
             CACHE_MAP.remove(rawHash(entry.getKey(), entry.getValue()));
-            KEY_VALUE_HASH.remove(CompatibleUtils.rawHashWithType(entry.getKey()));
+            KEY_VALUE_HASH.remove(CodecUtils.rawHashWithType(entry.getKey()));
         } finally {
             writeLock.unlock();
         }
@@ -862,11 +825,40 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     /**
      * Using the {@code template } cache data check for the rest of removing, and recovery
      *
-     * @param persistence must not be {@literal null}
-     * @param writePath   must not be {@literal null}
+     * @param t   must not be {@literal null}
+     * @param <T> extends for {@link ExpireSimpleGlobePersistence}
      */
-    public void deserializeWithEntry(@NotNull Persistence<K, V> persistence,
-                                     @NotNull String writePath) {
+    public <T extends ExpireSimpleGlobePersistence<K, V>> void deserializeWithEntry(@NotNull T t) {
+        //current time
+        LocalDateTime now = LocalDateTime.now();
+        Persistence<K, V> persistence = t.getPersistence();
+        //When the time is equal to or judged failure after now in record time
+        if (persistence.getExpire() == null || now.isEqual(persistence.getExpire()) ||
+                now.isAfter(persistence.getExpire())) {
+            //Delete the persistent file
+            t.delWithCurrentWritePath();
+            throw new PersistenceException("File [" + t.getWritePath() + "] record time [" + persistence.getExpire() +
+                    "] before or equals now");
+        }
+        //save key/value with byte[]
+        Entry<K, V> entry = persistence.getEntry();
+        //check entry
+        checkEntry(entry);
+        //reload
+        reload(entry.getKey(), entry.getValue(), condition(now, persistence.getExpire(), entry.getTimeUnit()),
+                entry.getTimeUnit());
+    }
+
+    /**
+     * Cache value recovery
+     *
+     * @param key      must not be {@literal null}
+     * @param value    must not be {@literal null}
+     * @param duration must not be {@literal null}
+     * @param unit     must not be {@literal null}
+     */
+    public void reload(@NotNull K key, @NotNull V value,
+                       @NotNull Long duration, @NotNull TimeUnit unit) {
     }
 
     /**

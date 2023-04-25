@@ -1,15 +1,14 @@
 package io.github.zpf9705.expiring.help.expiremap;
 
 import io.github.zpf9705.expiring.core.annotation.NotNull;
-import io.github.zpf9705.expiring.core.persistence.ExpirePersistenceAfterHandle;
+import io.github.zpf9705.expiring.core.persistence.ExpirePersistenceProcessor;
 import io.github.zpf9705.expiring.core.persistence.PersistenceExec;
 import io.github.zpf9705.expiring.core.proxy.JdkProxy;
 import io.github.zpf9705.expiring.help.ExpireHelper;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
 
 /**
- * Connection factory creating {@link ExpireMapHelperFactory}
- * with {@link ExpireMapClientConfiguration}
+ * ExpireMap Connection factory creating for {@code ExpireHelperFactory}
  *
  * @author zpf
  * @since 3.0.0
@@ -35,10 +34,11 @@ public class ExpireMapHelperFactory implements ExpireHelperFactory {
      * @return return a {@link ExpireMapHelper}
      */
     public ExpireMapHelper doCreateExpireMapHelp(ExpireMapClientConfiguration clientConfiguration) {
-        ExpirePersistenceAfterHandle afterHandle = new ExpirePersistenceAfterHandle(
-                new ExpireMapRealHelper(
-                        () -> ExpireMapCenter.singletonWithConfiguration(clientConfiguration)
-                ), PersistenceExec.class
+        //Real object generated singleton operation
+        ExpireMapCenter expireMapCenter = ExpireMapCenter.singletonWithConfiguration(clientConfiguration);
+        //To approach the processor
+        ExpirePersistenceProcessor afterHandle = new ExpirePersistenceProcessor(
+                new ExpireMapRealHelper(() -> expireMapCenter), PersistenceExec.class
         );
         return JdkProxy.createProxy(afterHandle);
     }

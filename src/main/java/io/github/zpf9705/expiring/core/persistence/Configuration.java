@@ -32,31 +32,66 @@ public final class Configuration {
         return CONFIGURATION;
     }
 
+    /**
+     * For whether to open the cache persistent system configuration button
+     *
+     * @return if {@code true} will open
+     */
     public boolean getOpenPersistence() {
         return SystemUtils.getPropertyWithConvert(open_persistence, Boolean::parseBoolean, false);
     }
 
+    /**
+     * For whether to open the cache persistence operation asynchronous execution system configuration
+     *
+     * @return if {@code true} will Async
+     */
     public boolean getPersistenceAsync() {
         return SystemUtils.getPropertyWithConvert(persistenceRunAsync, Boolean::parseBoolean, false);
     }
 
+    /**
+     * The persistent cache disk write path system configuration
+     *
+     * @return if not null {@code PersistencePath} will write this path
+     */
     public String getPersistencePath() {
         return SystemUtils.getPropertyWithConvert(persistence_path, Function.identity(), null);
     }
 
+    /**
+     * Obtain a maximum time of system configuration without persistence
+     *
+     * @return Below this time will not persistent
+     */
     public long getNoPersistenceOfExpireTime() {
         return SystemUtils.getPropertyWithConvert(noPersistenceOfExpireTime, Long::parseLong,
                 defaultNoPersistenceExpireTimeExample);
     }
 
+    /**
+     * Obtain a maximum time unit of system configuration without persistence
+     *
+     * @return {@link #getNoPersistenceOfExpireTime()}
+     */
     public TimeUnit getNoPersistenceOfExpireTimeUnit() {
         return SystemUtils.getPropertyWithConvert(noPersistenceOfExpireTimeUnit, TimeUnit::valueOf, null);
     }
 
+    /**
+     * Get the default cache time system configuration
+     *
+     * @return If you don't set the cache time, will use the configured
+     */
     public long getDefaultExpireTime() {
         return SystemUtils.getPropertyWithConvert(defaultExpireTime, Long::parseLong, defaultExpireTimeExample);
     }
 
+    /**
+     * Get the default cache time unit system configuration
+     *
+     * @return {@link #getDefaultExpireTime()}
+     */
     public TimeUnit getDefaultExpireTimeUnit() {
         return SystemUtils.getPropertyWithConvert(defaultExpireTimeUnit, TimeUnit::valueOf, null);
     }

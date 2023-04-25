@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  * @author zpf
  * @since 3.0.0
  */
-public abstract class CompatibleUtils {
+public abstract class CodecUtils {
 
     /**
      * Calculate the hash mark with object param

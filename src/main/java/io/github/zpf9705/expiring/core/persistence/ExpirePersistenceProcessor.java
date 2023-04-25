@@ -16,11 +16,11 @@ import io.github.zpf9705.expiring.util.ServiceLoadUtils;
  * @author zpf
  * @since 3.0.0
  */
-public class ExpirePersistenceAfterHandle extends JdkProxyInvocationTrace<ExpireMapHelper, PersistenceExec> {
+public class ExpirePersistenceProcessor extends JdkProxyInvocationTrace<ExpireMapHelper, PersistenceExec> {
 
     private static final long serialVersionUID = -2346911415600201852L;
 
-    public ExpirePersistenceAfterHandle(ExpireMapHelper target, Class<PersistenceExec> annotationClass) {
+    public ExpirePersistenceProcessor(ExpireMapHelper target, Class<PersistenceExec> annotationClass) {
         super(target, annotationClass);
     }
 

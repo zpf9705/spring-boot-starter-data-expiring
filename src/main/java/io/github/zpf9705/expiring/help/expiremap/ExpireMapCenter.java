@@ -4,11 +4,15 @@ import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.core.persistence.ExpireBytesPersistenceSolver;
 import io.github.zpf9705.expiring.core.persistence.PersistenceSolver;
+import io.github.zpf9705.expiring.help.HelpCenter;
 import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.ServiceLoadUtils;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,21 +29,17 @@ import java.util.concurrent.TimeUnit;
  * @since 3.0.0
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public final class ExpireMapCenter {
+public final class ExpireMapCenter implements HelpCenter<ExpireMapCenter> {
 
     /**
-     * Singleton
+     * Singleton for {@link ExpireMapCenter}
      */
     private static volatile ExpireMapCenter expireMapCenter;
 
     private final ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton;
 
-    private final ExpireMapByteContain contain;
-
-    private ExpireMapCenter(ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton,
-                            ExpireMapByteContain contain) {
+    private ExpireMapCenter(ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton) {
         this.solveDifferentialGenericSingleton = solveDifferentialGenericSingleton;
-        this.contain = contain;
     }
 
     /**
@@ -60,7 +60,7 @@ public final class ExpireMapCenter {
     }
 
     /**
-     * Get Singleton ExpireMapCenter
+     * Get Singleton instance for {@code ExpireMapCenter}
      *
      * @return {@link ExpireMapCenter}
      */
@@ -72,7 +72,7 @@ public final class ExpireMapCenter {
     }
 
     /**
-     * Get ExpiringMap
+     * Get operation with a {@code ExpiringMap}
      *
      * @return {@link net.jodah.expiringmap.ExpiringMap}
      */
@@ -80,13 +80,9 @@ public final class ExpireMapCenter {
         return this.solveDifferentialGenericSingleton;
     }
 
-    /**
-     * Get contain
-     *
-     * @return {@link ExpireMapByteContain}
-     */
-    public ExpireMapByteContain getContain() {
-        return this.contain;
+    @Override
+    public ExpireMapCenter getHelpCenter() {
+        return getExpireMapCenter();
     }
 
     /**
@@ -99,11 +95,11 @@ public final class ExpireMapCenter {
      */
     public void reload(@NotNull byte[] key, @NotNull byte[] value, @NotNull Long duration,
                        @NotNull TimeUnit unit) {
-        if (this.solveDifferentialGenericSingleton == null || this.contain == null) {
+        if (this.solveDifferentialGenericSingleton == null) {
             return;
         }
         this.solveDifferentialGenericSingleton.put(key, value, duration, unit);
-        this.contain.putIfAbsent(key, value);
+        this.getContain().putIfAbsent(key, value);
     }
 
     /**
@@ -119,7 +115,6 @@ public final class ExpireMapCenter {
                 .expirationPolicy(configuration.getExpirationPolicy())
                 .variableExpiration()
                 .build();
-        ExpireMapByteContain contain = new ExpireMapByteContain(configuration.getMaxSize());
         if (CollectionUtils.simpleNotEmpty(configuration.getSyncExpirationListeners())) {
             for (ExpirationListener expirationListener : configuration.getSyncExpirationListeners()) {
                 //sync
@@ -134,7 +129,7 @@ public final class ExpireMapCenter {
 
             }
         }
-        return new ExpireMapCenter(solveDifferentialGenericSingleton, contain);
+        return new ExpireMapCenter(solveDifferentialGenericSingleton);
     }
 
     /**
@@ -149,7 +144,7 @@ public final class ExpireMapCenter {
      */
     public void cleanSupportingElements(@NotNull byte[] key, @NotNull byte[] value) {
         //Remove control information
-        this.contain.remove(key, value);
+        this.getContain().remove(key, value);
         //Remove persistent cache
         PersistenceSolver<byte[], byte[]> solver = ServiceLoadUtils.load(PersistenceSolver.class)
                 .getSpecifiedServiceBySubClass(ExpireBytesPersistenceSolver.class);

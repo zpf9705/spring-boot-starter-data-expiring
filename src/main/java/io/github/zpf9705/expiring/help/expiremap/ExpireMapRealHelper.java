@@ -8,6 +8,7 @@ import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.help.AbstractExpireHelper;
+import io.github.zpf9705.expiring.help.HelpCenter;
 import net.jodah.expiringmap.ExpiringMap;
 
 import java.util.*;
@@ -21,12 +22,10 @@ import java.util.stream.Collectors;
  * @author zpf
  * @since 3.0.0
  */
-public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireMapHelper {
+public class ExpireMapRealHelper extends AbstractExpireHelper<ExpireMapCenter> implements ExpireMapHelper {
 
-    private final ExpireMapCenter center;
-
-    public ExpireMapRealHelper(@NotNull Supplier<ExpireMapCenter> centerSupplier) {
-        this.center = centerSupplier.get();
+    public ExpireMapRealHelper(HelpCenter<ExpireMapCenter> center) {
+        super(center);
     }
 
     /*
@@ -54,7 +53,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     @Override
     public Boolean put(byte[] key, byte[] value) {
         contain().addBytes(key, value);
-        expire().put(key, value);
+        getHelpCenter().getExpiringMap().put(key, value);
         return true;
     }
 
@@ -65,7 +64,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     @Override
     public Boolean putDuration(byte[] key, byte[] value, Long duration, TimeUnit unit) {
         contain().addBytes(key, value);
-        expire().put(key, value, duration, unit);
+        getHelpCenter().getExpiringMap().put(key, value, duration, unit);
         return true;
     }
 
@@ -77,7 +76,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     public Boolean putIfAbsent(byte[] key, byte[] value) {
         if (contain().existKey(key)) return false;
         contain().addBytes(key, value);
-        return expire().put(key, value) == null;
+        return getHelpCenter().getExpiringMap().put(key, value) == null;
     }
 
     /*
@@ -89,7 +88,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     public Boolean putIfAbsentDuration(byte[] key, byte[] value, Long duration, TimeUnit unit) {
         if (contain().existKey(key)) return false;
         contain().addBytes(key, value);
-        return expire().put(key, value, duration, unit) == null;
+        return getHelpCenter().getExpiringMap().put(key, value, duration, unit) == null;
     }
 
     /*
@@ -100,14 +99,14 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     public byte[] getVal(byte[] key) {
         byte[] simpleBytesKey = contain().getSimilarBytesForKey(key);
         if (simpleBytesKey == null) return null;
-        return expire().get(simpleBytesKey);
+        return getHelpCenter().getExpiringMap().get(simpleBytesKey);
     }
 
     @Override
     public List<byte[]> getKeysByKeys(byte[] key) {
         byte[] simpleBytesKey = contain().getSimilarBytesForKey(key);
         if (simpleBytesKey == null) return null;
-        return expire().keySet().stream().map(dai -> {
+        return getHelpCenter().getExpiringMap().keySet().stream().map(dai -> {
             if (this.similarJudgeOfBytes(dai, key)) {
                 return dai;
             }
@@ -132,7 +131,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
         //In the new value
         contain().put(similarKey, newValue);
         //Replace the new value and return old value
-        return expire().replace(similarKey, newValue);
+        return getHelpCenter().getExpiringMap().replace(similarKey, newValue);
     }
 
     /*
@@ -149,7 +148,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
                 continue;
             }
             contain().remove(similarKey);
-            if (expire().remove(similarKey) != null) {
+            if (getHelpCenter().getExpiringMap().remove(similarKey) != null) {
                 count++;
             }
         }
@@ -164,14 +163,14 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     public Map<byte[], byte[]> deleteSimilarKey(byte[] key) {
         Map<byte[], byte[]> map = new HashMap<>();
         List<byte[]> delKeys = new ArrayList<>();
-        expire().forEach((k, v) -> {
+        getHelpCenter().getExpiringMap().forEach((k, v) -> {
             if (this.similarJudgeOfBytes(k, key)) {
                 map.put(k, v);
                 delKeys.add(k);
             }
         });
         delKeys.forEach(k -> {
-            expire().remove(k);
+            getHelpCenter().getExpiringMap().remove(k);
             contain().remove(k);
         });
         return map;
@@ -184,7 +183,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     @Override
     public Boolean reboot() {
         contain().clear();
-        expire().clear();
+        getHelpCenter().getExpiringMap().clear();
         return true;
     }
 
@@ -196,7 +195,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     public Boolean containsKey(byte[] key) {
         key = contain().getSimilarBytesForKey(key);
         if (key == null) return false;
-        return expire().containsKey(key);
+        return getHelpCenter().getExpiringMap().containsKey(key);
     }
 
     /*
@@ -207,7 +206,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     public Boolean containsValue(byte[] value) {
         value = contain().getSimilarBytesForValue(value);
         if (value == null) return false;
-        return expire().containsValue(value);
+        return getHelpCenter().getExpiringMap().containsValue(value);
     }
 
     /*
@@ -218,7 +217,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     public Long getExpirationWithKey(byte[] key) {
         key = contain().getSimilarBytesForKey(key);
         if (key == null) return null;
-        return expire().getExpiration(key);
+        return getHelpCenter().getExpiringMap().getExpiration(key);
     }
 
     /*
@@ -240,7 +239,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     public Long getExpectedExpirationWithKey(byte[] key) {
         key = contain().getSimilarBytesForKey(key);
         if (key == null) return null;
-        return expire().getExpectedExpiration(key);
+        return getHelpCenter().getExpiringMap().getExpectedExpiration(key);
     }
 
     /*
@@ -262,7 +261,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     public Boolean setExpirationDuration(byte[] key, Long duration, TimeUnit timeUnit) {
         key = contain().getSimilarBytesForKey(key);
         if (key == null) return false;
-        expire().setExpiration(key, duration, timeUnit);
+        getHelpCenter().getExpiringMap().setExpiration(key, duration, timeUnit);
         return true;
     }
 
@@ -274,30 +273,12 @@ public class ExpireMapRealHelper extends AbstractExpireHelper implements ExpireM
     public Boolean resetExpirationWithKey(byte[] key) {
         key = contain().getSimilarBytesForKey(key);
         if (key == null) return false;
-        expire().resetExpiration(key);
+        getHelpCenter().getExpiringMap().resetExpiration(key);
         return true;
     }
 
     @Override
     public void restoreByteType(byte[] key, byte[] value) {
         throw new OperationsException("Now no support");
-    }
-
-    /**
-     * Get {@link ExpiringMap} operation
-     *
-     * @return {@link ExpiringMap}
-     */
-    public ExpiringMap<byte[], byte[]> expire() {
-        return this.center.getExpiringMap();
-    }
-
-    /**
-     * Get {@link ExpireMapByteContain} operation adapter
-     *
-     * @return {@link ExpiringMap}
-     */
-    public ExpireMapByteContain contain() {
-        return this.center.getContain();
     }
 }
