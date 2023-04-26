@@ -15,11 +15,18 @@ import java.io.File;
 public interface PersistenceRenewFactory {
 
     /**
-     * Get Factory name
+     * Get Renew Factory name
+     *
+     * @return a Renew factory name
+     */
+    String getRenewFactoryName();
+
+    /**
+     * Get Reload class name
      *
      * @return a factory name
      */
-    String getFactoryName();
+    String getReloadClassName();
 
     /**
      * Restore memory within a path

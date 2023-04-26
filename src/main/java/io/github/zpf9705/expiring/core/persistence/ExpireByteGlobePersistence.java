@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import io.github.zpf9705.expiring.core.PersistenceException;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.help.expiremap.ExpireMapCenter;
+import io.github.zpf9705.expiring.help.expiremap.ExpireMapCenterReload;
 import io.github.zpf9705.expiring.util.AssertUtils;
 
 import java.util.*;
@@ -80,8 +82,13 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
     }
 
     @Override
-    public String getFactoryName() {
+    public String getRenewFactoryName() {
         return ExpireByteGlobePersistence.class.getName();
+    }
+
+    @Override
+    public String getReloadClassName() {
+        return ExpireMapCenterReload.class.getName();
     }
 
     @Override

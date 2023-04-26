@@ -27,13 +27,8 @@ public abstract class JdkProxyInvocationHandler<T, A extends Annotation> impleme
         final T target = getTarget();
         //exec proxy method
         Object invokeResult = method.invoke(target, args);
-        Class<A> proxyAnnotation = getProxyAnnotation();
-        //if null return direct invokeResult
-        if (proxyAnnotation == null) {
-            return invokeResult;
-        }
         //get this proxyExec annotation
-        A proxyExec = method.getAnnotation(proxyAnnotation);
+        A proxyExec = method.getAnnotation(getProxyAnnotation());
         if (proxyExec != null) {
             invokeSubsequent(invokeResult, proxyExec, args);
         }

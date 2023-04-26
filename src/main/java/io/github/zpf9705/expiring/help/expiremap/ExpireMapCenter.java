@@ -5,15 +5,11 @@ import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.core.persistence.ExpireBytesPersistenceSolver;
 import io.github.zpf9705.expiring.core.persistence.PersistenceSolver;
 import io.github.zpf9705.expiring.help.HelpCenter;
-import io.github.zpf9705.expiring.help.ReloadCarry;
 import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.ServiceLoadUtils;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -30,14 +26,17 @@ import java.util.concurrent.TimeUnit;
  * @since 3.0.0
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public final class ExpireMapCenter implements HelpCenter<ExpireMapCenter>, ReloadCarry<byte[], byte[]> {
+public final class ExpireMapCenter implements HelpCenter<ExpireMapCenter> {
 
     /**
      * Singleton for {@link ExpireMapCenter}
      */
     private static volatile ExpireMapCenter expireMapCenter;
 
-    private final ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton;
+    private ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton;
+
+    private ExpireMapCenter() {
+    }
 
     private ExpireMapCenter(ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton) {
         this.solveDifferentialGenericSingleton = solveDifferentialGenericSingleton;
@@ -94,7 +93,6 @@ public final class ExpireMapCenter implements HelpCenter<ExpireMapCenter>, Reloa
      * @param duration must no be {@literal null}
      * @param unit     must no be {@literal null}
      */
-    @Override
     public void reload(@NotNull byte[] key, @NotNull byte[] value, @NotNull Long duration,
                        @NotNull TimeUnit unit) {
         if (this.solveDifferentialGenericSingleton == null) {

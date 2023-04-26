@@ -5,6 +5,7 @@ import cn.hutool.core.exceptions.InvocationTargetRuntimeException;
 import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.JSON;
 import io.github.zpf9705.expiring.core.ExpiringException;
+import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.PersistenceException;
 import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
@@ -768,8 +769,13 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     @Override
-    public String getFactoryName() {
+    public String getRenewFactoryName() {
         return ExpireSimpleGlobePersistence.class.getName();
+    }
+
+    @Override
+    public String getReloadClassName() {
+        throw new OperationsException();
     }
 
     @Override
@@ -864,8 +870,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         //check entry
         checkEntry(entry);
         //reload
-        ReloadCarry reloadCarry = ReloadCarry.getReloadCarry(getFactoryName());
-        AssertUtils.Persistence.notNull(reloadCarry, "[" + getFactoryName() + "] no found ReloadCarry");
+        ReloadCarry reloadCarry = ReloadCarry.getReloadCarry(getReloadClassName());
+        AssertUtils.Persistence.notNull(reloadCarry, "[" + getReloadClassName() + "] no found ReloadCarry");
         reloadCarry.reload(entry.getKey(), entry.getValue(),
                 condition(now, persistence.getExpire(), entry.getTimeUnit()),
                 entry.getTimeUnit());
