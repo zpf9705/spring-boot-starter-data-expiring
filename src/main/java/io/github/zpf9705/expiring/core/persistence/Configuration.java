@@ -20,6 +20,7 @@ public final class Configuration {
     public static final String noPersistenceOfExpireTimeUnit = "csp.expiry.noPersistenceOfExpireTimeUnit";
     public static final String defaultExpireTime = "csp.expiry.defaultExpireTime";
     public static final String defaultExpireTimeUnit = "csp.expiry.defaultExpireTimeUnit";
+    public static final String chooseClient = "csp.expiry.chooseClient";
     static final long defaultNoPersistenceExpireTimeExample = 10L;
     static final long defaultExpireTimeExample = 20L;
 
@@ -94,5 +95,14 @@ public final class Configuration {
      */
     public TimeUnit getDefaultExpireTimeUnit() {
         return SystemUtils.getPropertyWithConvert(defaultExpireTimeUnit, TimeUnit::valueOf, null);
+    }
+
+    /**
+     * Get choose cache client
+     *
+     * @return Help factory
+     */
+    public String getChooseClient() {
+        return SystemUtils.getPropertyWithConvert(chooseClient, Function.identity(), null);
     }
 }

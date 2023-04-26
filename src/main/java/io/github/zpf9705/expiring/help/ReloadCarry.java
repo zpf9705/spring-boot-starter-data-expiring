@@ -1,8 +1,11 @@
 package io.github.zpf9705.expiring.help;
 
 import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.ServiceLoadUtils;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,10 +30,21 @@ public interface ReloadCarry<K, V> {
     /**
      * According to the class name for the corresponding operation interface
      *
-     * @param className {@link Class#getName()}
+     * @param client choose client name
      * @return {@link ReloadCarry}
      */
-    static ReloadCarry getReloadCarry(@NotNull String className) {
-        return ServiceLoadUtils.load(ReloadCarry.class).getSpecifiedServiceBySubClassName(className);
+    static ReloadCarry getReloadCarry(@NotNull String client) {
+        Map<Class<?>, ReloadCarry> reloadCarryMap = ServiceLoadUtils.load(ReloadCarry.class).withClassMap();
+        if (CollectionUtils.simpleNotEmpty(reloadCarryMap)) {
+            for (Class<?> clazz : reloadCarryMap.keySet()) {
+                Reload reload = clazz.getAnnotation(Reload.class);
+                if (reload != null) {
+                    if (Objects.equals(reload.value(), client)) {
+                        return reloadCarryMap.get(clazz);
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

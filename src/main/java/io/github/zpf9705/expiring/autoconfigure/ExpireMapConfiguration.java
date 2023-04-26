@@ -66,7 +66,7 @@ import java.util.function.Predicate;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ExpiringMap.class})
 @ConditionalOnProperty(
-        name = "spring.data.expiry.operation-type",
+        name = "spring.data.expiry.client",
         havingValue = "expire_map",
         matchIfMissing = true
 )

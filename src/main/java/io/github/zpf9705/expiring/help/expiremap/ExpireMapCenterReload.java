@@ -1,6 +1,7 @@
 package io.github.zpf9705.expiring.help.expiremap;
 
 import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.help.Reload;
 import io.github.zpf9705.expiring.help.ReloadCarry;
 
 import java.util.concurrent.TimeUnit;
@@ -11,6 +12,7 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 3.0.0
  */
+@Reload("EXPIRE_MAP")
 public class ExpireMapCenterReload implements ReloadCarry<byte[], byte[]> {
 
     @Override

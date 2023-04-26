@@ -2,6 +2,7 @@ package io.github.zpf9705.expiring.util;
 
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -53,6 +54,20 @@ public final class ServiceLoadUtils<T> {
             return null;
         }
         return this.load.iterator();
+    }
+
+    /**
+     * To load all the program interface implementation class be a class map
+     *
+     * @return {@link java.util.Iterator}
+     */
+    public Map<Class<?>, T> withClassMap() {
+        if (this.load == null) {
+            return null;
+        }
+        Map<Class<?>, T> classTMap = new HashMap<>();
+        this.load.forEach(v -> classTMap.put(v.getClass(),v));
+        return classTMap;
     }
 
     /**

@@ -22,13 +22,6 @@ public interface PersistenceRenewFactory {
     String getRenewFactoryName();
 
     /**
-     * Get Reload class name
-     *
-     * @return a factory name
-     */
-    String getReloadClassName();
-
-    /**
      * Restore memory within a path
      *
      * @param path Persistence path

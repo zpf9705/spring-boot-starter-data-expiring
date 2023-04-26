@@ -63,9 +63,9 @@ public class ExpireProperties {
     private TimeUnit defaultExpireTimeUnit = TimeUnit.SECONDS;
 
     /**
-     * Set a {@code operationType} for help source
+     * Set a {@code client} for help source
      */
-    private OperationType operationType;
+    private Client client;
 
     /**
      * Expiry implement for {@link net.jodah.expiringmap.ExpiringMap}
@@ -137,12 +137,12 @@ public class ExpireProperties {
         this.defaultExpireTimeUnit = defaultExpireTimeUnit;
     }
 
-    public OperationType getOperationType() {
-        return operationType;
+    public Client getClient() {
+        return client;
     }
 
-    public void setOperationType(OperationType operationType) {
-        this.operationType = operationType;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public ExpiringMap getExpiringMap() {
@@ -196,9 +196,9 @@ public class ExpireProperties {
     }
 
     /**
-     * Cache operation type
+     * Cache Client
      */
-    public enum OperationType {
+    public enum Client {
         EXPIRE_MAP
     }
 
@@ -211,5 +211,6 @@ public class ExpireProperties {
         SystemUtils.setProperty(Configuration.defaultExpireTimeUnit, this.defaultExpireTimeUnit);
         SystemUtils.setProperty(Configuration.noPersistenceOfExpireTime, this.noPersistenceOfExpireTime);
         SystemUtils.setProperty(Configuration.noPersistenceOfExpireTimeUnit, this.noPersistenceOfExpireTimeUnit);
+        SystemUtils.setProperty(Configuration.chooseClient, this.client.name());
     }
 }
