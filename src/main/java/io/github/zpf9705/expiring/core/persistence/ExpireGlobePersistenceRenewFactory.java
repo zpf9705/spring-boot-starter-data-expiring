@@ -82,7 +82,7 @@ public abstract class ExpireGlobePersistenceRenewFactory {
          */
         public static PersistenceRenewFactory findRenewFactory(@NotNull Class<?> factoryClass) {
             return PERSISTENCE_FACTORIES.stream()
-                    .filter(f -> Objects.equals(factoryClass.getName(), f.getFactoryName()))
+                    .filter(f -> Objects.equals(factoryClass.getName(), f.getRenewFactoryName()))
                     .findFirst()
                     .orElse(null);
         }
