@@ -667,7 +667,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         writeLock.lock();
         try {
             //Delete the old file to add a new file
-            delWithCurrentWritePath();
+            this.delWithCurrentWritePath();
             //Refresh time due to the key value no change don't need to delete the application cache
             entry.refreshOfExpire(duration, timeUnit);
             //Redefine the cache
@@ -688,7 +688,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         writeLock.lock();
         try {
             //Delete the old file to add a new key value no change don't need to delete the application cache
-            delWithCurrentWritePath();
+            this.delWithCurrentWritePath();
             //To write a cache file
             ofSet(getGlobePersistenceClass(), getPersistenceClass(), per.getEntry()).serial();
         } finally {
@@ -707,7 +707,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         writeLock.lock();
         try {
             //Delete the old file to add a new file
-            delWithCurrentWritePath();
+            this.delWithCurrentWritePath();
             //Delete the cache because the value changes
             CACHE_MAP.remove(rawHash(entry.getKey(), entry.getValue()));
             //To write a cache file
@@ -724,7 +724,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         writeLock.lock();
         try {
             //Delete the persistent file
-            delWithCurrentWritePath();
+            this.delWithCurrentWritePath();
             //Delete the cache
             CACHE_MAP.remove(rawHash(entry.getKey(), entry.getValue()));
             KEY_VALUE_HASH.remove(CodecUtils.rawHashWithType(entry.getKey()));
