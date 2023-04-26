@@ -1,10 +1,12 @@
 package io.github.zpf9705.expiring.util;
 
 import io.github.zpf9705.expiring.core.annotation.NotNull;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 /**
  * Program interface loader tool, mainly used for the set of query interface implementation class
@@ -54,17 +56,37 @@ public final class ServiceLoadUtils<T> {
     }
 
     /**
-     * By class type for the specified type of interface implementation class
+     * By class type for the specified type of interface implementation class type
      *
      * @param subClass specified type
      * @return specified sub
      */
     public T getSpecifiedServiceBySubClass(Class<? extends T> subClass) {
+        return findBySubPredict(t -> t.getClass() == subClass);
+    }
+
+    /**
+     * By class type for the specified type of interface implementation class name
+     *
+     * @param className specified type
+     * @return specified sub
+     */
+    public T getSpecifiedServiceBySubClassName(String className) {
+        return findBySubPredict(t -> t.getClass().getName().equals(className));
+    }
+
+    /**
+     * Under conditions of assertions
+     *
+     * @param predicate {@link Predicate}
+     * @return result
+     */
+    private T findBySubPredict(Predicate<T> predicate) {
         if (this.load == null) {
             return null;
         }
         for (T load : load) {
-            if (load.getClass() == subClass) {
+            if (predicate.test(load)) {
                 return load;
             }
         }

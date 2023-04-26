@@ -5,6 +5,7 @@ import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.core.persistence.ExpireBytesPersistenceSolver;
 import io.github.zpf9705.expiring.core.persistence.PersistenceSolver;
 import io.github.zpf9705.expiring.help.HelpCenter;
+import io.github.zpf9705.expiring.help.ReloadCarry;
 import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.ServiceLoadUtils;
 import net.jodah.expiringmap.ExpirationListener;
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  * @since 3.0.0
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public final class ExpireMapCenter implements HelpCenter<ExpireMapCenter> {
+public final class ExpireMapCenter implements HelpCenter<ExpireMapCenter>, ReloadCarry<byte[], byte[]> {
 
     /**
      * Singleton for {@link ExpireMapCenter}
@@ -93,6 +94,7 @@ public final class ExpireMapCenter implements HelpCenter<ExpireMapCenter> {
      * @param duration must no be {@literal null}
      * @param unit     must no be {@literal null}
      */
+    @Override
     public void reload(@NotNull byte[] key, @NotNull byte[] value, @NotNull Long duration,
                        @NotNull TimeUnit unit) {
         if (this.solveDifferentialGenericSingleton == null) {

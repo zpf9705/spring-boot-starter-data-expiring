@@ -9,6 +9,7 @@ import io.github.zpf9705.expiring.core.PersistenceException;
 import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.help.ReloadCarry;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import io.github.zpf9705.expiring.util.CodecUtils;
 import io.github.zpf9705.expiring.util.CollectionUtils;
@@ -81,6 +82,7 @@ import java.util.stream.Collectors;
  *      <li>{@link PersistenceRenewFactory#deserializeWithFile(File)}</li>
  *  </ul>
  *  And provides asynchronous takes up the recovery of the main thread
+ *  5、At final ,
  *
  * @author zpf
  * @since 1.1.0
@@ -845,20 +847,11 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         //check entry
         checkEntry(entry);
         //reload
-        reload(entry.getKey(), entry.getValue(), condition(now, persistence.getExpire(), entry.getTimeUnit()),
+        ReloadCarry reloadCarry = ReloadCarry.getReloadCarry(getFactoryName());
+        AssertUtils.Persistence.notNull(reloadCarry, "[" + getFactoryName() + "] no found ReloadCarry");
+        reloadCarry.reload(entry.getKey(), entry.getValue(),
+                condition(now, persistence.getExpire(), entry.getTimeUnit()),
                 entry.getTimeUnit());
-    }
-
-    /**
-     * Cache value recovery
-     *
-     * @param key      must not be {@literal null}
-     * @param value    must not be {@literal null}
-     * @param duration must not be {@literal null}
-     * @param unit     must not be {@literal null}
-     */
-    public void reload(@NotNull K key, @NotNull V value,
-                       @NotNull Long duration, @NotNull TimeUnit unit) {
     }
 
     /**

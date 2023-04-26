@@ -104,11 +104,6 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
         this.deserializeWithEntry(globePersistence);
     }
 
-    @Override
-    public void reload(@NotNull byte[] key, @NotNull byte[] value, @NotNull Long duration, @NotNull TimeUnit unit) {
-        ExpireMapCenter.getExpireMapCenter().reload(key, value, duration, unit);
-    }
-
     public static class BytePersistence extends Persistence<byte[], byte[]> {
 
         private static final long serialVersionUID = -368192386828860022L;
