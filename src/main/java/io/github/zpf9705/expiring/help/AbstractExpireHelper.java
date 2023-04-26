@@ -33,19 +33,6 @@ public abstract class AbstractExpireHelper<T> implements DefaultedExpireHelper {
     }
 
     /**
-     * Similar object {@code key} and object {@code value}  check function expression
-     */
-    private final BiFunction<Object, Object, Boolean> compare = (b, c) -> {
-        if (b != null && c != null) {
-            Predicate<String> predicate = CodecUtils.findPredicate(
-                    CodecUtils.toStingBeReal(c)
-            );
-            return predicate.test(CodecUtils.toStingBeReal(c));
-        }
-        return false;
-    };
-
-    /**
      * Get a The cache helper for {@link HelpCenter}
      *
      * @return {@link HelpCenter}
@@ -62,6 +49,19 @@ public abstract class AbstractExpireHelper<T> implements DefaultedExpireHelper {
     public ExpireMapByteContain contain() {
         return this.helpCenter.getContain();
     }
+
+    /**
+     * Similar object {@code key} and object {@code value}  check function expression
+     */
+    private final BiFunction<Object, Object, Boolean> compare = (b, c) -> {
+        if (b != null && c != null) {
+            Predicate<String> predicate = CodecUtils.findPredicate(
+                    CodecUtils.toStingBeReal(c)
+            );
+            return predicate.test(CodecUtils.toStingBeReal(b));
+        }
+        return false;
+    };
 
     /**
      * Compare with {@code byte[]} of similar
