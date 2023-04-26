@@ -21,8 +21,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -245,7 +244,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     (@CanNull Class<G> globePersistenceClass, // construct have default value can nullable
      @CanNull Class<P> persistenceClass, // construct have default value can nullable
      @NotNull Entry<K, V> entry,
-     @NotNull LocalDateTime expired,
+     @NotNull Long expired,
      @NotNull String writePath) {
         G globePersistence;
         try {
@@ -916,8 +915,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <V>   value generic
      * @return result
      */
-    private static <V, K> LocalDateTime expired(@NotNull Entry<K, V> entry) {
-        LocalDateTime expired;
+    private static <V, K> Long expired(@NotNull Entry<K, V> entry) {
+        Long expired;
         if (entry.haveDuration()) {
             expired = plusCurrent(entry.getDuration(), entry.getTimeUnit());
         } else {
@@ -933,7 +932,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param timeUnit must not be {@literal null}
      * @return result
      */
-    private static LocalDateTime plusCurrent(@CanNull Long duration, @CanNull TimeUnit timeUnit) {
+    private static Long plusCurrent(@CanNull Long duration, @CanNull TimeUnit timeUnit) {
         if (duration == null) {
             duration = configuration.getDefaultExpireTime();
         }
@@ -959,7 +958,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
                 break;
         }
         if (unit == null) throw new UnsupportedOperationException(timeUnit.name());
-        return LocalDateTime.now().plus(duration, unit);
+        return System.currentTimeMillis() + duration;
     }
 
     /**
@@ -971,7 +970,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     public static class Persistence<K, V> implements Serializable {
         private static final long serialVersionUID = 5916681709307714445L;
         private Entry<K, V> entry;
-        private LocalDateTime expire;
+        private Long expire;
         static final String FORMAT = AT + "\n" + "%s" + "\n" + AT;
         static final String execute_name = "expireOn";
 
@@ -996,7 +995,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
             return new Persistence<>(entry);
         }
 
-        public Persistence<K, V> expireOn(@NotNull LocalDateTime expire) {
+        public Persistence<K, V> expireOn(@NotNull Long expire) {
             this.expire = expire;
             return this;
         }
@@ -1010,10 +1009,10 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         }
 
         public LocalDateTime getExpire() {
-            return expire;
+            return LocalDateTime.ofInstant(Instant.ofEpochMilli(this.expire), ZoneId.systemDefault());
         }
 
-        public void setExpire(LocalDateTime expire) {
+        public void setExpire(Long expire) {
             this.expire = expire;
         }
 
