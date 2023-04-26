@@ -60,8 +60,11 @@ import java.util.stream.Collectors;
  *      <li>{@link PersistenceRunner}</li>
  *  </ul>
  *  Its operation is completely thread-safe, because here is introduced into the read-write lock
+ * <p>
  *  {@link #readLock}
+ * <p>
  *  {@link #writeLock}
+ * <p>
  *  Read not write, write can't read, to ensure the safety of the file system of the thread
  * <p>
  *  2、Will, depending on the type of execution method after different persistence API calls
@@ -72,9 +75,15 @@ import java.util.stream.Collectors;
  *  </ul>
  * <p>
  *  3、Persistent cache will be stored in the form of a particular file
+ *  The relevant configuration information will be cached in advance {@link #CACHE_MAP}
+ *  Attached to the {@link CodecUtils}
+ * <p>
  *  {@link #AT}
+ * <p>
  *  {@link #PREFIX_BEFORE}
+ * <p>
  *  {@link #configuration}
+ * <p>
  *  4、When attached project restart automatically read persistence file in memory
  *  <ul>
  *      <li>{@link PersistenceRenewFactory#deserializeWithString(StringBuilder)}</li>
@@ -82,7 +91,15 @@ import java.util.stream.Collectors;
  *      <li>{@link PersistenceRenewFactory#deserializeWithFile(File)}</li>
  *  </ul>
  *  And provides asynchronous takes up the recovery of the main thread
- *  5、At final ,
+ * <p>
+ *  5、At final , on the analysis of unexpired value for recovery operations
+ *  Mainly the {@link ExpireSimpleGlobePersistence} implementation class according to
+ *  provide the name of the factory to obtain corresponding overloading interface classes
+ *  <ul>
+ *      <li>{@link ReloadCarry}</li>
+ *      <li>{@link ReloadCarry#reload(Object, Object, Long, TimeUnit)}</li>
+ *      <li>{@link ReloadCarry#getReloadCarry(String)}</li>
+ *  </ul>
  *
  * @author zpf
  * @since 1.1.0
