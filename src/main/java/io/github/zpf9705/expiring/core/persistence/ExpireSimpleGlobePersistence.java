@@ -939,26 +939,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         if (timeUnit == null) {
             timeUnit = configuration.getDefaultExpireTimeUnit();
         }
-        ChronoUnit unit;
-        switch (timeUnit) {
-            case SECONDS:
-                unit = ChronoUnit.SECONDS;
-                break;
-            case MINUTES:
-                unit = ChronoUnit.MINUTES;
-                break;
-            case HOURS:
-                unit = ChronoUnit.HOURS;
-                break;
-            case DAYS:
-                unit = ChronoUnit.DAYS;
-                break;
-            default:
-                unit = null;
-                break;
-        }
-        if (unit == null) throw new UnsupportedOperationException(timeUnit.name());
-        return System.currentTimeMillis() + duration;
+        return System.currentTimeMillis() + timeUnit.toMillis(duration);
     }
 
     /**
