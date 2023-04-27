@@ -2,7 +2,7 @@ package io.github.zpf9705.expiring.core.serializer;
 
 import io.github.zpf9705.expiring.util.AssertUtils;
 import io.github.zpf9705.expiring.util.SerialUtils;
-import io.reactivex.rxjava3.core.Single;
+import io.github.zpf9705.expiring.util.TypeUtils;
 
 /**
  * Key/value pairs serialized adapter , Direct implementation {@link ExpiringSerializer}
@@ -31,7 +31,7 @@ public class ExpiringSerializerAdapter<T> implements ExpiringSerializer<T> {
         T t = null;
         Object deserialize = SerialUtils.deserialize(bytes);
         if (deserialize != null) {
-            t = Single.just(deserialize).ofType(this.type).blockingGet();
+            t = TypeUtils.convert(deserialize, this.type);
         }
         return t;
     }

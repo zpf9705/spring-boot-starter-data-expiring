@@ -1,22 +1,15 @@
 package io.github.zpf9705.expiring.core.persistence;
 
-import ch.qos.logback.core.util.CloseUtil;
-import cn.hutool.core.exceptions.InvocationTargetRuntimeException;
-import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.JSON;
-import io.github.zpf9705.expiring.core.ExpiringException;
 import io.github.zpf9705.expiring.core.PersistenceException;
 import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.help.ReloadCarry;
-import io.github.zpf9705.expiring.util.AssertUtils;
-import io.github.zpf9705.expiring.util.CodecUtils;
-import io.github.zpf9705.expiring.util.CollectionUtils;
-import io.github.zpf9705.expiring.util.StringUtils;
-import io.reactivex.rxjava3.core.Single;
+import io.github.zpf9705.expiring.util.*;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
@@ -187,8 +180,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * {@code Entry<K,V>} and {@code FactoryBeanName}
      * whether you need to query in the cache
      *
-     * @param globePersistenceClass can be {@literal null}
-     * @param persistenceClass      can be {@literal null}
+     * @param globePersistenceClass must not be {@literal null}
+     * @param persistenceClass      must not be {@literal null}
      * @param entry                 must not be {@literal null}
      * @param <G>                   Inherit generic
      * @param <P>                   Inherit son generic
@@ -197,8 +190,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @return {@link ExpireByteGlobePersistence}
      */
     public static <G extends ExpireSimpleGlobePersistence, P extends Persistence, K, V> G ofSet
-    (@CanNull Class<G> globePersistenceClass, // construct have default value can nullable
-     @CanNull Class<P> persistenceClass, // construct have default value can nullable
+    (@NotNull Class<G> globePersistenceClass,
+     @NotNull Class<P> persistenceClass,
      @NotNull Entry<K, V> entry) {
         checkOf(entry);
         String rawHash = rawHash(entry.getKey(), entry.getValue());
@@ -220,80 +213,6 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
          * Must conform to the transformation of idea down
          */
         return (G) persistence;
-    }
-
-    /**
-     * Use a derived class of this object class object and made a reflection structure subclasses class
-     * object instantiation, build a singleton object cache
-     * Apply to cache the runtime phase
-     *
-     * @param globePersistenceClass can be {@literal null}
-     * @param persistenceClass      can be {@literal null}
-     * @param entry                 must not be {@literal null}
-     * @param expired               must not be {@literal null}
-     * @param writePath             must not be {@literal null}
-     * @param <G>                   Inherit generic
-     * @param <P>                   Inherit son generic
-     * @param <K>                   key generic
-     * @param <V>                   value generic
-     * @return Inherit the instantiation singleton
-     */
-    public static <G extends ExpireSimpleGlobePersistence, P extends Persistence, K, V> G reflectForInstance
-    (@CanNull Class<G> globePersistenceClass, // construct have default value can nullable
-     @CanNull Class<P> persistenceClass, // construct have default value can nullable
-     @NotNull Entry<K, V> entry,
-     @NotNull Long expired,
-     @NotNull String writePath) {
-        G globePersistence;
-        try {
-            /*
-             * @see Persistence#Persistence(Entry)
-             */
-            P persistence = ReflectUtil.newInstance(persistenceClass, entry);
-
-            /*
-             * @see Persistence#expireOn(LocalDateTime)
-             * exec add expire time
-             */
-            ReflectUtil.invoke(persistence, Persistence.execute_name, expired);
-
-            /*
-             * @see ExpireSimpleGlobePersistence#ExpireSimpleGlobePersistence(Persistence, String)
-             */
-            globePersistence = ReflectUtil.newInstance(globePersistenceClass, persistence, writePath);
-
-            //record class type
-            globePersistence.setGlobePersistenceClass(globePersistenceClass);
-            globePersistence.setPersistenceClass(persistenceClass);
-        } catch (Throwable e) {
-            if (e instanceof ExpiringException) {
-                throw e;
-            }
-            if (e.getMessage().contains("No constructor") || e.getMessage().contains("Instance class")) {
-                throw new PersistenceException(
-                        "You provider [" + persistenceClass + "] maybe no " +
-                                "Construct of Persistence#Persistence(Entry, String) " +
-                                "or " +
-                                "[" + globePersistenceClass + "] maybe no" +
-                                "Construct of ExpireSimpleGlobePersistence#ExpireSimpleGlobePersistence(Persistence, String)" +
-                                "if you provider class type is null , please super ExpireSimpleGlobePersistence " +
-                                "or ExpireSimpleGlobePersistence.Persistence constructs ," +
-                                "now throw msg : " + e.getMessage()
-                );
-            } else if (e.getMessage().contains("No such method")) {
-                throw new PersistenceException(
-                        "Please check you provider [" + persistenceClass + " instance Is there a "
-                                + Persistence.execute_name + " this method] and args a String , now throw msg : " + e.getMessage()
-                );
-            } else if (e instanceof InvocationTargetRuntimeException) {
-                throw new PersistenceException(
-                        "Please check you provider [" + persistenceClass + " instance , is there a method named "
-                                + Persistence.execute_name + " exec error , now throw msg : " + e.getMessage()
-                );
-            }
-            throw new UnsupportedOperationException(e.getMessage());
-        }
-        return globePersistence;
     }
 
     /**
@@ -325,6 +244,50 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     /**
      * Use a derived class of this object class object and made a reflection structure subclasses class
      * object instantiation, build a singleton object cache
+     * Apply to cache the runtime phase
+     *
+     * @param globePersistenceClass must not be {@literal null}
+     * @param persistenceClass      must not be {@literal null}
+     * @param entry                 must not be {@literal null}
+     * @param expired               must not be {@literal null}
+     * @param writePath             must not be {@literal null}
+     * @param <G>                   Inherit generic
+     * @param <P>                   Inherit son generic
+     * @param <K>                   key generic
+     * @param <V>                   value generic
+     * @return Inherit the instantiation singleton
+     */
+    public static <G extends ExpireSimpleGlobePersistence, P extends Persistence, K, V> G reflectForInstance
+    (@NotNull Class<G> globePersistenceClass,
+     @NotNull Class<P> persistenceClass,
+     @NotNull Entry<K, V> entry,
+     @NotNull Long expired,
+     @NotNull String writePath) {
+        G globePersistence;
+        try {
+            //get constructor with io.github.zpf9705.expiring.core.persistence.Entry
+            Constructor<P> pConstructor = persistenceClass.getConstructor(Entry.class);
+            //constructor instance with entry param
+            P persistence = pConstructor.newInstance(entry);
+            //set expired timestamp
+            persistence.setExpire(expired);
+            //get constructor with persistenceClass
+            Constructor<G> gConstructor = globePersistenceClass.getConstructor(persistenceClass, String.class);
+            //constructor instance with persistence param and write path
+            globePersistence = gConstructor.newInstance(persistence, writePath);
+            //record class GlobePersistenceClass type
+            globePersistence.setGlobePersistenceClass(globePersistenceClass);
+            //record class persistenceClass type
+            globePersistence.setPersistenceClass(persistenceClass);
+        } catch (Throwable e) {
+            throw new PersistenceException(e.getMessage());
+        }
+        return globePersistence;
+    }
+
+    /**
+     * Use a derived class of this object class object and made a reflection structure subclasses class
+     * object instantiation, build a singleton object cache
      * Apply to restart recovery stage
      *
      * @param globePersistenceClass can be {@literal null}
@@ -340,26 +303,16 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      @NotNull String writePath) {
         G globePersistence;
         try {
-            /*
-             * @see ExpireSimpleGlobePersistence#ExpireSimpleGlobePersistence(Persistence, String)
-             */
-            globePersistence = ReflectUtil.newInstance(
-                    globePersistenceClass, persistence, writePath
-            );
+            //get constructor with persistenceClass
+            Constructor<G> gConstructor = globePersistenceClass.getConstructor(persistence.getClass(), String.class);
+            //constructor instance with persistence param and write path
+            globePersistence = gConstructor.newInstance(persistence, writePath);
+            //record class GlobePersistenceClass type
             globePersistence.setGlobePersistenceClass(globePersistenceClass);
+            //record class persistenceClass type
             globePersistence.setPersistenceClass(persistence.getClass());
         } catch (Throwable e) {
-            if (e.getMessage().contains("No constructor") || e.getMessage().contains("Instance class")) {
-                throw new PersistenceException(
-                        "You provider" +
-                                "[" + globePersistenceClass + "] maybe no" +
-                                "Construct of ExpireSimpleGlobePersistence#ExpireSimpleGlobePersistence(Persistence, String)" +
-                                "if you provider class type is null , please super ExpireSimpleGlobePersistence " +
-                                "or ExpireSimpleGlobePersistence.Persistence constructs ," +
-                                "now throw msg : " + e.getMessage()
-                );
-            }
-            throw new UnsupportedOperationException(e.getMessage());
+            throw new PersistenceException(e.getMessage());
         }
         return globePersistence;
     }
@@ -452,7 +405,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
                                                                            @CanNull Class<G> globePersistenceClass) {
         try {
             if (globePersistenceClass == null) return (G) expireGlobePersistence;
-            return Single.just(expireGlobePersistence).ofType(globePersistenceClass).blockingGet();
+            return TypeUtils.convert(expireGlobePersistence, globePersistenceClass);
         } catch (Throwable e) {
             throw new PersistenceException(
                     "Provider obj no instanceof" +
@@ -739,7 +692,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     @Override
     public boolean expireOfCache() {
         //Expiration date after the current time
-        return this.persistence.getExpire().isAfter(LocalDateTime.now());
+        return this.persistence.getExpireLocalDateTime().isAfter(LocalDateTime.now());
     }
 
     @Override
@@ -812,8 +765,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         } catch (Throwable e) {
             throw new PersistenceException("Buff read cache error [" + e.getMessage() + "]");
         } finally {
-            CloseUtil.closeQuietly(in);
-            CloseUtil.closeQuietly(read);
+            AbleUtils.close(in, read);
         }
         //Perform follow-up supplement
         this.deserializeWithString(buffer);
@@ -837,8 +789,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         LocalDateTime now = LocalDateTime.now();
         Persistence<K, V> persistence = t.getPersistence();
         //When the time is equal to or judged failure after now in record time
-        if (persistence.getExpire() == null || now.isEqual(persistence.getExpire()) ||
-                now.isAfter(persistence.getExpire())) {
+        if (persistence.getExpire() == null || now.isEqual(persistence.getExpireLocalDateTime()) ||
+                now.isAfter(persistence.getExpireLocalDateTime())) {
             //Delete the persistent file
             t.delWithCurrentWritePath();
             throw new PersistenceException("File [" + t.getWritePath() + "] record time [" + persistence.getExpire() +
@@ -853,7 +805,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         AssertUtils.Persistence.notNull(reloadCarry,
                 "[" + configuration.getChooseClient() + "] no found ReloadCarry");
         reloadCarry.reload(entry.getKey(), entry.getValue(),
-                condition(now, persistence.getExpire(), entry.getTimeUnit()),
+                condition(now, persistence.getExpireLocalDateTime(), entry.getTimeUnit()),
                 entry.getTimeUnit());
     }
 
@@ -934,7 +886,6 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         private Entry<K, V> entry;
         private Long expire;
         static final String FORMAT = AT + "\n" + "%s" + "\n" + AT;
-        static final String execute_name = "expireOn";
 
         public Persistence() {
             Console.warn("Persistence empty after construction, must undertake other variable initialization");
@@ -957,25 +908,25 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
             return new Persistence<>(entry);
         }
 
-        public Persistence<K, V> expireOn(@NotNull Long expire) {
-            this.expire = expire;
-            return this;
+        public void setEntry(Entry<K, V> entry) {
+            this.entry = entry;
         }
 
         public Entry<K, V> getEntry() {
             return entry;
         }
 
-        public void setEntry(Entry<K, V> entry) {
-            this.entry = entry;
-        }
 
-        public LocalDateTime getExpire() {
-            return LocalDateTime.ofInstant(Instant.ofEpochMilli(this.expire), ZoneId.systemDefault());
-        }
-
-        public void setExpire(Long expire) {
+        public void setExpire(@NotNull Long expire) {
             this.expire = expire;
+        }
+
+        public Long getExpire() {
+            return expire;
+        }
+
+        public LocalDateTime getExpireLocalDateTime() {
+            return LocalDateTime.ofInstant(Instant.ofEpochMilli(this.expire), ZoneId.systemDefault());
         }
 
         @Override
