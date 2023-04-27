@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 3.0.0
  */
-@Reload("EXPIRE_MAP")
+@Reload(client = "EXPIRE_MAP")
 public class ExpireMapCenterReload implements ReloadCarry<byte[], byte[]> {
 
     @Override

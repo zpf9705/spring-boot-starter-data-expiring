@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * The cache to reload the client select annotations
  * <p>
- * {@link #value()} The client name
+ * {@link #client()} ()} The client name
  *
  * @author zpf
  * @since 3.0.0
@@ -17,5 +17,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Reload {
 
-    String value();
+    String client();
 }

@@ -39,7 +39,7 @@ public interface ReloadCarry<K, V> {
             for (Class<?> clazz : reloadCarryMap.keySet()) {
                 Reload reload = clazz.getAnnotation(Reload.class);
                 if (reload != null) {
-                    if (Objects.equals(reload.value(), client)) {
+                    if (Objects.equals(reload.client(), client)) {
                         return reloadCarryMap.get(clazz);
                     }
                 }
