@@ -22,7 +22,7 @@ public class ExpireByteGlobePersistence extends ExpireSimpleGlobePersistence<byt
         super();
     }
 
-    public ExpireByteGlobePersistence(Persistence<byte[], byte[]> persistence, String writePath) {
+    public ExpireByteGlobePersistence(BytePersistence persistence, String writePath) {
         super(persistence, writePath);
     }
 
