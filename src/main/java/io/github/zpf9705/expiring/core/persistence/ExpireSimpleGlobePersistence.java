@@ -15,7 +15,6 @@ import io.github.zpf9705.expiring.util.CodecUtils;
 import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.StringUtils;
 import io.reactivex.rxjava3.core.Single;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -475,12 +474,13 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         checkEntry(entry);
         //empty just pass
         if (entry.getDuration() == null || entry.getTimeUnit() == null) {
-            return;
+            if (configuration.isDefaultCompareWithExpirePersistence()) {
+                return;
+            }
+            throw new PersistenceException("Default setting no support be persisted");
         }
-        if ((entry.getDuration() != null && entry.getDuration() >=
-                configuration.getNoPersistenceOfExpireTime())
-                && (entry.getTimeUnit() != null && entry.getTimeUnit()
-                .equals(configuration.getNoPersistenceOfExpireTimeUnit()))) {
+        if (entry.getTimeUnit().toMillis(entry.getDuration()) >=
+                configuration.getDefaultNoPersistenceExpireTimeToMille()) {
             return;
         }
         throw new PersistenceException("Only more than or == " +
@@ -532,22 +532,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         AssertUtils.Persistence.notNull(key, "Key no be null ");
         return configuration.getPersistencePath()
                 //md5 sign to prevent the file name is too long
-                + DigestUtils.md5Hex(getContentBytes(key))
+                + CodecUtils.md5Hex(key)
                 + PREFIX_BEFORE;
-    }
-
-    /**
-     * Get the MD5 encryption byte array
-     *
-     * @param key must not be {@literal null}
-     * @param <K> key generic
-     * @return byte array
-     */
-    static <K> byte[] getContentBytes(@NotNull K key) {
-        if (key instanceof byte[]) {
-            return (byte[]) key;
-        }
-        return key.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     /**

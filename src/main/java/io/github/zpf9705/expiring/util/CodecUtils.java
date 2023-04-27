@@ -2,6 +2,9 @@ package io.github.zpf9705.expiring.util;
 
 import cn.hutool.core.util.ArrayUtil;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -58,6 +61,31 @@ public abstract class CodecUtils {
             }
         }
         return toString;
+    }
+
+    /**
+     * Get the MD5 encryption with object
+     *
+     * @param key must not be {@literal null}
+     * @param <K> key generic
+     * @return byte array
+     */
+    public static <K> String md5Hex(@NotNull K key) {
+        return DigestUtils.md5Hex(getContentBytes(key));
+    }
+
+    /**
+     * Get the MD5 encryption byte array
+     *
+     * @param key must not be {@literal null}
+     * @param <K> key generic
+     * @return byte array
+     */
+    public static <K> byte[] getContentBytes(@NotNull K key) {
+        if (key instanceof byte[]) {
+            return (byte[]) key;
+        }
+        return key.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     /**

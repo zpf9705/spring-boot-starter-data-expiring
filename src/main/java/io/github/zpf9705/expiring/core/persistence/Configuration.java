@@ -3,6 +3,7 @@ package io.github.zpf9705.expiring.core.persistence;
 import io.github.zpf9705.expiring.util.SystemUtils;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 /**
@@ -23,7 +24,9 @@ public final class Configuration {
     public static final String chooseClient = "csp.expiry.chooseClient";
     static final long defaultNoPersistenceExpireTimeExample = 10L;
     static final long defaultExpireTimeExample = 20L;
-
+    static boolean defaultCompareWithExpirePersistence = false;
+    static AtomicBoolean load = new AtomicBoolean(false);
+    static long defaultNoPersistenceExpireTimeToMille;
     private static final Configuration CONFIGURATION = new Configuration();
 
     private Configuration() {
@@ -31,6 +34,36 @@ public final class Configuration {
 
     public static Configuration getConfiguration() {
         return CONFIGURATION;
+    }
+
+    static {
+        compareDefaultCompareWithExpirePersistence();
+    }
+
+    /**
+     * Comparison when no input expiration time, the default Settings or default default
+     * expiration and default not persistent value of the size of the timestamp
+     */
+    public static void compareDefaultCompareWithExpirePersistence() {
+        if (!load.compareAndSet(false, true)) {
+            return;
+        }
+        Configuration configuration = getConfiguration();
+        TimeUnit defaultExpireTimeUnit = configuration.getDefaultExpireTimeUnit();
+        if (defaultExpireTimeUnit == null) {
+            return;
+        }
+        TimeUnit noPersistenceOfExpireTimeUnit = configuration.getNoPersistenceOfExpireTimeUnit();
+        if (noPersistenceOfExpireTimeUnit == null) {
+            return;
+        }
+        defaultNoPersistenceExpireTimeToMille =
+                noPersistenceOfExpireTimeUnit.toMillis(configuration.getNoPersistenceOfExpireTime());
+        try {
+            defaultCompareWithExpirePersistence = defaultExpireTimeUnit.toMillis(configuration.getDefaultExpireTime())
+                    >= defaultNoPersistenceExpireTimeToMille;
+        } catch (Exception ignored) {
+        }
     }
 
     /**
@@ -100,9 +133,27 @@ public final class Configuration {
     /**
      * Get choose cache client
      *
-     * @return Help factory
+     * @return choose client
      */
     public String getChooseClient() {
         return SystemUtils.getPropertyWithConvert(chooseClient, Function.identity(), null);
+    }
+
+    /**
+     * Whether you need to obtain the default persistent identity
+     *
+     * @return if {@code true} persistence right
+     */
+    public boolean isDefaultCompareWithExpirePersistence() {
+        return defaultCompareWithExpirePersistence;
+    }
+
+    /**
+     * Get the default not persistent {@link TimeUnit#toMillis(long)} value
+     *
+     * @return result
+     */
+    public long getDefaultNoPersistenceExpireTimeToMille() {
+        return defaultNoPersistenceExpireTimeToMille;
     }
 }
