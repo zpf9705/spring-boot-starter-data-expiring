@@ -108,7 +108,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper<ExpireMapCenter> i
                 return dai;
             }
             return null;
-        }).collect(Collectors.toList());
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /*
