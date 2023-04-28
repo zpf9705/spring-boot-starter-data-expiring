@@ -9,7 +9,6 @@ import io.github.zpf9705.expiring.help.ReloadCarry;
 import io.github.zpf9705.expiring.util.*;
 
 import java.io.*;
-import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
@@ -265,20 +264,14 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      @NotNull String writePath) {
         G globePersistence;
         try {
-            //get constructor with io.github.zpf9705.expiring.core.persistence.Entry
-            Constructor<P> pConstructor = persistenceClass.getConstructor(Entry.class);
-            //constructor instance with entry param
-            P persistence = pConstructor.newInstance(entry);
+            //instance for persistenceClass
+            P persistence = InstanceUtils.instanceWithArgs(persistenceClass, entry);
             //set expired timestamp
             persistence.setExpire(expired);
-            //get constructor with persistenceClass
-            Constructor<G> gConstructor = globePersistenceClass.getConstructor(persistenceClass, String.class);
-            //constructor instance with persistence param and write path
-            globePersistence = gConstructor.newInstance(persistence, writePath);
-            //record class GlobePersistenceClass type
-            globePersistence.setGlobePersistenceClass(globePersistenceClass);
-            //record class persistenceClass type
-            globePersistence.setPersistenceClass(persistenceClass);
+            //instance for globePersistenceClass
+            globePersistence = InstanceUtils.instanceWithArgs(globePersistenceClass, persistence, writePath);
+            //record class GlobePersistenceClass type and persistenceClass
+            globePersistence.recordCurrentType(globePersistenceClass, persistenceClass);
         } catch (Throwable e) {
             throw new PersistenceException(e.getMessage());
         }
@@ -303,14 +296,10 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      @NotNull String writePath) {
         G globePersistence;
         try {
-            //get constructor with persistenceClass
-            Constructor<G> gConstructor = globePersistenceClass.getConstructor(persistence.getClass(), String.class);
-            //constructor instance with persistence param and write path
-            globePersistence = gConstructor.newInstance(persistence, writePath);
-            //record class GlobePersistenceClass type
-            globePersistence.setGlobePersistenceClass(globePersistenceClass);
-            //record class persistenceClass type
-            globePersistence.setPersistenceClass(persistence.getClass());
+            //instance for globePersistenceClass
+            globePersistence = InstanceUtils.instanceWithArgs(globePersistenceClass, persistence, writePath);
+            //record class GlobePersistenceClass type and persistenceClass
+            globePersistence.recordCurrentType(globePersistenceClass, persistence.getClass());
         } catch (Throwable e) {
             throw new PersistenceException(e.getMessage());
         }
@@ -378,6 +367,9 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         return similarElement.stream().map(toStringKey -> {
             G g;
             Object keyObj = TO_STRING.get(toStringKey);
+            if (keyObj == null) {
+                return null;
+            }
             String keyHash = CodecUtils.rawHashWithType(keyObj);
             String valueHash = KEY_VALUE_HASH.get(CodecUtils.rawHashWithType(keyObj));
             if (StringUtils.simpleNotBlank(valueHash)) {
@@ -528,6 +520,19 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      */
     static <K> void recordContentToKeyString(@NotNull K key) {
         TO_STRING.putIfAbsent(CodecUtils.toStingBeReal(key), key);
+    }
+
+    /**
+     * Record the current implementation of the class object type
+     * In order to facilitate the subsequent recovery
+     *
+     * @param globePersistenceClass {{@link #setGlobePersistenceClass(Class)}}
+     * @param persistenceClass      {@link #setPersistenceClass(Class)}
+     */
+    void recordCurrentType(@NotNull Class<? extends ExpireSimpleGlobePersistence> globePersistenceClass,
+                           @NotNull Class<? extends Persistence> persistenceClass) {
+        setGlobePersistenceClass(globePersistenceClass);
+        setPersistenceClass(persistenceClass);
     }
 
     /**
