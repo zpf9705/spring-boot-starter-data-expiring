@@ -11,8 +11,6 @@ import io.github.zpf9705.expiring.util.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.*;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -697,7 +695,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     @Override
     public boolean expireOfCache() {
         //Expiration date after the current time
-        return this.persistence.getExpireLocalDateTime().isAfter(LocalDateTime.now());
+        return this.persistence.getExpire() > System.currentTimeMillis();
     }
 
     @Override
@@ -791,11 +789,10 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      */
     public <T extends ExpireSimpleGlobePersistence<K, V>> void deserializeWithEntry(@NotNull T t) {
         //current time
-        LocalDateTime now = LocalDateTime.now();
+        long currentTimeMillis = System.currentTimeMillis();
         Persistence<K, V> persistence = t.getPersistence();
         //When the time is equal to or judged failure after now in record time
-        if (persistence.getExpire() == null || now.isEqual(persistence.getExpireLocalDateTime()) ||
-                now.isAfter(persistence.getExpireLocalDateTime())) {
+        if (persistence.getExpire() == null || currentTimeMillis >= persistence.getExpire()) {
             //Delete the persistent file
             t.delWithCurrentWritePath();
             throw new PersistenceException("File [" + t.getWritePath() + "] record time [" + persistence.getExpire() +
@@ -810,7 +807,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         AssertUtils.Persistence.notNull(reloadCarry,
                 "[" + configuration.getChooseClient() + "] no found ReloadCarry");
         reloadCarry.reload(entry.getKey(), entry.getValue(),
-                condition(now, persistence.getExpireLocalDateTime(), entry.getTimeUnit()),
+                condition(currentTimeMillis, persistence.getExpire(), entry.getTimeUnit()),
                 entry.getTimeUnit());
     }
 
@@ -822,27 +819,9 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param unit   must not be {@literal null}
      * @return long result
      */
-    public Long condition(@NotNull LocalDateTime now, @NotNull LocalDateTime expire, @NotNull TimeUnit unit) {
-        long value;
-        switch (unit) {
-            case SECONDS:
-                value = Duration.between(now, expire).getSeconds();
-                break;
-            case MINUTES:
-                value = ChronoUnit.MINUTES.between(now, expire);
-                break;
-            case HOURS:
-                value = ChronoUnit.HOURS.between(now, expire);
-                break;
-            case DAYS:
-                value = ChronoUnit.DAYS.between(now, expire);
-                break;
-            default:
-                throw new PersistenceException(
-                        "This already supported SECONDS MINUTES HOURS DAYS"
-                );
-        }
-        return value;
+    public Long condition(@NotNull Long now, @NotNull Long expire, @NotNull TimeUnit unit) {
+        long difference = expire - now;
+        return unit.convert(difference, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -928,10 +907,6 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
 
         public Long getExpire() {
             return expire;
-        }
-
-        public LocalDateTime getExpireLocalDateTime() {
-            return LocalDateTime.ofInstant(Instant.ofEpochMilli(this.expire), ZoneId.systemDefault());
         }
 
         @Override
