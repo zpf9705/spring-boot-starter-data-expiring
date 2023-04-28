@@ -37,9 +37,9 @@ public class ExpireMapHelperFactory implements ExpireHelperFactory {
         //Real object generated singleton operation
         ExpireMapCenter expireMapCenter = ExpireMapCenter.singletonWithConfiguration(clientConfiguration);
         //To approach the processor
-        ExpirePersistenceProcessor afterHandle = new ExpirePersistenceProcessor(
-                new ExpireMapRealHelper(() -> expireMapCenter), PersistenceExec.class
+        ExpireMapPersistenceProcessor processor = ExpireMapPersistenceProcessor.buildProcessor(
+                new ExpireMapRealHelper(() -> expireMapCenter)
         );
-        return JdkProxy.createProxy(afterHandle);
+        return JdkProxy.createProxy(processor);
     }
 }

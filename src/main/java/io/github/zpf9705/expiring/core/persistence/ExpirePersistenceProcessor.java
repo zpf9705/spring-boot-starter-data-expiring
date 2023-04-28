@@ -11,17 +11,19 @@ import io.github.zpf9705.expiring.util.ServiceLoadUtils;
  * <ul>
  *     <li>{@link io.github.zpf9705.expiring.core.proxy.JdkProxyInvocationHandler}</li>
  *     <li>{@link JdkProxyInvocationTrace}</li>
+ *     <li>{@link PersistenceExec}</li>
  * </ul>
  *
  * @author zpf
  * @since 3.0.0
  */
-public class ExpirePersistenceProcessor extends JdkProxyInvocationTrace<ExpireMapHelper, PersistenceExec> {
+@SuppressWarnings("rawtypes")
+public class ExpirePersistenceProcessor<H> extends JdkProxyInvocationTrace<H, PersistenceExec> {
 
     private static final long serialVersionUID = -2346911415600201852L;
 
-    public ExpirePersistenceProcessor(ExpireMapHelper target, Class<PersistenceExec> annotationClass) {
-        super(target, annotationClass);
+    public ExpirePersistenceProcessor(H target) {
+        super(target, PersistenceExec.class);
     }
 
     @Override
@@ -31,7 +33,6 @@ public class ExpirePersistenceProcessor extends JdkProxyInvocationTrace<ExpireMa
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
     public void invokeSubsequent(Object invokeResult, PersistenceExec proxyExec, Object[] args) {
         super.invokeSubsequent(invokeResult, proxyExec, args);
         //Did the test execution results in line with expectations
