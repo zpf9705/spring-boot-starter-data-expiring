@@ -66,7 +66,7 @@ public final class ServiceLoadUtils<T> {
             return null;
         }
         Map<Class<?>, T> classTMap = new HashMap<>();
-        this.load.forEach(v -> classTMap.put(v.getClass(),v));
+        this.load.forEach(v -> classTMap.put(v.getClass(), v));
         return classTMap;
     }
 

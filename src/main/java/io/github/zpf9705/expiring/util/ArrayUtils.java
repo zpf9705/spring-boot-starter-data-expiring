@@ -31,4 +31,15 @@ public abstract class ArrayUtils {
     public static <T> boolean simpleNotEmpty(@CanNull T[] array) {
         return null != array && !(array.length == 0);
     }
+
+    /**
+     * Check Whether is arrayed
+     *
+     * @param t   check obj
+     * @param <T> object generic
+     * @return {@literal true} is array
+     */
+    public static <T> boolean isArray(T t) {
+        return t != null && t.getClass().isArray();
+    }
 }

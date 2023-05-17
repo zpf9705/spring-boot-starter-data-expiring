@@ -14,10 +14,10 @@ public abstract class TypeUtils {
     /**
      * Of the object by using the {@link Single#ofType(Class)} type conversion
      *
-     * @param source     To cast objects , must no be {@literal null}
+     * @param source To cast objects , must no be {@literal null}
      * @param target Conversion type , must no be {@literal null}
-     * @param <T>   To cast objects generic
-     * @param <O>   Conversion type generic
+     * @param <T>    To cast objects generic
+     * @param <O>    Conversion type generic
      * @return Conversion object
      */
     public static <T, O> O convert(@NotNull T source, @NotNull Class<O> target) {

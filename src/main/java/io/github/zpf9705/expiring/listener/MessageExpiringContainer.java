@@ -1,6 +1,7 @@
 package io.github.zpf9705.expiring.listener;
 
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapCenter;
+import io.github.zpf9705.expiring.util.AbleUtils;
 
 /**
  * Default abstract Expiring Load Listener container of key{@code  Object} and value {@code Object}
@@ -20,13 +21,13 @@ public abstract class MessageExpiringContainer implements ExpirationBytesBlocker
         //notify
         onMessage(this.capable);
         //clean Persistence with key and value
-        close();
+        AbleUtils.close(this);
     }
 
     @Override
     public void close() {
-        ExpireMapCenter.getExpireMapCenter().cleanSupportingElements(this.capable.getByteKey(),
-                this.capable.getByteValue());
+        ExpireMapCenter.getExpireMapCenter()
+                .cleanSupportingElements(this.capable.getByteKey(), this.capable.getByteValue());
     }
 
     /**

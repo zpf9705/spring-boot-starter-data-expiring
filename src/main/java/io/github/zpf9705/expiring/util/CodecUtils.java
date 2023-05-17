@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.util;
 
-import cn.hutool.core.util.ArrayUtil;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -25,7 +24,7 @@ public abstract class CodecUtils {
     public static <T> String rawHashWithType(@NotNull T t) {
         int hashcode = 0;
         String className = t.getClass().getName();
-        if (ArrayUtil.isArray(t)) {
+        if (ArrayUtils.isArray(t)) {
             if (t instanceof byte[]) {
                 hashcode = Arrays.hashCode((byte[]) t);
             }

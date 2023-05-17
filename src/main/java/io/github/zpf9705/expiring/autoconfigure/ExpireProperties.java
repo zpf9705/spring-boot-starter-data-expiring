@@ -65,7 +65,7 @@ public class ExpireProperties {
     /**
      * Set a {@code client} for help source
      */
-    private Client client;
+    private Client client = Client.EXPIRE_MAP;
 
     /**
      * Expiry implement for {@link net.jodah.expiringmap.ExpiringMap}
