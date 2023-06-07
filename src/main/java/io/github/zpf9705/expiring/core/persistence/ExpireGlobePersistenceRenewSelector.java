@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Persistent cache files to restore factory abstract class, through the collection of
+ * Persistent cache files to restore selector abstract class, through the collection of
  * <ul>
  *     <li>{@link ServiceLoader}</li>
  *     <li>{@link ServiceLoadUtils}</li>
@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author zpf
  * @since 3.0.0
  */
-public abstract class ExpireGlobePersistenceRenewFactory {
+public abstract class ExpireGlobePersistenceRenewSelector {
 
     /**
      * The query cache persistent chemical plant

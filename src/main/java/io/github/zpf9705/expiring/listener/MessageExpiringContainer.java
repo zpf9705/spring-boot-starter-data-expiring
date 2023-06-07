@@ -26,6 +26,7 @@ public abstract class MessageExpiringContainer implements ExpirationBytesBlocker
 
     @Override
     public void close() {
+        //now only apply close expiring-map
         ExpireMapCenter.getExpireMapCenter()
                 .cleanSupportingElements(this.capable.getByteKey(), this.capable.getByteValue());
     }

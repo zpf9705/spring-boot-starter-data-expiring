@@ -2,7 +2,7 @@ package io.github.zpf9705.expiring.autoconfigure;
 
 import io.github.zpf9705.expiring.core.*;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
-import io.github.zpf9705.expiring.core.persistence.ExpireGlobePersistenceRenewFactory;
+import io.github.zpf9705.expiring.core.persistence.ExpireGlobePersistenceRenewSelector;
 import io.github.zpf9705.expiring.core.persistence.PersistenceRenewFactory;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializerAdapter;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
@@ -168,7 +168,7 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
             return "Open persistence now , but provider factoryClass is null so persistenceRegain failed";
         }
         String clientName = factoryClass.getName();
-        PersistenceRenewFactory factory = ExpireGlobePersistenceRenewFactory.getPersistenceFRenewFactory(factoryClass);
+        PersistenceRenewFactory factory = ExpireGlobePersistenceRenewSelector.getPersistenceFRenewFactory(factoryClass);
         if (factory == null) {
             return "Client name [" + clientName + "] persistenceRegain failed";
         }
