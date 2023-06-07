@@ -26,7 +26,6 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
                             ExpireSimpleGlobePersistence.class,
                             ExpireSimpleGlobePersistence.Persistence.class,
                             Entry.of(key, value, duration, timeUnit));
-            //判断是否已经写入
             AssertUtils.Persistence.isTrue(!put.persistenceExist(), "persistence already exist ");
             put.serial();
         }, "putPersistence");
