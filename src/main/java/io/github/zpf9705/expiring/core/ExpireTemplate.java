@@ -1,60 +1,32 @@
 package io.github.zpf9705.expiring.core;
 
 import io.github.zpf9705.expiring.command.ExpireKeyCommands;
-import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
-import io.github.zpf9705.expiring.core.error.OperationsException;
-import io.github.zpf9705.expiring.core.logger.Console;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializer;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
+import io.github.zpf9705.expiring.help.ExpireHelper;
+import io.github.zpf9705.expiring.help.ExpireHelperFactory;
 import io.github.zpf9705.expiring.util.AssertUtils;
-import io.reactivex.rxjava3.core.Single;
-import net.jodah.expiringmap.ExpiringMap;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
+ * Helper class that simplifies Expiry data access code.
  * <p>
- * Template for ioc integration springboot of ExpiringMap
- * </p>
+ * Performs automatic serialization/deserialization between the given objects
+ * and the underlying binary data in the expiry store. By default, it uses
+ * Generic String serialization for its objects(through {@link GenericStringExpiringSerializer}).
+ * For String intensive operations consider the dedicated {@link StringExpireTemplate}.
  * <p>
- * In order to better fit springboot {@link org.springframework.boot.autoconfigure.SpringBootApplication}
- * Here enclosed the template model about {@link ExpireAccessor}
- * ----------------------
- * {@link ExpiringMap}
- * ------ english introduce -------
- * Max Size: the maximum length of the map, add the 1001th entry, can lead to the first expired immediately (even if not to expiration time).
- * Expiration: expiration time and expired unit, set the expiration time, is permanent.
- * The use of expiration Policy: expiration policies.
- * CREATED: when each update element, the countdown reset date.
- * ACCESSED: in every visit elements, the countdown reset date.
- * Variable Expiration: allows you to update the Expiration time value, if not set variable Expiration.
- * Are not allowed to change the expiration time, once the executive change the expiration time will throw an Unsupported Operation Exception.
- * Expiration Listener: synchronous expired reminders
- * Async Expiration Listener: asynchronous expired reminders
- * Entry Loader: lazy loading, if the key does not exist when calling the get method to create the default value
- * ----------------------
- * ------ 中文 解析 -------
- * maxSize:map的最大长度,添加第1001个entry时,会导致第1个马上过期(即使没到过期时间)
- * expiration:过期时间和过期单位,设置过期时间,则永久有效.
- * expirationPolicy:过期策略的使用
- * CREATED：  在每次更新元素时，过期倒计时清零
- * ACCESSED： 在每次访问元素时，过期倒计时清零
- * variableExpiration:允许更新过期时间值,如果不设置variableExpiration
- * 不允许更改过期时间,一旦执行更改过期时间的操作则会抛出UnsupportedOperationException异常
- * expirationListener:同步过期提醒
- * asyncExpirationListener:异步过期提醒
- * entryLoader:懒加载,调用get方法时若key不存在创建默认value
- * .......
- * </p>
+ * The Expiry of the template model , imitate expireTemplate encapsulation mode
+ * The cache operation way to connect assembly simulation for the connection,
+ * and is equipped with a variety of connection factory
+ * <p>
+ * When the configuration is completed of this class are thread safe operation.
+ * <p>
+ * <b>his is the central class in Expiry support</b>
  *
  * @author zpf
  * @since 1.1.0
@@ -63,13 +35,12 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
     private static final long serialVersionUID = -8020854200126293536L;
     @SuppressWarnings("rawtypes")
-    private @Nullable ExpiringSerializer defaultSerializer;
+    private @CanNull ExpiringSerializer defaultSerializer;
     private boolean enableDefaultSerializer = true;
     private boolean initialized = false;
 
     private ExpiringSerializer<K> keySerialize;
     private ExpiringSerializer<V> valueSerialize;
-    private String factoryBeanName;
 
     private final ValueOperations<K, V> valueOperations = new DefaultValueOperations<>(this);
     private final ExpirationOperations<K, V> expirationOperations = new DefaultExpirationOperations<>(this);
@@ -105,7 +76,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
         }
 
         if (this.enableDefaultSerializer && defaultUsed) {
-            Assert.notNull(this.defaultSerializer, "defaultSerializer must initialized");
+            AssertUtils.Operation.notNull(this.defaultSerializer, "defaultSerializer must initialized");
         }
 
         this.initialized = true;
@@ -113,53 +84,67 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
     @Override
     public <T> T execute(ExpireValueCallback<T> action, boolean composeException) {
-
         AssertUtils.Operation.isTrue(initialized, "Execute must before initialized");
-
-        ExpireConnectionFactory connectionFactory = getConnectionFactory();
-
-        AssertUtils.Operation.notNull(connectionFactory, "ConnectionFactory no be null");
-
-        AssertUtils.Operation.hasText(this.factoryBeanName, "FactoryBeanName no be null");
-
-        T result;
-        try {
-            result = action.doInExpire(connectionFactory.getConnection(), this.factoryBeanName);
-
-        } catch (Throwable e) {
-            solverException(e, composeException);
-            result = null;
-        }
-
-        return result;
+        return execute(action, getHelperFactory(), composeException);
     }
 
     /**
-     * Whether or not the default serializer should be used. If not, any serializers not explicitly
+     * Execute the plan had to adjust parameter calibration
+     *
+     * @param action           Expiry do action
+     * @param factory          help factory
+     * @param composeException Whether to merge exception
+     * @param <T>              Return paradigm
+     * @return return value be changed
+     */
+    public <T> T execute(ExpireValueCallback<T> action, ExpireHelperFactory factory, boolean composeException) {
+
+        AssertUtils.Operation.notNull(factory, "ExpireConnectionFactory no be null");
+
+        return execute(action, factory.getHelper(), composeException);
+    }
+
+    /**
+     * Unified execute callback scheme, using try catch and handle exception to perform process monitoring,
+     * once found to have abnormal situation a timely manner according to the number of times for a retry, if still
+     * cannot successfully after retries,will prompt is given
+     *
+     * @param action           Expiry do action
+     * @param helper           Expiry helper
+     * @param composeException Whether to merge exception
+     * @param <T>              return paradigm
+     * @return return value be changed
+     */
+    public <T> T execute(ExpireValueCallback<T> action, ExpireHelper helper, boolean composeException) {
+        /*
+         * The callback encapsulation
+         */
+        Supplier<T> supplierRunner = () -> action.doInExpire(helper);
+        //expiry apis runtime exception need throw
+        T value;
+        try {
+            value = supplierRunner.get();
+        } catch (Throwable e) {
+            Console.error("Expiry abnormal operating the callback error [{}]", e.getMessage());
+            if (composeException) {
+                //Deviate from the custom exception exception thrown
+                if (!(e instanceof ExpiringException)) {
+                    throw new OperationsException(e);
+                }
+            }
+            value = null;
+        }
+        return value;
+    }
+
+    /**
+     * Whether the default serializer should be used. If not, any serializers not explicitly
      * set will remain null and values will not be serialized or deserialized.
      *
      * @param enableDefaultSerializer The above
      */
     public void setEnableDefaultSerializer(boolean enableDefaultSerializer) {
         this.enableDefaultSerializer = enableDefaultSerializer;
-    }
-
-    /**
-     * setting factory bean name
-     *
-     * @param factoryBeanName ioc bean name
-     */
-    public void setFactoryBeanName(String factoryBeanName) {
-        this.factoryBeanName = factoryBeanName;
-    }
-
-    /**
-     * get factory bean name
-     *
-     * @return ioc bean name
-     */
-    public String getFactoryBeanName() {
-        return this.factoryBeanName;
     }
 
     /**
@@ -214,22 +199,22 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
         return this.expirationOperations;
     }
 
-    @Nullable
+    @CanNull
     @Override
     public Boolean delete(K key) {
-        Long result = execute((connection, f) -> connection.delete(
+        Long result = execute((connection) -> connection.delete(
                 this.rawKey(key)
         ), true);
         return result != null && result.intValue() == 1;
     }
 
-    @Nullable
+    @CanNull
     @Override
     public Long delete(Collection<K> keys) {
-        if (CollectionUtils.isEmpty(keys)) {
+        if (keys == null || keys.isEmpty()) {
             return 0L;
         }
-        return this.execute((connection, f) -> connection.delete(
+        return this.execute((connection) -> connection.delete(
                 this.rawKeys(keys)
         ), true);
     }
@@ -237,11 +222,11 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     @Override
     public Map<K, V> deleteType(K key) {
 
-        Map<byte[], byte[]> map = this.execute((connection, f) -> connection.deleteType(
+        Map<byte[], byte[]> map = this.execute((connection) -> connection.deleteType(
                 this.rawKey(key)
         ), true);
 
-        if (CollectionUtils.isEmpty(map)) {
+        if (map == null || map.isEmpty()) {
             return Collections.emptyMap();
         }
 
@@ -255,18 +240,18 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
     @Override
     public Boolean deleteAll() {
-        return this.execute((connection, f) -> connection.deleteAll(), true);
+        return this.execute(ExpireKeyCommands::deleteAll, true);
     }
 
     @Override
     public Boolean exist(K key) {
-        return this.execute((connection, f) -> connection.hasKey(
+        return this.execute((connection) -> connection.hasKey(
                 this.rawKey(key)
         ), true);
     }
 
     private byte[] rawKey(K key) {
-        Assert.notNull(key, "non null key required");
+        AssertUtils.Operation.notNull(key, "Non null key required");
         byte[] v;
         if (this.keySerialize != null) {
             v = this.keySerialize.serialize(key);
@@ -282,17 +267,15 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
     private byte[][] rawKeys(Collection<K> keys) {
         final byte[][] rawKeys = new byte[keys.size()][];
-
         int i = 0;
         for (K key : keys) {
             rawKeys[i++] = rawKey(key);
         }
-
         return rawKeys;
     }
 
     private byte[] rawValue(V value) {
-        Assert.notNull(value, "non null value required");
+        AssertUtils.Operation.notNull(value, "Non null value required");
         byte[] v;
         if (this.valueSerialize != null) {
             v = this.valueSerialize.serialize(value);
@@ -304,49 +287,5 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
             }
         }
         return v;
-    }
-
-    /**
-     * exchange special class type
-     *
-     * @param o                     supplier
-     * @param ofTypeClass           type class
-     * @param composeSolveException Whether solve exception
-     * @param <O>                   You can specify the paradigm
-     * @return exchange obj
-     */
-    public <O> O ofType(Supplier<Object> o, Class<O> ofTypeClass, boolean composeSolveException) {
-        Object source = o.get();
-        //NOTE : source will be null but ofTypeClass is null return null
-        if (source == null || ofTypeClass == null) {
-            return null;
-        }
-        O target = null;
-        try {
-            /*
-             * update repeat call value to threadLocal
-             * @since 2.1.1-complete
-             */
-            target = Single.just(source)
-                    .ofType(ofTypeClass)
-                    .blockingGet();
-        } catch (Throwable e) {
-            solverException(e, composeSolveException);
-        }
-        return target;
-    }
-
-    /**
-     * solver exception way
-     *
-     * @param e                exception
-     * @param composeException whether solve exception
-     */
-    public void solverException(Throwable e, boolean composeException) throws OperationsException {
-        AssertUtils.Operation.notNull(e, "Exception handling object information can't be null");
-        Console.info("The cache implementation errors [{}]", e.getMessage());
-        if (composeException) {
-            throw new OperationsException(e);
-        }
     }
 }

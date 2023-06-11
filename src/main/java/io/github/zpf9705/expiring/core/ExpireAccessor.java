@@ -1,42 +1,41 @@
 package io.github.zpf9705.expiring.core;
 
-import io.github.zpf9705.expiring.connection.ExpireConnectionFactory;
-import net.jodah.expiringmap.ExpiringMap;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.help.ExpireHelperFactory;
+import io.github.zpf9705.expiring.util.AssertUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.lang.NonNull;
-import org.springframework.util.Assert;
 
 /**
- * Connection factory operation accessor  {@link InitializingBean#afterPropertiesSet()}
- * Provide connection factory acquisition and corresponding related pre initialization during template initialization
+ * Cache expiration project simulation Helper accessors ,
+ * its performance in the form of a Helper factory
  *
  * @author zpf
  * @since 3.0.0
  */
 public class ExpireAccessor implements InitializingBean {
 
-    private ExpireConnectionFactory connectionFactory;
+    private ExpireHelperFactory helperFactory;
 
     @Override
     public void afterPropertiesSet() {
-        Assert.isTrue(getConnectionFactory() != null, "ExpireConnectionFactory must required !");
+        AssertUtils.Operation.isTrue(getHelperFactory() != null, "ExpireHelperFactory must required");
     }
 
     /**
-     * Get the expire connection factory
+     * Get the expiry Helper factory
      *
-     * @return The connectionFactory to get.
+     * @return The HelperFactory to get.
      */
-    public ExpireConnectionFactory getConnectionFactory() {
-        return this.connectionFactory;
+    public ExpireHelperFactory getHelperFactory() {
+        return this.helperFactory;
     }
 
     /**
-     * Set the expire connection factory.
+     * Set the expiry Helper factory.
      *
-     * @param connectionFactory The connectionFactory to set.
+     * @param helperFactory The connectionFactory to set.
      */
-    public void setConnectionFactory(@NonNull ExpireConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
+    public void setHelperFactory(@NotNull ExpireHelperFactory helperFactory) {
+        this.helperFactory = helperFactory;
     }
 }

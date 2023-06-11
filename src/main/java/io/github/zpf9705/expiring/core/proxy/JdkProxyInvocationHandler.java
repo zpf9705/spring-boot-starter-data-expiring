@@ -1,5 +1,8 @@
 package io.github.zpf9705.expiring.core.proxy;
 
+import io.github.zpf9705.expiring.core.annotation.CanNull;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
+
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -24,20 +27,16 @@ public abstract class JdkProxyInvocationHandler<T, A extends Annotation> impleme
         final T target = getTarget();
         //exec proxy method
         Object invokeResult = method.invoke(target, args);
-        Class<A> proxyAnnotation = getProxyAnnotation();
-        //if null return direct invokeResult
-        if (proxyAnnotation == null) {
-            return invokeResult;
-        }
         //get this proxyExec annotation
-        A proxyExec = method.getAnnotation(proxyAnnotation);
+        A proxyExec = method.getAnnotation(getProxyAnnotation());
         if (proxyExec != null) {
-            invokeSubsequent(proxyExec, args);
+            invokeSubsequent(invokeResult, proxyExec, args);
         }
         return invokeResult;
     }
 
     @Override
+    @NotNull
     public abstract Class<A> getProxyAnnotation();
 
     /**
@@ -45,13 +44,15 @@ public abstract class JdkProxyInvocationHandler<T, A extends Annotation> impleme
      *
      * @return target object
      */
+    @NotNull
     public abstract T getTarget();
 
     /**
      * Agent performs follow-up unified method
      *
-     * @param proxyExec proxy exec annotation
-     * @param args      proxy method args
+     * @param invokeResult exec result
+     * @param proxyExec    proxy exec annotation
+     * @param args         proxy method args
      */
-    public abstract void invokeSubsequent(A proxyExec, Object[] args);
+    public abstract void invokeSubsequent(@CanNull Object invokeResult, A proxyExec, Object[] args);
 }

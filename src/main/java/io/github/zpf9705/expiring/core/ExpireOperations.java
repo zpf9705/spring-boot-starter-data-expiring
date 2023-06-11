@@ -1,15 +1,11 @@
 package io.github.zpf9705.expiring.core;
 
 
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializer;
-import net.jodah.expiringmap.ExpiringMap;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Template pattern specification interface operation
@@ -19,7 +15,16 @@ import java.util.concurrent.TimeUnit;
  **/
 public interface ExpireOperations<K, V> {
 
-    @Nullable
+    /**
+     * Expire Execute unified call solutions with {@link ExpireValueCallback}
+     * Used here connection factory used for uniform distribution
+     *
+     * @param action           expiry do action must not be {@literal null}.
+     * @param composeException {@literal true} Whether to merge exception
+     * @param <T>              return paradigm
+     * @return return value be changed
+     */
+    @CanNull
     <T> T execute(ExpireValueCallback<T> action, boolean composeException);
 
     /**
@@ -28,7 +33,7 @@ public interface ExpireOperations<K, V> {
      * @param key must not be {@literal null}.
      * @return {@literal true} if the key was removed.
      */
-    @Nullable
+    @CanNull
     Boolean delete(K key);
 
     /**
@@ -37,7 +42,7 @@ public interface ExpireOperations<K, V> {
      * @param keys must not be {@literal null}.
      * @return The number of keys that were removed. {@literal null}
      */
-    @Nullable
+    @CanNull
     Long delete(Collection<K> keys);
 
     /**

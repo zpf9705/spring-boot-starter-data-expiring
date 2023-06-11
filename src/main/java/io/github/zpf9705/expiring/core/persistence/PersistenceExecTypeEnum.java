@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.core.persistence;
 
-import java.util.concurrent.TimeUnit;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 
 /**
  * The cache persistence operation type
@@ -8,55 +8,56 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 3.0.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public enum PersistenceExecTypeEnum implements Dispose {
 
-    PUT {
+    SET {
         @Override
-        public void dispose(Object[] entry) {
-            if (entry.length == lengthSimple) {
-                ExpirePersistenceUtils
-                        .putPersistence(entry[indexOne], entry[indexTwo], null, null);
-            } else if (entry.length == lengthDlg) {
-                ExpirePersistenceUtils
-                        .putPersistence(entry[indexOne], entry[indexTwo],
-                                (Long) entry[indexThree], (TimeUnit) entry[indexFour]);
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+            solver.putPersistence(variable.getKey(),
+                    variable.getValue(),
+                    variable.getDuration(),
+                    variable.getUnit());
+        }
+    }, REPLACE_VALUE {
+        @Override
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+            solver.replaceValuePersistence(variable.getKey(),
+                    variable.getNewValue());
+        }
+    }, REPLACE_DURATION {
+        @Override
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+            solver.replaceDurationPersistence(variable.getKey(),
+                    variable.getDuration(),
+                    variable.getUnit());
+        }
+    }, REST_DURATION {
+        @Override
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+            solver.restDurationPersistence(variable.getKey());
+        }
+    }, REMOVE_KEYS {
+        @Override
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+            for (Object key : variable.getAnyKeys()) {
+                solver.removePersistenceWithKey(key);
             }
         }
-    }, REPLACE {
+    }, REMOVE_TYPE {
         @Override
-        public void dispose(Object[] entry) {
-            if (entry.length == lengthGan) {
-                ExpirePersistenceUtils
-                        .replacePersistence(entry[indexOne], entry[indexTwo], entry[indexThree]);
-            }
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+            solver.removeSimilarKeyPersistence(variable.getKey());
         }
-    }, SET_E {
+    }, REMOVE_ALL {
         @Override
-        public void dispose(Object[] entry) {
-            if (entry.length == lengthDlg) {
-                ExpirePersistenceUtils
-                        .setEPersistence(entry[indexOne], entry[indexTwo],
-                                (Long) entry[indexThree], (TimeUnit) entry[indexFour]);
-            }
+        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+            solver.removeAllPersistence();
         }
-    }, REST {
-        @Override
-        public void dispose(Object[] entry) {
-            if (entry.length == lengthSimple){
-                ExpirePersistenceUtils.restPersistence(entry[indexOne], entry[indexTwo]);
-            }
-        }
-    }, REMOVE {
-        @Override
-        public void dispose(Object[] entry) {
-            if (entry.length == lengthSimple){
-                ExpirePersistenceUtils.removePersistence(entry[indexOne], entry[indexTwo]);
-            }
-        }
-    }, REMOVE_ANY {
-        @Override
-        public void dispose(Object[] entry) {
+    };
 
-        }
+    @Override
+    public PersistenceExecTypeEnum getExecType() {
+        return this;
     }
 }

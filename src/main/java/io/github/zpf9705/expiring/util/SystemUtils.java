@@ -1,14 +1,13 @@
 package io.github.zpf9705.expiring.util;
 
 import cn.hutool.core.io.FileUtil;
-import org.apache.commons.lang3.StringUtils;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 
 import java.io.File;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.function.Function;
 
 /**
- * Here is some tips on some of the API support system of Java classes
+ * Here is some tips on some API support system of Java classes
  *
  * @author zpf
  * @since 1.1.4
@@ -39,23 +38,25 @@ public abstract class SystemUtils {
     }
 
     /**
-     * set system key and value constant or configuration or cache value
+     * Set system key and value constant or configuration or cache value
      *
-     * @param key   set a value as a key
-     * @param value set a value as a key of value
+     * @param key   must no be {@literal null}
+     * @param value must no be {@literal null}
+     * @param <K>   generic of {@code key}
+     * @param <V>   generic of {@code value}
      * @since 1.1.5
      */
-    public static void setProperty(String key, String value) {
+    public static <K, V> void setProperty(K key, V value) {
         if (key == null || value == null) {
             return;
         }
-        System.setProperty(key, value);
+        System.setProperty(key.toString(), value.toString());
     }
 
     /**
-     * get system key and value constant or configuration or cache value
+     * Get system key and value constant or configuration or cache value
      *
-     * @param key value of key
+     * @param key Value of {@code key}
      * @return You call parameter value of key value
      * @since 1.1.5
      */
@@ -67,7 +68,28 @@ public abstract class SystemUtils {
     }
 
     /**
-     * get current project path
+     * Get system key and value constant or configuration or cache value with convert
+     *
+     * @param key     value of {@code key}
+     * @param <C>     convert generic
+     * @param convert type
+     * @param def     {@literal null} with default value
+     * @return You call parameter value of key value
+     * @since 1.1.5
+     */
+    public static <C> C getPropertyWithConvert(String key, Function<String, C> convert, @CanNull C def) {
+        if (key == null) {
+            return def;
+        }
+        String property = getProperty(key);
+        if (property == null) {
+            return def;
+        }
+        return convert.apply(property);
+    }
+
+    /**
+     * Get current project path
      *
      * @return path
      */
@@ -82,7 +104,7 @@ public abstract class SystemUtils {
      * @return target folder
      */
     public static File createRelativePathSpecifyFolder(String specifyFolder) {
-        if (StringUtils.isBlank(specifyFolder)) return null;
+        if (StringUtils.simpleIsBlank(specifyFolder)) return null;
         String path;
         if (currentProjectPath.endsWith(SLASH) || specifyFolder.startsWith(SLASH)) {
             path = currentProjectPath + specifyFolder;

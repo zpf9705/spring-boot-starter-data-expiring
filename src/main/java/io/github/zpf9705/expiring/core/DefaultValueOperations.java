@@ -1,7 +1,9 @@
 package io.github.zpf9705.expiring.core;
 
-import io.github.zpf9705.expiring.connection.ExpireConnection;
+import io.github.zpf9705.expiring.help.ExpireHelper;
+import io.github.zpf9705.expiring.util.SerialUtils;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -26,8 +28,8 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
         final byte[] rawValue = this.rawValue(value);
         this.execute(new AbstractOperations<K, V>.ValueDeserializingExpireCallback(key) {
             @Override
-            protected byte[] inExpire(byte[] rawKey, ExpireConnection connection) {
-                connection.set(rawKey, rawValue);
+            protected byte[] inExpire(byte[] rawKey, ExpireHelper helper) {
+                helper.set(rawKey, rawValue);
                 return null;
             }
         }, false);
@@ -42,8 +44,8 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
         final byte[] rawValue = this.rawValue(value);
         this.execute(new AbstractOperations<K, V>.ValueDeserializingExpireCallback(key) {
             @Override
-            protected byte[] inExpire(byte[] rawKey, ExpireConnection connection) {
-                connection.setE(rawKey, rawValue, duration, unit);
+            protected byte[] inExpire(byte[] rawKey, ExpireHelper helper) {
+                helper.setE(rawKey, rawValue, duration, unit);
                 return null;
             }
         }, false);
@@ -57,7 +59,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
     public Boolean setIfAbsent(K key, V value) {
         byte[] rawKey = this.rawKey(key);
         byte[] rawValue = this.rawValue(value);
-        return this.execute((connection, f) -> connection.setNX(rawKey, rawValue), true);
+        return this.execute((connection) -> connection.setNX(rawKey, rawValue), true);
     }
 
     /*
@@ -69,7 +71,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
 
         byte[] rawKey = this.rawKey(key);
         byte[] rawValue = this.rawValue(value);
-        return this.execute((connection, f) -> connection.setEX(rawKey, rawValue, duration, unit), true);
+        return this.execute((connection) -> connection.setEX(rawKey, rawValue, duration, unit), true);
     }
 
     /*
@@ -80,10 +82,19 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
 
         return this.execute(new ValueDeserializingExpireCallback(key) {
             @Override
-            protected byte[] inExpire(byte[] rawKey, ExpireConnection connection) {
-                return connection.get(rawKey);
+            protected byte[] inExpire(byte[] rawKey, ExpireHelper helper) {
+                return helper.get(rawKey);
             }
         }, true);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<K> getSimilarKeys(K key) {
+
+        byte[] rawKey = this.rawKey(key);
+        List<byte[]> execute = this.execute((connection) -> connection.getSimilarKeys(rawKey), true);
+        return (List<K>) SerialUtils.deserializeAny(execute);
     }
 
     /*
@@ -96,8 +107,8 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
         final byte[] rawValue = this.rawValue(newValue);
         return this.execute(new ValueDeserializingExpireCallback(key) {
             @Override
-            protected byte[] inExpire(byte[] rawKey, ExpireConnection connection) {
-                return connection.getAndSet(rawKey, rawValue);
+            protected byte[] inExpire(byte[] rawKey, ExpireHelper helper) {
+                return helper.getAndSet(rawKey, rawValue);
             }
         }, true);
     }

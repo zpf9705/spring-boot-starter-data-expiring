@@ -1,6 +1,8 @@
 package io.github.zpf9705.expiring.command;
 
-import org.springframework.lang.Nullable;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
+import io.github.zpf9705.expiring.core.persistence.PersistenceExec;
+import io.github.zpf9705.expiring.core.persistence.PersistenceExecTypeEnum;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +21,9 @@ public interface ExpireKeyCommands {
      * @param keys must not be {@literal null}.
      * @return The number of keys that were removed.
      */
-    @Nullable
+    @CanNull
+    @PersistenceExec(value = PersistenceExecTypeEnum.REMOVE_KEYS,
+            expectValue = PersistenceExec.ValueExpectations.LONG_NO_ZERO)
     Long delete(byte[]... keys);
 
     /**
@@ -28,6 +32,8 @@ public interface ExpireKeyCommands {
      * @param key must not be {@literal null}.
      * @return key/value
      */
+    @PersistenceExec(value = PersistenceExecTypeEnum.REMOVE_TYPE,
+            expectValue = PersistenceExec.ValueExpectations.NOT_EMPTY)
     Map<byte[], byte[]> deleteType(byte[] key);
 
     /**
@@ -35,6 +41,8 @@ public interface ExpireKeyCommands {
      *
      * @return true del all right
      */
+    @PersistenceExec(value = PersistenceExecTypeEnum.REMOVE_ALL,
+            expectValue = PersistenceExec.ValueExpectations.REALLY)
     Boolean deleteAll();
 
     /**
@@ -51,7 +59,7 @@ public interface ExpireKeyCommands {
      * @param key must not be {@literal null}.
      * @return unit : ms
      */
-    @Nullable
+    @CanNull
     Long getExpiration(byte[] key);
 
     /**
@@ -61,7 +69,7 @@ public interface ExpireKeyCommands {
      * @param unit must not be {@literal null}.
      * @return specify unit
      */
-    @Nullable
+    @CanNull
     Long getExpiration(byte[] key, TimeUnit unit);
 
     /**
@@ -70,7 +78,7 @@ public interface ExpireKeyCommands {
      * @param key must not be {@literal null}.
      * @return unit : ms
      */
-    @Nullable
+    @CanNull
     Long getExpectedExpiration(byte[] key);
 
     /**
@@ -80,7 +88,7 @@ public interface ExpireKeyCommands {
      * @param unit must not be {@literal null}.
      * @return specify unit
      */
-    @Nullable
+    @CanNull
     Long getExpectedExpiration(byte[] key, TimeUnit unit);
 
     /**
@@ -91,6 +99,8 @@ public interface ExpireKeyCommands {
      * @param timeUnit must not be {@literal null}.
      * @return Set result
      */
+    @PersistenceExec(value = PersistenceExecTypeEnum.REPLACE_DURATION,
+            expectValue = PersistenceExec.ValueExpectations.REALLY)
     Boolean setExpiration(byte[] key, Long duration, TimeUnit timeUnit);
 
     /**
@@ -99,5 +109,7 @@ public interface ExpireKeyCommands {
      * @param key must not be {@literal null}.
      * @return Reset result
      */
+    @PersistenceExec(value = PersistenceExecTypeEnum.REST_DURATION,
+            expectValue = PersistenceExec.ValueExpectations.REALLY)
     Boolean resetExpiration(byte[] key);
 }

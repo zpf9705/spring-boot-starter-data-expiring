@@ -1,9 +1,9 @@
 package io.github.zpf9705.expiring.core;
 
-import io.github.zpf9705.expiring.connection.ExpireConnection;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.serializer.ExpiringSerializer;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
+import io.github.zpf9705.expiring.help.ExpireHelper;
+import io.github.zpf9705.expiring.util.AssertUtils;
 
 /**
  * This abstract class is mainly described {@link ExpireTemplate} Some behavioral methods
@@ -26,17 +26,16 @@ public abstract class AbstractOperations<K, V> {
         }
 
         @Override
-        public V doInExpire(ExpireConnection connection, String factoryBeanName) {
+        public V doInExpire(ExpireHelper helper) {
             /*
              * How to have a special transformation of key/value demand, can be operated in this department
              */
-            ExpireFactoryNameHolder.setFactoryName(factoryBeanName);
-            byte[] bytes = inExpire(rawKey(this.key), connection);
+            byte[] bytes = inExpire(rawKey(this.key), helper);
             return deserializeValue(bytes);
         }
 
-        @Nullable
-        protected abstract byte[] inExpire(byte[] rawKey, ExpireConnection connection);
+        @CanNull
+        protected abstract byte[] inExpire(byte[] rawKey, ExpireHelper helper);
     }
 
     final ExpireTemplate<K, V> template;
@@ -45,7 +44,7 @@ public abstract class AbstractOperations<K, V> {
         this.template = expireTemplate;
     }
 
-    @Nullable
+    @CanNull
     <T> T execute(ExpireValueCallback<T> callback, boolean composeException) {
         return template.execute(callback, composeException);
     }
@@ -78,7 +77,7 @@ public abstract class AbstractOperations<K, V> {
     }
 
     byte[] rawKey(K key) {
-        Assert.notNull(key, "non null key required");
+        AssertUtils.Operation.notNull(key, "Non null key required");
         if (keySerializer() == null && key instanceof byte[]) {
             return (byte[]) key;
         }
@@ -86,7 +85,7 @@ public abstract class AbstractOperations<K, V> {
     }
 
     byte[] rawValue(V value) {
-        Assert.notNull(value, "non null key required");
+        AssertUtils.Operation.notNull(value, "Non null key required");
         if (valueSerializer() == null && value instanceof byte[]) {
             return (byte[]) value;
         }

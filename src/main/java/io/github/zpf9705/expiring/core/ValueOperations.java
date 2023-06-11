@@ -1,7 +1,8 @@
 package io.github.zpf9705.expiring.core;
 
-import org.springframework.lang.Nullable;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -14,7 +15,7 @@ public interface ValueOperations<K, V> {
 
     /**
      * Set {@code value} for {@code key}.
-     * There is expire time for the default configuration
+     * There is expiry time for the default configuration
      *
      * @param key   must not be {@literal null}.
      * @param value must not be {@literal null}.
@@ -38,7 +39,7 @@ public interface ValueOperations<K, V> {
      * @param value must not be {@literal null}.
      * @return {@literal null} If returns true, then add memory success, or false, indicates the key/value pair already exists
      */
-    @Nullable
+    @CanNull
     Boolean setIfAbsent(K key, V value);
 
     /**
@@ -50,30 +51,39 @@ public interface ValueOperations<K, V> {
      * @param unit     must not be {@literal null}.
      * @return {@literal null} If returns true, then add memory success, or false, indicates the key/value pair already exists
      */
-    @Nullable
+    @CanNull
     Boolean setIfAbsent(K key, V value, Long duration, TimeUnit unit);
 
     /**
      * Get the value of {@code key}.
      *
      * @param key must not be {@literal null}.
-     * @return {@literal null} get in memory with {@code key} , when used in pipeline / transaction.
+     * @return {@literal null} get in memory with {@code key}.
      */
-    @Nullable
+    @CanNull
     V get(K key);
+
+    /**
+     * Get Similar keys of {@code key}.
+     *
+     * @param key must not be {@literal null}.
+     * @return {@literal null} get keys in memory with {@code key}.
+     */
+    @CanNull
+    List<K> getSimilarKeys(K key);
 
     /**
      * Set {@code value} of {@code newValue} and return its old value.
      *
      * @param key      must not be {@literal null}.
      * @param newValue must not be {@literal null}.
-     * @return {@literal null} when used in pipeline / transaction.
+     * @return if {@literal null} prove first set
      */
-    @Nullable
+    @CanNull
     V getAndSet(K key, V newValue);
 
     /**
-     * To get the operator
+     * To get the operator {@code ExpireOperations}
      *
      * @return Expire Operations
      */

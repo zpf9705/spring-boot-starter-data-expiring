@@ -1,6 +1,7 @@
 package io.github.zpf9705.expiring.core.persistence;
 
-import io.github.zpf9705.expiring.util.AssertUtils;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
+
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
@@ -13,22 +14,29 @@ import java.util.concurrent.TimeUnit;
 public class Entry<K, V> implements Serializable {
 
     private static final long serialVersionUID = -8927814512833346379L;
-    private final K key;
-    private final V value;
+    private K key;
+    private V value;
     private Long duration;
     private TimeUnit timeUnit;
 
-    public boolean ofDuration() {
-        return (duration != null && duration != 0L)
-                && timeUnit != null;
+    public boolean haveDuration() {
+        return duration != null && duration != 0L && timeUnit != null;
     }
 
     public K getKey() {
         return key;
     }
 
+    public void setKey(K key) {
+        this.key = key;
+    }
+
     public V getValue() {
         return value;
+    }
+
+    public void setValue(V value) {
+        this.value = value;
     }
 
     public Long getDuration() {
@@ -58,9 +66,7 @@ public class Entry<K, V> implements Serializable {
         this.timeUnit = timeUnit;
     }
 
-    public void refreshOfExpire(Long duration, TimeUnit timeUnit) {
-        AssertUtils.Persistence.notNull(duration, "duration no be null");
-        AssertUtils.Persistence.notNull(timeUnit, "timeUnit no be null");
+    public void refreshOfExpire(@NotNull Long duration, @NotNull TimeUnit timeUnit) {
         this.duration = duration;
         this.timeUnit = timeUnit;
     }

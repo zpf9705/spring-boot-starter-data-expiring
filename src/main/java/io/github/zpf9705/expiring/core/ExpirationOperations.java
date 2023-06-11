@@ -1,7 +1,6 @@
 package io.github.zpf9705.expiring.core;
 
-import org.springframework.lang.Nullable;
-
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,7 +17,7 @@ public interface ExpirationOperations<K, V> {
      * @param key must not be {@literal null}.
      * @return unit : ms
      */
-    @Nullable
+    @CanNull
     Long getExpiration(K key);
 
     /**
@@ -28,7 +27,7 @@ public interface ExpirationOperations<K, V> {
      * @param unit must not be {@literal null}.
      * @return specify unit
      */
-    @Nullable
+    @CanNull
     Long getExpiration(K key, TimeUnit unit);
 
     /**
@@ -37,7 +36,7 @@ public interface ExpirationOperations<K, V> {
      * @param key must not be {@literal null}.
      * @return unit : ms
      */
-    @Nullable
+    @CanNull
     Long getExpectedExpiration(K key);
 
     /**
@@ -47,7 +46,7 @@ public interface ExpirationOperations<K, V> {
      * @param unit must not be {@literal null}.
      * @return specify unit
      */
-    @Nullable
+    @CanNull
     Long getExpectedExpiration(K key, TimeUnit unit);
 
     /**
