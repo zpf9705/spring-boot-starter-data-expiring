@@ -1,6 +1,7 @@
 package io.github.zpf9705.expiring.listener;
 
-import io.github.zpf9705.expiring.help.expiremap.ExpireMapCenter;
+import io.github.zpf9705.expiring.core.persistence.Configuration;
+import io.github.zpf9705.expiring.help.Center;
 import io.github.zpf9705.expiring.util.AbleUtils;
 
 /**
@@ -25,10 +26,10 @@ public abstract class MessageExpiringContainer implements ExpirationBytesBlocker
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void close() {
-        //now only apply close expiring-map
-        ExpireMapCenter.getExpireMapCenter()
-                .cleanSupportingElements(this.capable.getByteKey(), this.capable.getByteValue());
+        Center.getCenter(Configuration.getConfiguration().getChooseClient())
+                .cleanSupportingElements(this.capable.getKey(), this.capable.getValue());
     }
 
     /**
