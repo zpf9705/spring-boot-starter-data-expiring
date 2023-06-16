@@ -6,6 +6,7 @@ import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.help.Center;
+import io.github.zpf9705.expiring.help.RecordActivationCenter;
 import io.github.zpf9705.expiring.util.*;
 
 import java.io.*;
@@ -805,7 +806,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         //check entry
         checkEntry(entry);
         //reload
-        Center.getCenter(configuration.getChooseClient())
+        RecordActivationCenter.getSingletonCenter()
                 .reload(entry.getKey(), entry.getValue(),
                         condition(currentTimeMillis, persistence.getExpire(), entry.getTimeUnit()),
                         entry.getTimeUnit());

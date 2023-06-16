@@ -4,7 +4,7 @@ import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.core.persistence.ExpireBytesPersistenceSolver;
 import io.github.zpf9705.expiring.core.persistence.PersistenceSolver;
-import io.github.zpf9705.expiring.help.Center;
+import io.github.zpf9705.expiring.help.RecordActivationCenter;
 import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.ServiceLoadUtils;
 import net.jodah.expiringmap.ExpirationListener;
@@ -25,8 +25,7 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 3.0.0
  */
-@Center.Client("EXPIRE_MAP")
-public final class ExpireMapCenter implements Center<ExpireMapCenter, byte[], byte[]> {
+public final class ExpireMapCenter extends RecordActivationCenter<ExpireMapCenter, byte[], byte[]> {
 
     private static final long serialVersionUID = -7878806306402600655L;
 
@@ -66,6 +65,7 @@ public final class ExpireMapCenter implements Center<ExpireMapCenter, byte[], by
             synchronized (ExpireMapCenter.class) {
                 if (expireMapCenter == null) {
                     expireMapCenter = buildSingleton(configuration);
+                    setSingletonCenter(expireMapCenter);
                 }
             }
         }
