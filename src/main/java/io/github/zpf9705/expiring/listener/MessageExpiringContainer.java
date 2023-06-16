@@ -25,10 +25,8 @@ public abstract class MessageExpiringContainer implements ExpirationBytesBlocker
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void close() {
-        RecordActivationCenter.getSingletonCenter()
-                .cleanSupportingElements(this.capable.getKey(), this.capable.getValue());
+        RecordActivationCenter.getSingletonCenter().cleanSupportingElements(capable);
     }
 
     /**

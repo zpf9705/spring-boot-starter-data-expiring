@@ -5,6 +5,7 @@ import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.core.persistence.ExpireBytesPersistenceSolver;
 import io.github.zpf9705.expiring.core.persistence.PersistenceSolver;
 import io.github.zpf9705.expiring.help.RecordActivationCenter;
+import io.github.zpf9705.expiring.listener.MessageExpiryCapable;
 import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.ServiceLoadUtils;
 import net.jodah.expiringmap.ExpirationListener;
@@ -141,14 +142,14 @@ public final class ExpireMapCenter extends RecordActivationCenter<ExpireMapCente
 
     @Override
     @SuppressWarnings("unchecked")
-    public void cleanSupportingElements(@NotNull byte[] key, @NotNull byte[] value) {
+    public void cleanSupportingElements(@NotNull MessageExpiryCapable capable) {
         //Remove control information
-        this.getContain().remove(key, value);
+        this.getContain().remove(capable.getByteKey(), capable.getByteValue());
         //Remove persistent cache
         PersistenceSolver<byte[], byte[]> solver = ServiceLoadUtils.load(PersistenceSolver.class)
                 .getSpecifiedServiceBySubClass(ExpireBytesPersistenceSolver.class);
         if (solver != null) {
-            solver.removePersistence(key, value);
+            solver.removePersistence(capable.getByteKey(), capable.getByteValue());
         }
     }
 }

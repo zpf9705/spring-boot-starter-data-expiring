@@ -1,6 +1,7 @@
 package io.github.zpf9705.expiring.help;
 
 import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.listener.MessageExpiryCapable;
 
 import java.util.concurrent.TimeUnit;
 
@@ -31,8 +32,7 @@ public interface ReloadCenter<K, V> {
      *     <dt>Persistence</dt>
      * </dl>
      *
-     * @param key   must not be {@literal null}
-     * @param value must not be {@literal null}
+     * @param capable must not be {@literal null}
      */
-    void cleanSupportingElements(@NotNull K key, @NotNull V value);
+    void cleanSupportingElements(@NotNull MessageExpiryCapable capable);
 }
