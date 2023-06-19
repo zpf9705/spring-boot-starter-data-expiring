@@ -4,6 +4,7 @@ import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.util.AssertUtils;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -97,7 +98,8 @@ public interface ExpireMapClientConfiguration {
         final List<ExpirationListener> syncExpirationListeners = new ArrayList<>();
         final List<ExpirationListener> asyncExpirationListeners = new ArrayList<>();
 
-        ExpireMapClientConfigurationBuilder() {}
+        ExpireMapClientConfigurationBuilder() {
+        }
 
         /**
          * Given the map one of the biggest capacity

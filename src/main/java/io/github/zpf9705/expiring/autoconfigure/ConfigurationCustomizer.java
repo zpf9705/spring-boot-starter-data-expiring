@@ -1,6 +1,4 @@
-package io.github.zpf9705.expiring.core;
-
-import io.github.zpf9705.expiring.autoconfigure.ExpireProperties;
+package io.github.zpf9705.expiring.autoconfigure;
 
 /**
  * Interface-oriented configuration integration needs to be combined auto Load Configuration
