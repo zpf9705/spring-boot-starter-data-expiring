@@ -101,19 +101,19 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      *
      * @param newClientSupplier New client provider
      * @param request           Request Object Parameters
-     * @param uri               Link Address
+     * @param host              Link host Address
      * @param <R>               Object Generics
      * @return Client singleton client
      */
     public static <R extends Response> Client<R> getClient(Supplier<Client<R>> newClientSupplier,
                                                            Request<R> request,
-                                                           String uri) {
-        AssertUtils.Operation.hasText(uri,
-                "Api request uri can not be null !");
+                                                           String host) {
+        AssertUtils.Operation.hasText(host,
+                "Api request host can not be null !");
         AssertUtils.Operation.notNull(request,
                 "Api request params can not be null !");
         setCurrentParam(request);
-        String url = request.formatUrl(uri);
+        String url = request.formatUrl(host);
         Client<R> client = getCacheClient(url);
         if (client == null) {
             synchronized (lock) {

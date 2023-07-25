@@ -41,7 +41,7 @@ public abstract class ClientUtils {
     /**
      * Obtain request client singleton
      *
-     * @param host    uri address
+     * @param host    host address
      * @param request Request parameter encapsulation class
      * @param <R>     Response data generalization
      * @return Client singleton object

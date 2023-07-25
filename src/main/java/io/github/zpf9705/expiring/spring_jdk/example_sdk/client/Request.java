@@ -27,7 +27,7 @@ public interface Request<R extends Response> extends Serializable {
     SdkEnum matchApi();
 
     /**
-     * Obtain request uri
+     * Obtain format request url with host
      *
      * @param host Request host address
      * @return request url

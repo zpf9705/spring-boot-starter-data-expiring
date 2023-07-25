@@ -9,7 +9,7 @@ import org.springframework.lang.NonNull;
 
 /**
  * Inject proxy classes, define the final processing scheme,
- * and call different API services based on different 【 uri/input parameter objects 】
+ * and call different API services based on different 【 host/input parameter objects 】
  *
  * @author zpf
  * @since 3.1.0
@@ -18,14 +18,14 @@ public class SdkProxyBeanDefinition<T> extends AbstractSdkProxyInvokeHandler<T> 
 
     private static final long serialVersionUID = -4976006670359451017L;
 
-    private String uri;
+    private String host;
 
-    public String getUri() {
-        return uri;
+    public String getHost() {
+        return host;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setHost(String host) {
+        this.host = host;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class SdkProxyBeanDefinition<T> extends AbstractSdkProxyInvokeHandler<T> 
         AssertUtils.Operation.notNull(returnType, "returnType no be null");
         Response response;
         try {
-            response = ClientUtils.execute(this.uri, request);
+            response = ClientUtils.execute(this.host, request);
         } catch (Throwable e) {
             //If the parameter preparation before execution throws an exception, it will be directly thrown here
             throw new SdkException(400, methodName + "param prepare no enough [" + e.getMessage() + "]");
