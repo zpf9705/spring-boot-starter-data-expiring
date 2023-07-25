@@ -1,10 +1,10 @@
 package io.github.zpf9705.expiring.spring_jdk.example_sdk;
 
-import cn.hutool.core.util.ArrayUtil;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.util.ArrayUtils;
+import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.StringUtils;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -20,52 +20,88 @@ public final class SdkAssert {
 
     private static final Integer ASSERT_UTILS_THROW_EX_CODE = 58845;
 
-    public static void isTrue(boolean expression, @NonNull String message) {
+    /*
+     * (non-Javadoc)
+     * @see io.github.zpf9705.expiring.util.AssertUtils.Operation
+     */
+    public static void isTrue(boolean expression, @NotNull String message) {
         if (!expression) {
             throw new SdkException(ASSERT_UTILS_THROW_EX_CODE, message);
         }
     }
 
-    public static void isFalse(boolean expression, @NonNull String message) {
+    /*
+     * (non-Javadoc)
+     * @see io.github.zpf9705.expiring.util.AssertUtils.Operation
+     */
+    public static void isFalse(boolean expression, @NotNull String message) {
         if (expression) {
             throw new SdkException(ASSERT_UTILS_THROW_EX_CODE, message);
         }
     }
 
-    public static void isNull(@Nullable Object object, @NonNull String message) {
+    /*
+     * (non-Javadoc)
+     * @see io.github.zpf9705.expiring.util.AssertUtils.Operation
+     */
+    public static void isNull(@CanNull Object object, @NotNull String message) {
         if (Objects.nonNull(object)) {
             throw new SdkException(ASSERT_UTILS_THROW_EX_CODE, message);
         }
     }
 
-    public static void notNull(@Nullable Object object, @NonNull String message) {
+    /*
+     * (non-Javadoc)
+     * @see io.github.zpf9705.expiring.util.AssertUtils.Operation
+     */
+    public static void notNull(@CanNull Object object, @NotNull String message) {
         if (Objects.isNull(object)) {
             throw new SdkException(ASSERT_UTILS_THROW_EX_CODE, message);
         }
     }
 
-    public static void hasText(@Nullable String text, @NonNull String message) {
+    /*
+     * (non-Javadoc)
+     * @see io.github.zpf9705.expiring.util.AssertUtils.Operation
+     */
+    public static void hasText(@CanNull String text, @NotNull String message) {
         if (StringUtils.simpleIsBlank(text)) {
             throw new SdkException(ASSERT_UTILS_THROW_EX_CODE, message);
         }
     }
 
-    public static void notEmpty(@Nullable Collection<?> collection, @NonNull String message) {
-        if (CollectionUtils.isEmpty(collection)) {
+    /*
+     * (non-Javadoc)
+     * @see io.github.zpf9705.expiring.util.AssertUtils.Operation
+     */
+    public static void notEmpty(@CanNull Collection<?> collection, @NotNull String message) {
+        if (CollectionUtils.simpleIsEmpty(collection)) {
             throw new SdkException(ASSERT_UTILS_THROW_EX_CODE, message);
         }
     }
 
-    public static void notEmpty(@Nullable Object[] array, @NonNull String message) {
-        if (ArrayUtil.isEmpty(array)) {
+    /*
+     * (non-Javadoc)
+     * @see io.github.zpf9705.expiring.util.AssertUtils.Operation
+     */
+    public static void notEmpty(@CanNull Object[] array, @NotNull String message) {
+        if (ArrayUtils.simpleIsEmpty(array)) {
             throw new SdkException(ASSERT_UTILS_THROW_EX_CODE, message);
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see io.github.zpf9705.expiring.util.AssertUtils.Operation
+     */
     public static void throwException(String message) {
         throw new SdkException(ASSERT_UTILS_THROW_EX_CODE, message);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see io.github.zpf9705.expiring.util.AssertUtils.Operation
+     */
     public static void throwException(int code, String message) {
         throw new SdkException(code, message);
     }
