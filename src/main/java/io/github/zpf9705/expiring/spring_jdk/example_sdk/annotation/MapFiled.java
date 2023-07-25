@@ -19,7 +19,7 @@ import java.lang.annotation.*;
  * When converting an object to a map, an alias needs to be given to the key of the map
  *
  * @author zpf
- * @since 1.0.0 - [2023-07-25 16:41]
+ * @since 3.1.0
  */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
