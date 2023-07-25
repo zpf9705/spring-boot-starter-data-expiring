@@ -12,6 +12,7 @@ public interface SdkEnum {
      * Get request URL
      *
      * @param host host address
+     * @return request url address
      */
     String getUlr(String host);
 
