@@ -10,7 +10,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.lang.NonNull;
-import org.springframework.util.CollectionUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -127,7 +126,7 @@ public final class HttpUtils {
      * @param requestBase HTTP Public Request Class {@link HttpRequestBase}
      */
     private static void addHeaders(Map<String, String> headers, @NonNull HttpRequestBase requestBase) {
-        if (!CollectionUtils.isEmpty(headers)) {
+        if (!CollectionUtils.simpleIsEmpty(headers)) {
             for (Map.Entry<String, String> header : headers.entrySet()) {
                 requestBase.addHeader(header.getKey(), header.getValue());
             }
@@ -145,7 +144,7 @@ public final class HttpUtils {
         URI uri;
         try {
             URIBuilder uriBuilder = new URIBuilder(url);
-            if (!CollectionUtils.isEmpty(params)) {
+            if (!CollectionUtils.simpleIsEmpty(params)) {
                 for (String paramKey : params.keySet()) {
                     uriBuilder.addParameter(paramKey, String.valueOf(params.get(paramKey)));
                 }
