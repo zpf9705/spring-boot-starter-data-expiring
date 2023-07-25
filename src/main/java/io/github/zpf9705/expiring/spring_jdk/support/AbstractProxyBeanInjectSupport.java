@@ -32,7 +32,8 @@ import java.util.Set;
  * @author zpf
  * @since 3.1.0
  */
-public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F extends Annotation> implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware {
+public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F extends Annotation>
+        implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware {
 
     private Environment environment;
 
@@ -49,7 +50,8 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
     }
 
     @Override
-    public void registerBeanDefinitions(@NotNull AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry, @NotNull BeanNameGenerator importBeanNameGenerator) {
+    public void registerBeanDefinitions(@NotNull AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry,
+                                        @NotNull BeanNameGenerator importBeanNameGenerator) {
         this.registerBeanDefinitions(metadata, registry);
     }
 
@@ -87,7 +89,8 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
                     continue;
                 }
                 //Obtain annotation class identification interface annotation value domain
-                AnnotationAttributes attributesFu = AnnotationAttributes.fromMap(meta.getAnnotationAttributes(getFindClazz().getCanonicalName()));
+                AnnotationAttributes attributesFu = AnnotationAttributes
+                        .fromMap(meta.getAnnotationAttributes(getFindClazz().getCanonicalName()));
                 if (attributesFu == null) {
                     continue;
                 }
@@ -114,7 +117,8 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
      */
     @NotNull
     public ClassPathScanningCandidateComponentProvider getClassPathScanUseAnnotationClass() {
-        ClassPathScanningCandidateComponentProvider classPathScan = new ClassPathScanningCandidateComponentProvider(false, this.environment) {
+        ClassPathScanningCandidateComponentProvider classPathScan =
+                new ClassPathScanningCandidateComponentProvider(false, this.environment) {
             @Override
             protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
                 return beanDefinition.getMetadata().isIndependent() && !beanDefinition.getMetadata().isAnnotation();
