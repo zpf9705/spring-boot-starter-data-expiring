@@ -18,32 +18,6 @@ import java.util.function.Supplier;
  * <p>
  * The relevant operational parameter definitions for {@link Flowable} are completed here
  * <p>
- * It mainly includes the following aspects：
- * <table cellspacing=8 cellpadding=0 ">
- *     <tr style="background-color: rgb(204, 204, 255);">
- *         <th align=left>run
- *         <th align=left>
- *         <th align=left>
- *         <th align=left>type
- *         <th align=left>
- *         <th align=left>
- *         <th align=left>check
- *         <th align=left>
- *         <th align=left>
- *         <th align=left>simpleMsgHandler
- *     </tr>
- *          <td>[Method operation provided]</td>
- *          <td></td>
- *          <td></td>
- *          <td>[Return value conversion type]</td>
- *          <td></td>
- *          <td></td>
- *          <td>[Callback interface check assertion]</td>
- *          <td></td>
- *          <td></td>
- *          <td>[Return information formatting function]</td>
- * </table>
- * <p>
  * The specific application method of the above parameters can be queried
  * {@link Observer#run(Supplier, Class, Predicate, Function)}
  *
@@ -67,6 +41,7 @@ public class Spectator<T> implements Observer<T>, Serializable {
     private Flowable<T> flowable;
 
     static {
+        //By default, it is taken from the system configuration If not, defaults to 2
         retry_times = SystemUtils.getPropertyWithConvert("rxjava3.retry.times", Integer::parseInt, 2);
     }
 
