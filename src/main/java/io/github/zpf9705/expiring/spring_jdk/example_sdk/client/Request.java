@@ -27,6 +27,15 @@ public interface Request<R extends Response> extends Serializable {
     SdkEnum matchApi();
 
     /**
+     * The splicing after the URL requires
+     *
+     * @return Splicing item
+     */
+    default String urlJoin() {
+        return "";
+    }
+
+    /**
      * Obtain format request url with host
      *
      * @param host Request host address
