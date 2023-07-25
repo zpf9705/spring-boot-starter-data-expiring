@@ -1,15 +1,18 @@
 package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.util.ArrayUtil;
 import io.github.zpf9705.expiring.spring_jdk.example_sdk.SdkEnum;
 import io.github.zpf9705.expiring.spring_jdk.example_sdk.SdkException;
+import io.github.zpf9705.expiring.spring_jdk.example_sdk.annotation.MapFiled;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Define Request Nodes
@@ -54,6 +57,7 @@ public interface Request<R extends Response> extends Serializable {
 
     /**
      * Default parameter conversion to map method，be dependent on{@link #getBody()}
+     * If you want to create an alias for the field, please add {@link MapFiled}
      *
      * @return The map form of the parameter body
      */
@@ -62,8 +66,21 @@ public interface Request<R extends Response> extends Serializable {
         if (Objects.isNull(body)) {
             return Collections.emptyMap();
         }
-        return BeanUtil.beanToMap(body, new LinkedHashMap<>(),
-                false, true);
+        //get all fields include private and public
+        Field[] allFields = body.getClass().getDeclaredFields();
+        if (ArrayUtil.isEmpty(allFields)) {
+            return BeanUtil.beanToMap(body);
+        } else {
+            Map<String, String> fieldMapping = Arrays.stream(allFields)
+                    //at MapFiled
+                    .filter(f -> Objects.nonNull(f.getAnnotation(MapFiled.class)) &&
+                            //no static
+                            !Modifier.isStatic(f.getModifiers()))
+                    .collect(Collectors.toMap(Field::getName,
+                            field -> field.getAnnotation(MapFiled.class).name()));
+            return BeanUtil.beanToMap(body, new LinkedHashMap<>(),
+                    CopyOptions.create().setFieldMapping(fieldMapping));
+        }
     }
 
     /**
