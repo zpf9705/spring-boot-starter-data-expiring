@@ -42,7 +42,7 @@ public interface Request<R extends Response> extends Serializable {
      * @return request url
      */
     default String formatUrl(String host) {
-        return matchApi().getUlr(host);
+        return matchApi().getUlr(host) + urlJoin();
     }
 
     /**
