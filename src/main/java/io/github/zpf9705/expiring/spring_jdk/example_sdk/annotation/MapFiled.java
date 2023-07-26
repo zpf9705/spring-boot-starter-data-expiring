@@ -1,22 +1,13 @@
-//
-// Copyright: Hangzhou Boku Network Co., Ltd
-// ......
-// Copyright Maintenance Date: 2022-2023
-// ......
-// Direct author: Zhang Pengfei
-// ......
-// Author email: 929160069@qq.com
-// ......
-// Please indicate the source for reprinting use
-//
-
-
 package io.github.zpf9705.expiring.spring_jdk.example_sdk.annotation;
+
+import io.github.zpf9705.expiring.spring_jdk.example_sdk.client.Request;
 
 import java.lang.annotation.*;
 
 /**
- * When converting an object to a map, an alias needs to be given to the key of the map
+ * When using map for JSON parameter conversion, it is an alias for key value conversion
+ * <p>
+ * {@link Request#toParamsMap()}
  *
  * @author zpf
  * @since 3.1.0
@@ -26,5 +17,10 @@ import java.lang.annotation.*;
 @Documented
 public @interface MapFiled {
 
+    /**
+     * Alias for key
+     *
+     * @return not be {@literal null}
+     */
     String name();
 }
