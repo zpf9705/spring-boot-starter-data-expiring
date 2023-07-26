@@ -59,7 +59,7 @@ public class HttpClient<R extends Response> extends AbstractClient<R> {
 
             /*
              * This step requires special conversion
-             * requirements for response data
+             * requirements for response data Final shift to JSON data
              */
             responseStr = this.convert(request, responseStr);
 
