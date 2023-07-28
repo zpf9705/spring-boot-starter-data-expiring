@@ -3,6 +3,7 @@ package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.ReflectUtil;
 import io.github.zpf9705.expiring.spring_jdk.example_sdk.SdkEnum;
 import io.github.zpf9705.expiring.spring_jdk.example_sdk.SdkException;
 import io.github.zpf9705.expiring.spring_jdk.example_sdk.annotation.MapFiled;
@@ -66,8 +67,8 @@ public interface Request<R extends Response> extends Serializable {
         if (Objects.isNull(body)) {
             return Collections.emptyMap();
         }
-        //get all fields include private and public
-        Field[] allFields = body.getClass().getDeclaredFields();
+        //get all fields include self and parent private and public
+        Field[] allFields = ReflectUtil.getFields(body.getClass());
         if (ArrayUtil.isEmpty(allFields)) {
             return BeanUtil.beanToMap(body);
         } else {
