@@ -58,11 +58,7 @@ public abstract class SpectatorUtils {
                 SystemUtils.getPropertyWithConvert(core_size_sign, Integer::parseInt, 1),
                 default_thread_factory);
 
-        //startup ScheduledExecutor
-        service.scheduleAtFixedRate(SpectatorUtils::clearDisposable,
-                SystemUtils.getPropertyWithConvert(start_init_delay, Integer::parseInt, 2),
-                SystemUtils.getPropertyWithConvert(start_period, Integer::parseInt, 2),
-                SystemUtils.getPropertyWithConvert(timeunit, TimeUnit::valueOf, TimeUnit.MINUTES));
+        start();
     }
 
     private SpectatorUtils() {
@@ -303,6 +299,17 @@ public abstract class SpectatorUtils {
         solveDisposables.forEach(Disposable::dispose);
         //Delete completed
         dis.removeAll(solveDisposables);
+    }
+
+    /**
+     * Startup clear Disposable Executor
+     */
+    private static void start(){
+        //startup ScheduledExecutor
+        service.scheduleAtFixedRate(SpectatorUtils::clearDisposable,
+                SystemUtils.getPropertyWithConvert(start_init_delay, Integer::parseInt, 2),
+                SystemUtils.getPropertyWithConvert(start_period, Integer::parseInt, 2),
+                SystemUtils.getPropertyWithConvert(timeunit, TimeUnit::valueOf, TimeUnit.MINUTES));
     }
 
     /**
