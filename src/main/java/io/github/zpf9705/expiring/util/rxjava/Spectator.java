@@ -126,6 +126,7 @@ public class Spectator<T> implements Observer<T>, Serializable {
      *
      * @param exceptionRetryRestTime Enrichment call gap with exception
      * @return {@literal Spectator of return parameters}
+     * @since 3.1.2
      */
     public Spectator<T> exceptionRetryTime(Long exceptionRetryRestTime) {
         this.exceptionRetryRestTime = exceptionRetryRestTime;
@@ -137,6 +138,7 @@ public class Spectator<T> implements Observer<T>, Serializable {
      *
      * @param specialRetry Retrying the specified exception group
      * @return {@literal Spectator of return parameters}
+     * @since 3.1.2
      */
     public Spectator<T> specialRetry(Class<? extends Throwable>[] specialRetry) {
         this.specialRetry = specialRetry;
