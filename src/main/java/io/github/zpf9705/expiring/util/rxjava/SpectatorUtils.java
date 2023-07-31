@@ -62,27 +62,27 @@ public abstract class SpectatorUtils {
         service.scheduleAtFixedRate(SpectatorUtils::clearDisposable,
                 SystemUtils.getPropertyWithConvert(start_init_delay, Integer::parseInt, 2),
                 SystemUtils.getPropertyWithConvert(start_period, Integer::parseInt, 2),
-                SystemUtils.getPropertyWithConvert(timeunit, TimeUnit::valueOf, TimeUnit.SECONDS));
+                SystemUtils.getPropertyWithConvert(timeunit, TimeUnit::valueOf, TimeUnit.MINUTES));
     }
 
     private SpectatorUtils() {
     }
 
     /**
-     * {@link #runWithRetry2ExceptionAll(Supplier, boolean, Class)} no provider clazz use method return value type
+     * {@link #runWithRetry2_0ExceptionAll(Supplier, boolean, Class)} no provider clazz use method return value type
      *
      * @param able       Method Run Function , must no be {@literal null}
      * @param trampoline Whether to run on the main thread
      * @param <T>        Specify Generics
      * @return Specify conversion type object
      */
-    public static <T> T runWithRetry2ExceptionAll(Supplier<T> able,
-                                                  boolean trampoline) {
-        return runWithRetry2ExceptionAll(able, trampoline, null);
+    public static <T> T runWithRetry20ExceptionAll(Supplier<T> able,
+                                                   boolean trampoline) {
+        return runWithRetry2_0ExceptionAll(able, trampoline, null);
     }
 
     /**
-     * {@link #runWithRetry2DefaultExecutor(Supplier, Class[], boolean, Class)} No need to specify exceptions
+     * {@link #runWithRetry2_0DefaultExecutor(Supplier, Class[], boolean, Class)} No need to specify exceptions
      * All exceptions are retried
      *
      * @param able       Method Run Function , must no be {@literal null}
@@ -92,14 +92,15 @@ public abstract class SpectatorUtils {
      * @param <T>        Specify Generics
      * @return Specify conversion type object
      */
-    public static <T> T runWithRetry2ExceptionAll(Supplier<T> able,
-                                                  boolean trampoline,
-                                                  Class<T> clazz) {
-        return runWithRetry2DefaultExecutor(able, null, trampoline, clazz);
+    public static <T> T runWithRetry2_0ExceptionAll(Supplier<T> able,
+                                                    boolean trampoline,
+                                                    Class<T> clazz) {
+        return runWithRetry2_0DefaultExecutor(able, null, trampoline, clazz);
     }
 
     /**
-     * {@link #runRetry2While(Supplier, Class[], boolean, Executor, Class)} use default executor
+     * {@link #runRetry2While(Supplier, Class[], long, boolean, Executor, Class)} use default executor
+     * and no exception retry interval millisecond
      *
      * @param exceptionClasses Specify retry exception collection
      * @param able             Method Run Function , must no be {@literal null}
@@ -109,51 +110,64 @@ public abstract class SpectatorUtils {
      * @param <T>              Specify Generics
      * @return Specify conversion type object
      */
-    public static <T> T runWithRetry2DefaultExecutor(Supplier<T> able,
-                                                     Class<? extends Throwable>[] exceptionClasses,
-                                                     boolean trampoline,
-                                                     Class<T> clazz) {
-        return runRetry2While(able, exceptionClasses, trampoline, null, clazz);
+    public static <T> T runWithRetry2_0DefaultExecutor(Supplier<T> able,
+                                                       Class<? extends Throwable>[] exceptionClasses,
+                                                       boolean trampoline,
+                                                       Class<T> clazz) {
+        return runRetry2While(able, exceptionClasses, 0, trampoline, null, clazz);
     }
 
     /**
-     * {@link #runWhile(Supplier, Class[], int, boolean, Executor, Class)} Specify two retries
+     * {@link #runWhile(Supplier, Class[], int, long, boolean, Executor, Class)} Specify two retries
      *
-     * @param able             Method Run Function , must no be {@literal null}
-     * @param exceptionClasses Specify retry exception collection
-     * @param <T>              Specify Generics
-     * @param trampoline       Whether to run on the main thread
-     * @param executor         Switch Thread pool required by self thread default to {@link ForkJoinPool}
-     * @param clazz            Return value conversion clazz object ,
-     *                         The default is the type of value returned by the method
+     * @param able                   Method Run Function , must no be {@literal null}
+     * @param exceptionClasses       Specify retry exception collection
+     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}
+     * @param <T>                    Specify Generics
+     * @param trampoline             Whether to run on the main thread
+     * @param executor               Switch Thread pool required by self thread default to {@link ForkJoinPool}
+     * @param clazz                  Return value conversion clazz object ,
+     *                               The default is the type of value returned by the method
      * @return Specify conversion type object
      */
     public static <T> T runRetry2While(Supplier<T> able,
                                        Class<? extends Throwable>[] exceptionClasses,
+                                       long exceptionRetryRestMill,
                                        boolean trampoline,
                                        Executor executor,
                                        Class<T> clazz) {
-        return runWhile(able, exceptionClasses, 2, trampoline, executor, clazz);
+        return runWhile(able, exceptionClasses, 2, exceptionRetryRestMill, trampoline, executor, clazz);
     }
 
 
     /**
-     * {@link #runWhile(Supplier, Class[], int, boolean, Executor, Class)} no type clazz
+     * {@link #runWhile(Supplier, Class[], int, long, boolean, Executor, Class)} no type clazz .
+     * <pre>
+     *     {@code String s =
+     *     SpectatorUtils.runNoTypeClazzWhile(new Supplier<String>() {
+     *                                  public String get() {
+     *                                        System.out.println("1111");
+     *                                        return String.valueOf(1 / 0);}},
+     *                                  new Class[]{NullPointerException.class
+     *                                  ,ArithmeticException.class},2, 1000L, true, null);}
+     * </pre>
      *
-     * @param able             Method Run Function , must no be {@literal null}
-     * @param retryTimes       retry count default to {@code 1}
-     * @param exceptionClasses Specify retry exception collection
-     * @param <T>              Specify Generics
-     * @param trampoline       Whether to run on the main thread
-     * @param executor         Switch Thread pool required by self thread default to {@link ForkJoinPool}
+     * @param able                   Method Run Function , must no be {@literal null}
+     * @param retryTimes             retry count default to {@code 1}
+     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}
+     * @param exceptionClasses       Specify retry exception collection
+     * @param <T>                    Specify Generics
+     * @param trampoline             Whether to run on the main thread
+     * @param executor               Switch Thread pool required by self thread default to {@link ForkJoinPool}
      * @return Specify conversion type object
      */
     public static <T> T runNoTypeClazzWhile(Supplier<T> able,
                                             Class<? extends Throwable>[] exceptionClasses,
                                             int retryTimes,
+                                            long exceptionRetryRestMill,
                                             boolean trampoline,
                                             Executor executor) {
-        return runWhile(able, exceptionClasses, retryTimes, trampoline, executor, null);
+        return runWhile(able, exceptionClasses, retryTimes, exceptionRetryRestMill, trampoline, executor, null);
     }
 
     /**
@@ -161,20 +175,22 @@ public abstract class SpectatorUtils {
      * during method operation, including thread switching based on incoming parameters
      * and ultimately returning the desired generics
      *
-     * @param able             Method Run Function , must no be {@literal null}
-     * @param retryTimes       retry count default to {@code 1}
-     * @param exceptionClasses Specify retry exception collection
-     * @param trampoline       Whether to run on the main thread
-     * @param <T>              Specify Generics
-     * @param executor         Switch Thread pool required by self thread default to {@link ForkJoinPool}
-     * @param clazz            Return value conversion clazz object ,
-     *                         The default is the type of value returned by the method
+     * @param able                   Method Run Function , must no be {@literal null}
+     * @param retryTimes             retry count default to {@code 1}
+     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}
+     * @param exceptionClasses       Specify retry exception collection
+     * @param trampoline             Whether to run on the main thread
+     * @param <T>                    Specify Generics
+     * @param executor               Switch Thread pool required by self thread default to {@link ForkJoinPool}
+     * @param clazz                  Return value conversion clazz object ,
+     *                               The default is the type of value returned by the method
      * @return Specify conversion type object
      */
     @SuppressWarnings("unchecked")
     public static <T> T runWhile(Supplier<T> able,
                                  Class<? extends Throwable>[] exceptionClasses,
                                  int retryTimes,
+                                 long exceptionRetryRestMill,
                                  boolean trampoline,
                                  Executor executor,
                                  Class<T> clazz) {
@@ -189,7 +205,8 @@ public abstract class SpectatorUtils {
                     v.onComplete();
                 }, BackpressureStrategy.LATEST)
                 .observeOn(getSchedulers(trampoline, executor))
-                .retry(retryTimes, (e) -> specifyAnException(exceptionClasses, e.getClass()));
+                .retry(retryTimes, (e) -> specifyAnException(exceptionClasses,
+                        exceptionRetryRestMill, e.getClass()));
         T t;
         if (clazz != null) {
             t = flowable.ofType(clazz).blockingSingle();
@@ -200,19 +217,42 @@ public abstract class SpectatorUtils {
     }
 
     /**
-     * Verify if the thrown exception is in the specified exception group
+     * Verify if the thrown exception is in the specified exception group ,
+     * And can set the interval rest millisecond value for abnormal retries
      *
-     * @param exceptionClasses Specify retry exception collection
-     * @param specifyClazz     Throw an exception class object
+     * @param exceptionClasses       Specify retry exception collection
+     * @param exceptionRetryRestMill Abnormal retry interval millisecond value
+     * @param specifyClazz           Throw an exception class object
      * @return {@code  True} retry {@code false} non retry
      */
     protected static boolean specifyAnException(Class<? extends Throwable>[] exceptionClasses,
+                                                long exceptionRetryRestMill,
                                                 @NotNull Class<? extends Throwable> specifyClazz) {
+        boolean retry;
         if (ArrayUtils.simpleIsEmpty(exceptionClasses)) {
             // no special exception  retry at now
+            retry = true;
+        } else {
+            //if false prove no special exception so no retry
+            retry = Arrays.stream(exceptionClasses).anyMatch(v -> v.isAssignableFrom(specifyClazz));
+        }
+        //in retry so exceptionRetryTime to sleep
+        if (retry) {
+            if (exceptionRetryRestMill == 0) {
+                //rest no time
+                return true;
+            }
+            try {
+                Console.info("When retry there sleep {} millis ", exceptionRetryRestMill);
+                //------------------------------------
+                TimeUnit.MILLISECONDS.sleep(exceptionRetryRestMill);
+            } catch (InterruptedException ex) {
+                // if Interrupted try to retry
+                return true;
+            }
             return true;
         }
-        return Arrays.stream(exceptionClasses).anyMatch(v -> v.isAssignableFrom(specifyClazz));
+        return false;
     }
 
     /**

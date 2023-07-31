@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.util.rxjava;
 
-import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.StringUtils;
@@ -8,7 +7,6 @@ import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -125,34 +123,7 @@ public interface Observer<T> {
      * @since 3.1.2
      */
     default boolean retryWhen(Throwable e) {
-        Class<? extends Throwable>[] exClasses = specialRetry();
-        boolean retry;
-        //if retry exceptions nonnull check e in it
-        if (exClasses != null) {
-            //if false prove no special exception so no retry
-            retry = SpectatorUtils.specifyAnException(exClasses, e.getClass());
-        } else {
-            //if null retry all exception
-            retry = true;
-        }
-        //in retry so exceptionRetryTime to sleep
-        if (retry) {
-            long sleep = exceptionRetryRestTime();
-            if (sleep == 0) {
-                //rest no time
-                return true;
-            }
-            try {
-                Console.info("When retry there sleep {} millis ", sleep);
-                //------------------------------------
-                TimeUnit.MILLISECONDS.sleep(sleep);
-            } catch (InterruptedException ex) {
-                // if Interrupted try to retry
-                return true;
-            }
-            return true;
-        }
-        return false;
+        return SpectatorUtils.specifyAnException(specialRetry(), exceptionRetryRestTime(), e.getClass());
     }
 
     /**
