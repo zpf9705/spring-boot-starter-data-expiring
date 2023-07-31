@@ -23,18 +23,15 @@ import java.util.function.Supplier;
  * <pre>
  *     {@code
  *      Spectator.prepare(new Supplier<Integer>() {
- *                     @Override
  *                     public Integer get() {
  *                         System.out.println("11111");
  *                         return 1 / 0;
  *                     }
  *                 }, Integer.class, new Predicate<Integer>() {
- *                     @Override
  *                     public boolean test(Integer integer) {
  *                         return integer != null;
  *                     }
  *                 }, new Function<Integer, String>() {
- *                     @Override
  *                     public String apply(Integer integer) {
  *                         return integer.toString();
  *                     }
@@ -43,12 +40,10 @@ import java.util.function.Supplier;
  *                 .specialRetry(new Class[]{IllegalArgumentException.class})
  *                 .run()
  *                 .accept(new io.reactivex.rxjava3.functions.Consumer<Integer>() {
- *                     @Override
  *                     public void accept(Integer integer) throws Throwable {
  *
  *                     }
  *                 }, new io.reactivex.rxjava3.functions.Consumer<Throwable>() {
- *                     @Override
  *                     public void accept(Throwable throwable) throws Throwable {
  *                         System.out.println(throwable.getMessage());
  *                     }
