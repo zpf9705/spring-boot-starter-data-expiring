@@ -1,5 +1,6 @@
 package io.github.zpf9705.expiring.util.rxjava;
 
+import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.StringUtils;
@@ -8,6 +9,7 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -66,6 +68,21 @@ public interface Observer<T> {
     int getRetryTimes();
 
     /**
+     * Wait time for thread retry when an exception occurs
+     *
+     * @return wait times and Unit in milliseconds
+     */
+    long exceptionRetryRestTime();
+
+    /**
+     * Specify special retry exceptions. If left blank, all exceptions can be retried
+     *
+     * @return exception array
+     */
+    @CanNull
+    Class<? extends Throwable>[] specialRetry();
+
+    /**
      * Utilizing the Running Mechanism of rxJava {@link Flowable} , based on the provided operating parameters
      * <p>
      * Implementation method operation, interface check, information collection, exception retry
@@ -79,9 +96,9 @@ public interface Observer<T> {
      */
     @NotNull
     default Flowable<T> run(Supplier<T> run,
-                                    Class<T> type,
-                                    Predicate<T> check,
-                                    Function<T, String> simpleMsgHandler) {
+                            Class<T> type,
+                            Predicate<T> check,
+                            Function<T, String> simpleMsgHandler) {
         return Flowable.create(click -> {
                     click.onNext(checkValue(run, check, simpleMsgHandler));
                     click.onComplete();
@@ -91,9 +108,50 @@ public interface Observer<T> {
                         Schedulers.from(getExecutor()) :
                         Schedulers.trampoline())
                 //retry times no need assign ex
-                .retry(getRetryTimes())
+                .retry(getRetryTimes(), this::retryWhen)
                 //change type
                 .ofType(type);
+    }
+
+    /**
+     * When a method throws an exception during runtime, it can be determined
+     * whether it is a specified exception {@link #specialRetry()} based on the provided exception queue
+     * to determine whether it is a retry. If {@link #exceptionRetryRestTime()}the interval between exception
+     * retries is provided, the thread will retry after resting for these times
+     *
+     * @param e Exception thrown by method
+     * @return if {@code true} retry or no retry
+     * @since 3.1.2
+     */
+    default boolean retryWhen(Throwable e) {
+        Class<? extends Throwable>[] exClasses = specialRetry();
+        boolean retry;
+        //if retry exceptions nonnull check e in it
+        if (exClasses != null) {
+            //if false prove no special exception so no retry
+            retry = SpectatorUtils.specifyAnException(exClasses, e.getClass());
+        } else {
+            //if null retry all exception
+            retry = true;
+        }
+        //in retry so exceptionRetryTime to sleep
+        if (retry) {
+            long sleep = exceptionRetryRestTime();
+            if (sleep == 0) {
+                //rest no time
+                return true;
+            }
+            try {
+                Console.info("When retry there sleep {} millis ", sleep);
+                //------------------------------------
+                TimeUnit.MILLISECONDS.sleep(sleep);
+            } catch (InterruptedException ex) {
+                // if Interrupted try to retry
+                return true;
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -107,8 +165,8 @@ public interface Observer<T> {
      * @return Recycling objects
      */
     default T checkValue(Supplier<T> run,
-                    Predicate<T> check,
-                    Function<T, String> simpleMsgHandler) {
+                         Predicate<T> check,
+                         Function<T, String> simpleMsgHandler) {
         T t = null;
         String esg = null;
         try {

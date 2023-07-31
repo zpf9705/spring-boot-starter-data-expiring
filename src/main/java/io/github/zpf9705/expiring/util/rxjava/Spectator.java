@@ -20,6 +20,40 @@ import java.util.function.Supplier;
  * <p>
  * The specific application method of the above parameters can be queried
  * {@link Observer#run(Supplier, Class, Predicate, Function)}
+ * <pre>
+ *     {@code
+ *      Spectator.prepare(new Supplier<Integer>() {
+ *                     @Override
+ *                     public Integer get() {
+ *                         System.out.println("11111");
+ *                         return 1 / 0;
+ *                     }
+ *                 }, Integer.class, new Predicate<Integer>() {
+ *                     @Override
+ *                     public boolean test(Integer integer) {
+ *                         return integer != null;
+ *                     }
+ *                 }, new Function<Integer, String>() {
+ *                     @Override
+ *                     public String apply(Integer integer) {
+ *                         return integer.toString();
+ *                     }
+ *                 })
+ *                 .exceptionRetryTime(3000L)
+ *                 .specialRetry(new Class[]{IllegalArgumentException.class})
+ *                 .run()
+ *                 .accept(new io.reactivex.rxjava3.functions.Consumer<Integer>() {
+ *                     @Override
+ *                     public void accept(Integer integer) throws Throwable {
+ *
+ *                     }
+ *                 }, new io.reactivex.rxjava3.functions.Consumer<Throwable>() {
+ *                     @Override
+ *                     public void accept(Throwable throwable) throws Throwable {
+ *                         System.out.println(throwable.getMessage());
+ *                     }
+ *                 });}
+ * </pre>
  *
  * @author zpf
  * @since 3.1.0
@@ -37,6 +71,10 @@ public class Spectator<T> implements Observer<T>, Serializable {
     private final Predicate<T> check;
 
     private final Function<T, String> simpleMsgHandler;
+
+    private Class<? extends Throwable>[] specialRetry;
+
+    private long exceptionRetryRestTime;
 
     private Flowable<T> flowable;
 
@@ -85,6 +123,28 @@ public class Spectator<T> implements Observer<T>, Serializable {
     }
 
     /**
+     * Interval rest time setting for abnormal retries
+     *
+     * @param exceptionRetryRestTime Enrichment call gap with exception
+     * @return {@literal Spectator of return parameters}
+     */
+    public Spectator<T> exceptionRetryTime(Long exceptionRetryRestTime) {
+        this.exceptionRetryRestTime = exceptionRetryRestTime;
+        return this;
+    }
+
+    /**
+     * Special retry exception class object set setting
+     *
+     * @param specialRetry Retrying the specified exception group
+     * @return {@literal Spectator of return parameters}
+     */
+    public Spectator<T> specialRetry(Class<? extends Throwable>[] specialRetry) {
+        this.specialRetry = specialRetry;
+        return this;
+    }
+
+    /**
      * Conduct a method inspection run based on important necessary parameters
      *
      * @return {@literal Spectator of return parameters}
@@ -114,5 +174,15 @@ public class Spectator<T> implements Observer<T>, Serializable {
     @Override
     public int getRetryTimes() {
         return retry_times;
+    }
+
+    @Override
+    public long exceptionRetryRestTime() {
+        return exceptionRetryRestTime;
+    }
+
+    @Override
+    public Class<? extends Throwable>[] specialRetry() {
+        return specialRetry;
     }
 }

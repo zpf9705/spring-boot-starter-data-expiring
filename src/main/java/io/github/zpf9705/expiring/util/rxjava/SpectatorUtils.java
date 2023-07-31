@@ -29,8 +29,9 @@ public final class SpectatorUtils {
     /**
      * {@link #runWithRetry2ExceptionAll(Supplier, boolean, Class)} no provider clazz use method return value type
      *
-     * @param able Method Run Function , must no be {@literal null}
-     * @param <T>  Specify Generics
+     * @param able       Method Run Function , must no be {@literal null}
+     * @param trampoline Whether to run on the main thread
+     * @param <T>        Specify Generics
      * @return Specify conversion type object
      */
     public static <T> T runWithRetry2ExceptionAll(Supplier<T> able,
@@ -42,10 +43,11 @@ public final class SpectatorUtils {
      * {@link #runWithRetry2DefaultExecutor(Supplier, Class[], boolean, Class)} No need to specify exceptions
      * All exceptions are retried
      *
-     * @param able  Method Run Function , must no be {@literal null}
-     * @param clazz Return value conversion clazz object ,
-     *              The default is the type of value returned by the method
-     * @param <T>   Specify Generics
+     * @param able       Method Run Function , must no be {@literal null}
+     * @param clazz      Return value conversion clazz object ,
+     *                   The default is the type of value returned by the method
+     * @param trampoline Whether to run on the main thread
+     * @param <T>        Specify Generics
      * @return Specify conversion type object
      */
     public static <T> T runWithRetry2ExceptionAll(Supplier<T> able,
@@ -59,6 +61,7 @@ public final class SpectatorUtils {
      *
      * @param exceptionClasses Specify retry exception collection
      * @param able             Method Run Function , must no be {@literal null}
+     * @param trampoline       Whether to run on the main thread
      * @param clazz            Return value conversion clazz object ,
      *                         The default is the type of value returned by the method
      * @param <T>              Specify Generics
@@ -77,6 +80,7 @@ public final class SpectatorUtils {
      * @param able             Method Run Function , must no be {@literal null}
      * @param exceptionClasses Specify retry exception collection
      * @param <T>              Specify Generics
+     * @param trampoline       Whether to run on the main thread
      * @param executor         Switch Thread pool required by self thread default to {@link ForkJoinPool}
      * @param clazz            Return value conversion clazz object ,
      *                         The default is the type of value returned by the method
@@ -98,6 +102,7 @@ public final class SpectatorUtils {
      * @param retryTimes       retry count default to {@code 1}
      * @param exceptionClasses Specify retry exception collection
      * @param <T>              Specify Generics
+     * @param trampoline       Whether to run on the main thread
      * @param executor         Switch Thread pool required by self thread default to {@link ForkJoinPool}
      * @return Specify conversion type object
      */
@@ -117,6 +122,7 @@ public final class SpectatorUtils {
      * @param able             Method Run Function , must no be {@literal null}
      * @param retryTimes       retry count default to {@code 1}
      * @param exceptionClasses Specify retry exception collection
+     * @param trampoline       Whether to run on the main thread
      * @param <T>              Specify Generics
      * @param executor         Switch Thread pool required by self thread default to {@link ForkJoinPool}
      * @param clazz            Return value conversion clazz object ,
@@ -158,8 +164,8 @@ public final class SpectatorUtils {
      * @param specifyClazz     Throw an exception class object
      * @return {@code  True} retry {@code false} non retry
      */
-    private static boolean specifyAnException(Class<? extends Throwable>[] exceptionClasses,
-                                              @NotNull Class<? extends Throwable> specifyClazz) {
+    public static boolean specifyAnException(Class<? extends Throwable>[] exceptionClasses,
+                                             @NotNull Class<? extends Throwable> specifyClazz) {
         if (ArrayUtils.simpleIsEmpty(exceptionClasses)) {
             // no special exception  retry at now
             return true;
@@ -175,7 +181,7 @@ public final class SpectatorUtils {
      * @param executor   The Thread pool provided for the self thread must be threaded when the self thread runs
      * @return {@code Scheduler} default to {@link Schedulers#trampoline()} if no executor default to {@link ForkJoinPool}
      */
-    private static Scheduler getSchedulers(boolean trampoline, Executor executor) {
+    public static Scheduler getSchedulers(boolean trampoline, Executor executor) {
         Scheduler scheduler;
         if (trampoline) {
             scheduler = Schedulers.trampoline();
