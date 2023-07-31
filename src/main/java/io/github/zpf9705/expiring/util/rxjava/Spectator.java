@@ -76,6 +76,8 @@ public class Spectator<T> implements Observer<T>, Serializable {
     static {
         //By default, it is taken from the system configuration If not, defaults to 2
         retry_times = SystemUtils.getPropertyWithConvert("rxjava3.retry.times", Integer::parseInt, 2);
+        //Preload SpectatorUtils
+        SpectatorUtils.preload();
     }
 
     /**
@@ -154,10 +156,11 @@ public class Spectator<T> implements Observer<T>, Serializable {
      *
      * @param consumer   Normal consumers
      * @param exConsumer Abnormal consumers
-     * @return {@link Disposable} Subscription Results
      */
-    public Disposable accept(Consumer<T> consumer, Consumer<? super Throwable> exConsumer) {
-        return this.flowable.subscribe(consumer, exConsumer);
+    public void accept(Consumer<T> consumer, Consumer<? super Throwable> exConsumer) {
+        Disposable subscribe = this.flowable.subscribe(consumer, exConsumer);
+        //add Disposable Scheduled to clear
+        SpectatorUtils.addDisposable(subscribe);
     }
 
     @Override

@@ -1,15 +1,19 @@
 package io.github.zpf9705.expiring.util.rxjava;
 
+import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.ArrayUtils;
+import io.github.zpf9705.expiring.util.SystemUtils;
 import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import java.util.Arrays;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 
@@ -21,7 +25,45 @@ import java.util.function.Supplier;
  * @author zpf
  * @since jdk.spi.version-2022.11.18 - [2022-08-17 16:52]
  */
-public final class SpectatorUtils {
+public abstract class SpectatorUtils {
+
+    protected static final List<Disposable> dis = new CopyOnWriteArrayList<>();
+
+    protected static final ThreadFactory default_thread_factory = new ThreadFactory() {
+
+        private final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
+        private final AtomicInteger threadNumber = new AtomicInteger(0);
+
+        public Thread newThread(@NotNull Runnable r) {
+            Thread thread = defaultFactory.newThread(r);
+            thread.setName("disposable-clear-thread-" + threadNumber.getAndIncrement());
+            return thread;
+        }
+    };
+
+    static final String core_size_sign = "disposable.clear.core.thead.size";
+
+    static final String start_init_delay = "disposable.clear.start.init.delay";
+
+    static final String start_period = "disposable.clear.start.period";
+
+    static final String timeunit = "disposable.clear.start.timeunit";
+
+    static final ScheduledExecutorService service;
+
+    static {
+
+        //ScheduledExecutor init
+        service = Executors.newScheduledThreadPool(
+                SystemUtils.getPropertyWithConvert(core_size_sign, Integer::parseInt, 1),
+                default_thread_factory);
+
+        //startup ScheduledExecutor
+        service.scheduleAtFixedRate(SpectatorUtils::clearDisposable,
+                SystemUtils.getPropertyWithConvert(start_init_delay, Integer::parseInt, 2),
+                SystemUtils.getPropertyWithConvert(start_period, Integer::parseInt, 2),
+                SystemUtils.getPropertyWithConvert(timeunit, TimeUnit::valueOf, TimeUnit.SECONDS));
+    }
 
     private SpectatorUtils() {
     }
@@ -164,8 +206,8 @@ public final class SpectatorUtils {
      * @param specifyClazz     Throw an exception class object
      * @return {@code  True} retry {@code false} non retry
      */
-    public static boolean specifyAnException(Class<? extends Throwable>[] exceptionClasses,
-                                             @NotNull Class<? extends Throwable> specifyClazz) {
+    protected static boolean specifyAnException(Class<? extends Throwable>[] exceptionClasses,
+                                                @NotNull Class<? extends Throwable> specifyClazz) {
         if (ArrayUtils.simpleIsEmpty(exceptionClasses)) {
             // no special exception  retry at now
             return true;
@@ -181,7 +223,7 @@ public final class SpectatorUtils {
      * @param executor   The Thread pool provided for the self thread must be threaded when the self thread runs
      * @return {@code Scheduler} default to {@link Schedulers#trampoline()} if no executor default to {@link ForkJoinPool}
      */
-    public static Scheduler getSchedulers(boolean trampoline, Executor executor) {
+    protected static Scheduler getSchedulers(boolean trampoline, Executor executor) {
         Scheduler scheduler;
         if (trampoline) {
             scheduler = Schedulers.trampoline();
@@ -194,5 +236,39 @@ public final class SpectatorUtils {
             }
         }
         return scheduler;
+    }
+
+    /**
+     * Pre add subscription relationships to static favorites, to be processed when confirmed
+     *
+     * @param disposable {@link Disposable}
+     */
+    protected static void addDisposable(Disposable disposable) {
+        if (disposable != null) {
+            dis.add(disposable);
+        }
+    }
+
+    /**
+     * Clear the subscription relationship, free the occupied memory, and avoid Memory leak
+     */
+    protected static void clearDisposable() {
+        if (dis.isEmpty()) {
+            return;
+        }
+        Console.info("start clean up disposable");
+        //To prevent scheduled tasks from starting and clearing subscriptions that have not been completed,
+        // add the currently completed subscriptions to a new list for execution first
+        List<Disposable> solveDisposables = new CopyOnWriteArrayList<>(dis);
+        solveDisposables.forEach(Disposable::dispose);
+        //Delete completed
+        dis.removeAll(solveDisposables);
+    }
+
+    /**
+     * loading of this class
+     */
+    public static void preload() {
+        //no op
     }
 }
