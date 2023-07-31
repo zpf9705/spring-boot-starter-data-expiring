@@ -36,7 +36,7 @@ public interface Observer<T> {
      * @return no be {@literal null}
      */
     @NotNull
-    BackpressureStrategy selectBack();
+    BackpressureStrategy strategy();
 
     /**
      * Select the appropriate Thread pool {@link Executor} for the run method
@@ -102,7 +102,7 @@ public interface Observer<T> {
         return Flowable.create(click -> {
                     click.onNext(checkValue(run, check, simpleMsgHandler));
                     click.onComplete();
-                }, selectBack())
+                }, strategy())
                 //new thread to run
                 .observeOn(getExecutor() != null ?
                         Schedulers.from(getExecutor()) :

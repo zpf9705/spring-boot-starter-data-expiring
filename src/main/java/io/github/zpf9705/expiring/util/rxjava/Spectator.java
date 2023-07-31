@@ -165,7 +165,7 @@ public class Spectator<T> implements Observer<T>, Serializable {
 
     @Override
     @NotNull
-    public BackpressureStrategy selectBack() {
+    public BackpressureStrategy strategy() {
         return BackpressureStrategy.LATEST;
     }
 
