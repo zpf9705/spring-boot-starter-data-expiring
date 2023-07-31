@@ -41,15 +41,15 @@ public abstract class SpectatorUtils {
         }
     };
 
-    static final String core_size_sign = "disposable.clear.core.thead.size";
+    public static final String core_size_sign = "disposable.clear.core.thead.size";
 
-    static final String start_init_delay = "disposable.clear.start.init.delay";
+    public static final String start_init_delay = "disposable.clear.start.init.delay";
 
-    static final String start_period = "disposable.clear.start.period";
+    public static final String start_period = "disposable.clear.start.period";
 
-    static final String timeunit = "disposable.clear.start.timeunit";
+    public static final String timeunit = "disposable.clear.start.timeunit";
 
-    static final ScheduledExecutorService service;
+    public static final ScheduledExecutorService service;
 
     static {
 

@@ -73,9 +73,11 @@ public class Spectator<T> implements Observer<T>, Serializable {
 
     private Flowable<T> flowable;
 
+    public static final String retry_times_sign = "rxjava3.retry.times";
+
     static {
         //By default, it is taken from the system configuration If not, defaults to 2
-        retry_times = SystemUtils.getPropertyWithConvert("rxjava3.retry.times", Integer::parseInt, 2);
+        retry_times = SystemUtils.getPropertyWithConvert(retry_times_sign, Integer::parseInt, 2);
         //Preload SpectatorUtils
         SpectatorUtils.preload();
     }
