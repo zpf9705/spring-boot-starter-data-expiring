@@ -6,7 +6,6 @@ import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.StringUtils;
 import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -106,9 +105,9 @@ public interface Observer<T> {
                     click.onComplete();
                 }, strategy())
                 //new thread to run
-                .observeOn(getExecutor() != null ?
-                        Schedulers.from(getExecutor()) :
-                        Schedulers.trampoline())
+                .observeOn(SpectatorUtils.getSchedulers(
+                        //thread executor is null prove current thread run
+                        getExecutor() == null, getExecutor()))
                 //retry times no need assign ex
                 .retry(getRetryTimes(), this::retryWhen)
                 //change type
