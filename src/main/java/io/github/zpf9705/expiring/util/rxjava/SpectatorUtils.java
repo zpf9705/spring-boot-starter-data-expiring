@@ -243,7 +243,7 @@ public abstract class SpectatorUtils {
      *
      * @param disposable {@link Disposable}
      */
-    protected static void addDisposable(Disposable disposable) {
+    public static void addDisposable(Disposable disposable) {
         if (disposable != null) {
             dis.add(disposable);
         }
