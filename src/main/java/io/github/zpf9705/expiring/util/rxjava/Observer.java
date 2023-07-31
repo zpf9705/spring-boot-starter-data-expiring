@@ -71,6 +71,7 @@ public interface Observer<T> {
      * Wait time for thread retry when an exception occurs
      *
      * @return wait times and Unit in milliseconds
+     * @since 3.1.2
      */
     long exceptionRetryRestTime();
 
@@ -78,6 +79,7 @@ public interface Observer<T> {
      * Specify special retry exceptions. If left blank, all exceptions can be retried
      *
      * @return exception array
+     * @since 3.1.2
      */
     @CanNull
     Class<? extends Throwable>[] specialRetry();

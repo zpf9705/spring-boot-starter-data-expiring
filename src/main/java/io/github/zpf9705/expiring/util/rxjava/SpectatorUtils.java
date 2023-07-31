@@ -23,7 +23,7 @@ import java.util.function.Supplier;
  * Functions such as exception retry, generic conversion, and thread switching for method calls
  *
  * @author zpf
- * @since jdk.spi.version-2022.11.18 - [2022-08-17 16:52]
+ * @since 3.1.2
  */
 public abstract class SpectatorUtils {
 
