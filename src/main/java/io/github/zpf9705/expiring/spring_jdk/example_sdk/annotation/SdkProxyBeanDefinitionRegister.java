@@ -14,7 +14,15 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 
 /**
- * SDK Interface Proxy Registration
+ * The proxy registration class of SDK scans the relevant interface classes carrying {@link EnableSdkProxyRegister}
+ * <p>
+ * Annotations based on the switch {@link Sdk}, automatically equips the proxy implementation class ,
+ * and calls the method of unified direction {@link SdkProxyBeanDefinition} to achieve unified deployment
+ * of SDK proxy encapsulation
+ * <p>
+ * It mainly defines beans through {@link BeanDefinitionBuilder}, with variables including
+ * obtaining host addresses through spring's environment variables, class objects of proxy
+ * interfaces, class aliases, and scanning path names (from value or basePackages)
  *
  * @author zpf
  * @since 3.1.0

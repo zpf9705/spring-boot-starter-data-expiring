@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 public @interface Sdk {
 
     /**
-     * If [ioc alias] is not filled in, the interface name will be used as the bean name by default
+     * If [spring ioc bean alias] is not filled in, the interface name will be used as the bean name by default
      *
      * @return no be {@literal null}
      */
@@ -22,7 +22,9 @@ public @interface Sdk {
 
     /**
      * [host address configuration key] Support Type :
+     * <p>
      * 1、El expression : ${xxx.xxx.xxx}
+     * <p>
      * 2、Normal key format : xxx.xxx.xxx
      *
      * @return no be {@literal null}
