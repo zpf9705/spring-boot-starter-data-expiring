@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 
 /**
- * Request client type enums
+ * Enumeration of planning request types
  *
  * @author zpf
  * @since 3.1.0

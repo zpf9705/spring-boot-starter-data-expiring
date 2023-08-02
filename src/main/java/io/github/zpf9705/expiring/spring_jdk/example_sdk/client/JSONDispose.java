@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 
-import org.springframework.lang.NonNull;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 
 /**
  * Response object conversion processing after obtaining the requested JSON data
@@ -18,6 +18,6 @@ public interface JSONDispose<R extends Response> {
      * @param responseStr Request Response Data String
      * @return Converted response obj
      */
-    @NonNull
+    @NotNull
     R JsonToConvertResponse(Request<R> request, String responseStr);
 }

@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 
 /**
- * Default Request Client
+ * Default Request Client impl for {@link Client}
  *
  * @author zpf
  * @since 3.1.0

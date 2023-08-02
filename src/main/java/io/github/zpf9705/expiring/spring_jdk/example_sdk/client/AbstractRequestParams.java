@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Public Abstract Request Parameter Class
+ * Request abstract node class, used to define the public parameters or methods of the real request parameter class
  *
  * @author zpf
  * @since 3.1.0

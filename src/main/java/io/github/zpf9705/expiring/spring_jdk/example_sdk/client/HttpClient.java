@@ -14,7 +14,13 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * HTTP based {@link Client} request client
+ * The HTTP based request client supports four types of request methods: get, post, put, and del.
+ * <p>
+ * The parameter selection is a common and standardized form, and the default request body type is JSON.
+ * <p>
+ * Currently, it also supports {@code application/x-www-form-urlencoded} type request methods.
+ * <p>
+ * More specific support for request body types will be added when encountering them
  *
  * @author zpf
  * @since 3.1.0

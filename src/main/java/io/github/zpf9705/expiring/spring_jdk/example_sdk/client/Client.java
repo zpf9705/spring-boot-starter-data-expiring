@@ -4,7 +4,8 @@ import java.io.Closeable;
 import java.io.Serializable;
 
 /**
- * Request client interface , method for defining the entire SDK request process
+ * The request client interface includes planning for request issuance, special result conversion,
+ * JSON interface serialization, and can be said to be a process throughout the entire request lifecycle.
  *
  * @author zpf
  * @since 3.1.0

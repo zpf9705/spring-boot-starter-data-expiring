@@ -3,11 +3,11 @@ package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONValidator;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.AssertUtils;
+import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.StringUtils;
 import org.springframework.core.NamedThreadLocal;
-import org.springframework.lang.NonNull;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
- * Abstract client class, defining some common methods in this class
+ * Abstract client auxiliary class, where there are single instance clients cached
+ * based on URL addresses to prevent memory consumption caused by duplicate object
+ * creation, improve memory utilization, and some common method definitions
  *
  * @author zpf
  * @since 3.1.0
@@ -147,7 +149,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     }
 
     @Override
-    @NonNull
+    @NotNull
     public R JsonToConvertResponse(Request<R> request, String responseStr) {
         R response;
         JSONValidator jsonValidator = StringUtils.simpleIsBlank(responseStr) ? null : JSONValidator.from(responseStr);
@@ -156,7 +158,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
             response = JSON.parseObject(jsonData, request.getResponseCls());
         } else if (Objects.equals(JSONValidator.Type.Array, jsonValidator.getType())) {
             List<R> responses = JSONArray.parseArray(responseStr, request.getResponseCls());
-            if (!CollectionUtils.isEmpty(responses)) {
+            if (CollectionUtils.simpleNotEmpty(responses)) {
                 response = responses.get(0);
             } else {
                 response = JSON.parseObject(empty_json, request.getResponseCls());

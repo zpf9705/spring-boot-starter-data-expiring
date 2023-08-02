@@ -1,7 +1,9 @@
 package io.github.zpf9705.expiring.spring_jdk.example_sdk;
 
 /**
- * Public Abstract Enumeration Class SDK Interface
+ * SDK related attribute method definition interface,mainly including URL concatenation .
+ * <p>
+ * Request scheme selection, and related custom enumeration names .
  *
  * @author zpf
  * @since 3.1.0
@@ -9,7 +11,7 @@ package io.github.zpf9705.expiring.spring_jdk.example_sdk;
 public interface SdkEnum {
 
     /**
-     * Get request URL
+     * Get request url , generally, string formatting is required
      *
      * @param host host address
      * @return request url address
@@ -17,7 +19,8 @@ public interface SdkEnum {
     String getUlr(String host);
 
     /**
-     * Obtain Request Method
+     * Select the corresponding request scheme based on this enumeration identifier,
+     * currently supporting the type of HTTP
      *
      * @return {@link RequestMethod}
      */
@@ -30,7 +33,9 @@ public interface SdkEnum {
      */
     String name();
 
-
+    /**
+     * API Request Address HTTP Protocol Header Enumeration Selection
+     */
     enum ApiProtocol {
 
         HTTPS("https:"),
@@ -48,6 +53,9 @@ public interface SdkEnum {
         }
     }
 
+    /**
+     * Enumeration of currently supported types for HTTP
+     */
     enum RequestMethod {
         GET, PUT, POST, DELETE
     }

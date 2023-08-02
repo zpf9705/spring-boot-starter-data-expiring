@@ -4,7 +4,7 @@ package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 import com.alibaba.fastjson.JSON;
 
 /**
- * Public Abstract Response Class
+ * Response abstract node class, used to define common states, unknown error messages, success plans, etc
  *
  * @author zpf
  * @since 3.1.0
@@ -13,7 +13,7 @@ public abstract class AbstractResponse implements Response {
 
     private static final long serialVersionUID = 6922151145018976148L;
 
-    private static final Integer DATA_ERROR_CODE = 600558;
+    public static final Integer DATA_ERROR_CODE = 600558;
 
     private static final Integer UNKNOWN_ERROR_CODE = 500358;
 

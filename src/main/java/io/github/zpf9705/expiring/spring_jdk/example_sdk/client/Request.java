@@ -2,11 +2,11 @@ package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import io.github.zpf9705.expiring.spring_jdk.example_sdk.SdkEnum;
 import io.github.zpf9705.expiring.spring_jdk.example_sdk.SdkException;
 import io.github.zpf9705.expiring.spring_jdk.example_sdk.annotation.MapFiled;
+import io.github.zpf9705.expiring.util.ArrayUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -16,7 +16,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Define Request Nodes
+ * Define the value processing of the request node, including methods such as
+ * <p>
+ * SDK attribute {@link SdkEnum},
+ * <p>
+ * URL attribute {@link #urlJoin()}{@link #formatUrl(String)},
+ * <p>
+ * request body attribute {@link #getBody()} ,
+ * <p>
+ * parameter validation{@link #validate()},
+ * <p>
+ * response body processing scheme , etc., aiming to standardize the entire request process.
  *
  * @author zpf
  * @since 3.1.0
@@ -26,7 +36,7 @@ public interface Request<R extends Response> extends Serializable {
     /**
      * Affiliated API
      *
-     * @return api enum
+     * @return api enum for {@link SdkEnum}
      */
     SdkEnum matchApi();
 
@@ -69,7 +79,7 @@ public interface Request<R extends Response> extends Serializable {
         }
         //get all fields include self and parent private and public
         Field[] allFields = ReflectUtil.getFields(body.getClass());
-        if (ArrayUtil.isEmpty(allFields)) {
+        if (ArrayUtils.simpleIsEmpty(allFields)) {
             return BeanUtil.beanToMap(body);
         } else {
             Map<String, String> fieldMapping = Arrays.stream(allFields)

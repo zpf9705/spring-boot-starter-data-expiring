@@ -1,7 +1,8 @@
 package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 
 /**
- * Request Post Transform Interface
+ * Special conversion requirements for response strings, with the ultimate goal of JSON serialization,
+ * so if the response value is traditional XML or other, we hope to convert it into JSON data through this interface
  *
  * @author zpf
  * @since 3.1.0

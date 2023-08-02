@@ -1,5 +1,6 @@
 package io.github.zpf9705.expiring.spring_jdk.example_sdk.annotation;
 
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.spring_jdk.example_sdk.SdkProxyBeanDefinition;
 import io.github.zpf9705.expiring.spring_jdk.support.AbstractProxyBeanInjectSupport;
 import io.github.zpf9705.expiring.util.AssertUtils;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.lang.NonNull;
 
 /**
  * The proxy registration class of SDK scans the relevant interface classes carrying {@link EnableSdkProxyRegister}
@@ -30,13 +30,13 @@ import org.springframework.lang.NonNull;
 public class SdkProxyBeanDefinitionRegister extends AbstractProxyBeanInjectSupport<EnableSdkProxyRegister, Sdk> {
 
     @Override
-    @NonNull
+    @NotNull
     public Class<EnableSdkProxyRegister> getOpenClazz() {
         return EnableSdkProxyRegister.class;
     }
 
     @Override
-    @NonNull
+    @NotNull
     public Class<Sdk> getFindClazz() {
         return Sdk.class;
     }
@@ -54,7 +54,7 @@ public class SdkProxyBeanDefinitionRegister extends AbstractProxyBeanInjectSuppo
     }
 
     @Override
-    @NonNull
+    @NotNull
     public String getPackagesSign() {
         return "basePackages";
     }

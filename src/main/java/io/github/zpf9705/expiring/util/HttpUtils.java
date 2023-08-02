@@ -1,6 +1,7 @@
 package io.github.zpf9705.expiring.util;
 
 import io.github.zpf9705.expiring.core.OperationsException;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
@@ -9,7 +10,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.springframework.lang.NonNull;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 
 /**
- * Http Client Request Tool
+ * The HTTP client request tool class mainly includes four request methods: post, get, put, and del
  *
  * @author zpf
  * @since 3.1.0
@@ -30,7 +30,7 @@ public final class HttpUtils {
     }
 
     /**
-     * query request
+     * Get request
      *
      * @param url     request url
      * @param headers Header information
@@ -42,7 +42,7 @@ public final class HttpUtils {
     }
 
     /**
-     * Write Request
+     * Post Request
      *
      * @param url     request url
      * @param json    JSON parameters
@@ -54,7 +54,7 @@ public final class HttpUtils {
     }
 
     /**
-     * Modification Request
+     * Put Request
      *
      * @param url     request url
      * @param headers Header information
@@ -84,7 +84,7 @@ public final class HttpUtils {
      * @param json        JSON parameters
      * @return Return JSON data
      */
-    public static String doRequest(@NonNull HttpRequestBase requestBase,
+    public static String doRequest(@NotNull HttpRequestBase requestBase,
                                    Map<String, String> headers,
                                    String json) {
         CloseableHttpClient client = HttpClients.custom().build();
@@ -111,7 +111,7 @@ public final class HttpUtils {
      * @param json        JSON parameters
      * @param requestBase HTTP Public Request Class {@link HttpRequestBase}
      */
-    private static void setEntity(String json, @NonNull HttpRequestBase requestBase) {
+    private static void setEntity(String json, @NotNull HttpRequestBase requestBase) {
         if (StringUtils.simpleNotBlank(json) && requestBase instanceof HttpEntityEnclosingRequestBase) {
             StringEntity stringEntity = new StringEntity(json, ContentType.APPLICATION_JSON);
             HttpEntityEnclosingRequestBase base = (HttpEntityEnclosingRequestBase) requestBase;
@@ -125,7 +125,7 @@ public final class HttpUtils {
      * @param headers     Header information
      * @param requestBase HTTP Public Request Class {@link HttpRequestBase}
      */
-    private static void addHeaders(Map<String, String> headers, @NonNull HttpRequestBase requestBase) {
+    private static void addHeaders(Map<String, String> headers, @NotNull HttpRequestBase requestBase) {
         if (!CollectionUtils.simpleIsEmpty(headers)) {
             for (Map.Entry<String, String> header : headers.entrySet()) {
                 requestBase.addHeader(header.getKey(), header.getValue());

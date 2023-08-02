@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 
 /**
- * RPC based request client
+ * RPC based request client and now no support , if necessary, support will be added in the future
  *
  * @author zpf
  * @since 3.1.0

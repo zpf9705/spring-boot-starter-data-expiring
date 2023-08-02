@@ -2,6 +2,7 @@ package io.github.zpf9705.expiring.spring_jdk.example_sdk;
 
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.spring_jdk.example_sdk.client.Request;
 import io.github.zpf9705.expiring.util.ArrayUtils;
 import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.StringUtils;
@@ -11,7 +12,9 @@ import java.util.Objects;
 
 
 /**
- * API Exception Assertion
+ * SDK encapsulation specific assertion validator.
+ * <p>
+ * Mainly aimed at verifying necessary parameters before{@link Request#validate()} operation
  *
  * @author zpf
  * @since 3.1.0

@@ -3,7 +3,8 @@ package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 import java.io.Serializable;
 
 /**
- * Define response nodes
+ * The standardized interface of the request response class defines the success scheme of the response,
+ * exception information acquisition, and JSON as the final serialization scheme
  *
  * @author zpf
  * @since 3.1.0

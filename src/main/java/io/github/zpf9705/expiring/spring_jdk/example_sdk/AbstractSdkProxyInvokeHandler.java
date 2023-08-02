@@ -4,21 +4,17 @@ import io.github.zpf9705.expiring.spring_jdk.example_sdk.client.AbstractRequestP
 import io.github.zpf9705.expiring.spring_jdk.example_sdk.client.Request;
 import io.github.zpf9705.expiring.spring_jdk.support.AbstractJdkProxySupport;
 import io.github.zpf9705.expiring.util.AssertUtils;
-import org.springframework.lang.NonNull;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 
 /**
- * Public processing class for proxy object method execution
+ * The unified parameter transformation processing of jdk proxy object method calls
+ * abstracts and supports the class, and ultimately hands it over to the real processing class
  *
  * @author zpf
  * @since 3.1.0
  */
-public abstract class AbstractSdkProxyInvokeHandler<T> extends AbstractJdkProxySupport<T> implements Serializable,
-        SdkExecutor {
-
-    private static final long serialVersionUID = -6526921211944104635L;
+public abstract class AbstractSdkProxyInvokeHandler<T> extends AbstractJdkProxySupport<T> {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {
@@ -29,10 +25,16 @@ public abstract class AbstractSdkProxyInvokeHandler<T> extends AbstractJdkProxyS
         AssertUtils.Operation.isTrue((arg instanceof AbstractRequestParams),
                 "Sdk way [" + method.getName() + "]  args no qualified");
         //Execute call API
-        return execute((Request<?>) arg, method.getName(), method.getReturnType());
+        return doSdk((Request<?>) arg, method.getName(), method.getReturnType());
     }
 
-    @Override
-    @NonNull
-    public abstract Object execute(Request<?> request, String methodName, Class<?> returnType) throws SdkException;
+    /**
+     * Pass parameters to execute the API and provide the call method name (logging) and response type
+     *
+     * @param request      request parameters {@link Request}
+     * @param methodName   method Name {@link SdkEnum#name()}
+     * @param responseType final convert response class type
+     * @return Sdk return value for {@link io.github.zpf9705.expiring.spring_jdk.example_sdk.client.Response}
+     */
+    public abstract Object doSdk(Request<?> request, String methodName, Class<?> responseType) throws SdkException;
 }

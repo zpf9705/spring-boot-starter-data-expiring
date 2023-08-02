@@ -1,13 +1,13 @@
 package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 
 import cn.hutool.core.util.ReflectUtil;
-import org.springframework.lang.NonNull;
+import io.github.zpf9705.expiring.core.annotation.NotNull;
 
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 /**
- * Client Request utils to request
+ * Request the client tool class to route parameters {@link Request} for simple and efficient resolution of request.
  *
  * @author zpf
  * @since 3.1.0
@@ -29,17 +29,18 @@ public abstract class ClientUtils {
     /**
      * Unified request method, currently only supporting HTTP
      *
-     * @param request Request parameter encapsulation class
+     * @param request Request parameter encapsulation class of {@link Supplier}
      * @param host    host address
      * @param <R>     {@link Response}
      * @return {@link Response}
      */
-    public static <R extends Response> R execute(@NonNull Supplier<String> host, Request<R> request) {
+    public static <R extends Response> R execute(@NotNull Supplier<String> host, Request<R> request) {
         return execute(host.get(), request);
     }
 
     /**
-     * Obtain request client singleton
+     * Obtain and cache a single instance {@link Client} centered on non-repeating single urls, as shown in
+     * {@link AbstractClient}
      *
      * @param host    host address
      * @param request Request parameter encapsulation class

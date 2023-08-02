@@ -2,7 +2,7 @@ package io.github.zpf9705.expiring.spring_jdk.example_sdk;
 
 
 /**
- * API Common Exception
+ * Sdk uniformly throws exceptions, including status and status information, as shown in {@link SdkAssert}
  *
  * @author zpf
  * @since 3.1.0
@@ -18,6 +18,12 @@ public class SdkException extends RuntimeException {
 
     private final String msg;
 
+    /**
+     * Construction method with code and message
+     *
+     * @param code Request Status
+     * @param msg  Request Result Information
+     */
     public SdkException(Integer code, String msg) {
         super(String.format(format, code, msg));
         this.code = code;

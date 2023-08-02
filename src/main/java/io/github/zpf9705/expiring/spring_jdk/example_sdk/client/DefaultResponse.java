@@ -2,7 +2,7 @@ package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 
 
 /**
- * Default response for impl
+ * Default response impl for {@link Response}
  *
  * @author zpf
  * @since 3.1.0
