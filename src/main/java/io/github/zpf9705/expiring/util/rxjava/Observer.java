@@ -96,6 +96,7 @@ public interface Observer<T> {
      * </pre>
      *
      * @return can be {@literal null}
+     * @since 3.1.4
      */
     @CanNull
     default Executor observeExecutor() {
@@ -150,10 +151,7 @@ public interface Observer<T> {
      * @return {@link Flowable}
      */
     @NotNull
-    default Flowable<T> run(Supplier<T> run,
-                            Class<T> type,
-                            Predicate<T> check,
-                            Function<T, String> simpleMsgHandler) {
+    default Flowable<T> run(Supplier<T> run, Class<T> type, Predicate<T> check, Function<T, String> simpleMsgHandler) {
         return Flowable.create(click -> {
                     click.onNext(checkValue(run, check, simpleMsgHandler));
                     click.onComplete();
@@ -170,11 +168,9 @@ public interface Observer<T> {
                  */
 
                 //The producer currently supports a schedule, so a
-                .subscribeOn(SpectatorUtils.getSchedulers(
-                        subscribeExecutor() == null, subscribeExecutor()))
+                .subscribeOn(SpectatorUtils.getSchedulers(subscribeExecutor() == null, subscribeExecutor()))
                 //The consumer currently supports a thread scheduling option
-                .observeOn(SpectatorUtils.getSchedulers(
-                        observeExecutor() == null, observeExecutor()))
+                .observeOn(SpectatorUtils.getSchedulers(observeExecutor() == null, observeExecutor()))
                 //retry times no need assign ex
                 .retry(getRetryTimes(), this::retryWhen)
                 //change type
@@ -205,9 +201,7 @@ public interface Observer<T> {
      * @param simpleMsgHandler Exception occurrence collection function
      * @return Recycling objects
      */
-    default T checkValue(Supplier<T> run,
-                         Predicate<T> check,
-                         Function<T, String> simpleMsgHandler) {
+    default T checkValue(Supplier<T> run, Predicate<T> check, Function<T, String> simpleMsgHandler) {
         T t = null;
         String esg = null;
         try {
