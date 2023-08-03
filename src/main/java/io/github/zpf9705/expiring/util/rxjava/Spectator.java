@@ -162,6 +162,8 @@ public class Spectator<T> implements Observer<T>, Serializable {
      * @param exConsumer Abnormal consumers
      */
     public void accept(Consumer<T> consumer, Consumer<? super Throwable> exConsumer) {
+        AssertUtils.Operation.notNull(this.flowable,"Flowable no be null , " +
+                "Please call the run method before calling the accept method");
         Disposable subscribe = this.flowable.subscribe(consumer, exConsumer);
         //add Disposable Scheduled to clear
         DisposableUtils.addDisposable(subscribe);
