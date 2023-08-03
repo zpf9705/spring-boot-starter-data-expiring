@@ -63,6 +63,7 @@ public interface Observer<T> {
      * </pre>
      *
      * @return can be {@literal null}
+     * @since 3.1.4
      */
     @CanNull
     default Executor subscribeExecutor() {
