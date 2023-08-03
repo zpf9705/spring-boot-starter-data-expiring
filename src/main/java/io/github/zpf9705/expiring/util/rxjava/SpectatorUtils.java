@@ -3,167 +3,180 @@ package io.github.zpf9705.expiring.util.rxjava;
 import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.ArrayUtils;
-import io.github.zpf9705.expiring.util.SystemUtils;
 import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Scheduler;
-import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 
 /**
- * Asynchronous or synchronous blocking subscription tool，Mainly relying on him for implementation {@link Flowable}
+ * This tool class is mainly designed to encapsulate the {@link Flowable} of rxJava3 .
  * <p>
- * Functions such as exception retry, generic conversion, and thread switching for method calls
+ * Mainly for call schemes with return values, without any memory impact on subscription
+ * relationships. For those without return values, please refer to {@link Spectator}.
+ * For subscription relationship clearing and releasing, please refer to {@link DisposableUtils}
+ * <p>
+ * The main approach is to implement retry and method conversion during the process of
+ * calling the method body, relying on its producer to call our runtime to produce data
+ * and send it to consumers waiting for blocking to obtain the return value.
+ * <p>
+ * If an exception occurs during the process, it will be retried.
+ * Additionally, a retry interval is provided, which can be set according to one's
+ * own business needs. Here, only producers are planned to produce one data at a time,
+ * so a single value is taken away.
+ * <p>
+ * Generally, in project interface calls, we often use {@link #runWhileTrampoline(Supplier, Class[], int, long, Class)}
+ * to synchronize interface calls. This method effectively implements functions such as
+ * abnormal retry and retry intermittency. In fact, the method API is not commonly used,
+ * but can be combined arbitrarily through {@link #runWhile(Supplier, Class[], int, long, Executor, Executor, Class)}
  *
  * @author zpf
  * @since 3.1.2
  */
 public abstract class SpectatorUtils {
 
-    protected static final List<Disposable> dis = new CopyOnWriteArrayList<>();
-
-    protected static final ThreadFactory default_thread_factory = new ThreadFactory() {
-
-        private final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
-        private final AtomicInteger threadNumber = new AtomicInteger(0);
-
-        public Thread newThread(@NotNull Runnable r) {
-            Thread thread = defaultFactory.newThread(r);
-            thread.setName("disposable-clear-thread-" + threadNumber.getAndIncrement());
-            return thread;
-        }
-    };
-
-    public static final String core_size_sign = "disposable.clear.core.thead.size";
-
-    public static final String start_init_delay = "disposable.clear.start.init.delay";
-
-    public static final String start_period = "disposable.clear.start.period";
-
-    public static final String timeunit = "disposable.clear.start.timeunit";
-
-    public static final ScheduledExecutorService service;
-
-    static {
-
-        //ScheduledExecutor init
-        service = Executors.newScheduledThreadPool(
-                SystemUtils.getPropertyWithConvert(core_size_sign, Integer::parseInt, 1),
-                default_thread_factory);
-
-        start();
-    }
-
     private SpectatorUtils() {
     }
 
     /**
-     * {@link #runWithRetry2_0ExceptionAll(Supplier, boolean, Class)} no provider clazz use method return value type
-     *
-     * @param able       Method Run Function , must no be {@literal null}
-     * @param trampoline Whether to run on the main thread
-     * @param <T>        Specify Generics
-     * @return Specify conversion type object
-     */
-    public static <T> T runWithRetry20ExceptionAll(Supplier<T> able,
-                                                   boolean trampoline) {
-        return runWithRetry2_0ExceptionAll(able, trampoline, null);
-    }
-
-    /**
-     * {@link #runWithRetry2_0DefaultExecutor(Supplier, Class[], boolean, Class)} No need to specify exceptions
-     * All exceptions are retried
-     *
-     * @param able       Method Run Function , must no be {@literal null}
-     * @param clazz      Return value conversion clazz object ,
-     *                   The default is the type of value returned by the method
-     * @param trampoline Whether to run on the main thread
-     * @param <T>        Specify Generics
-     * @return Specify conversion type object
-     */
-    public static <T> T runWithRetry2_0ExceptionAll(Supplier<T> able,
-                                                    boolean trampoline,
-                                                    Class<T> clazz) {
-        return runWithRetry2_0DefaultExecutor(able, null, trampoline, clazz);
-    }
-
-    /**
-     * {@link #runRetry2While(Supplier, Class[], long, boolean, Executor, Class)} use default executor
-     * and no exception retry interval millisecond
-     *
-     * @param exceptionClasses Specify retry exception collection
-     * @param able             Method Run Function , must no be {@literal null}
-     * @param trampoline       Whether to run on the main thread
-     * @param clazz            Return value conversion clazz object ,
-     *                         The default is the type of value returned by the method
-     * @param <T>              Specify Generics
-     * @return Specify conversion type object
-     */
-    public static <T> T runWithRetry2_0DefaultExecutor(Supplier<T> able,
-                                                       Class<? extends Throwable>[] exceptionClasses,
-                                                       boolean trampoline,
-                                                       Class<T> clazz) {
-        return runRetry2While(able, exceptionClasses, 0, trampoline, null, clazz);
-    }
-
-    /**
-     * {@link #runWhile(Supplier, Class[], int, long, boolean, Executor, Class)} Specify two retries
+     * {@link #runWhileTrampoline(Supplier, Class[], int, long, Class)}no convert type clazz
      *
      * @param able                   Method Run Function , must no be {@literal null}
-     * @param exceptionClasses       Specify retry exception collection
+     * @param retryTimes             retry count default to {@code 1}
      * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}
+     * @param exceptionClasses       Specify retry exception collection . If null, all exceptions will be caught
      * @param <T>                    Specify Generics
-     * @param trampoline             Whether to run on the main thread
-     * @param executor               Switch Thread pool required by self thread default to {@link ForkJoinPool}
+     *                               The default is the type of value returned by the method
+     * @return Specify conversion type object
+     */
+    public static <T> T runWhileTrampolineNoConvert(Supplier<T> able,
+                                                    Class<? extends Throwable>[] exceptionClasses,
+                                                    int retryTimes,
+                                                    long exceptionRetryRestMill) {
+        return runWhileTrampoline(able, exceptionClasses, retryTimes, exceptionRetryRestMill, null);
+    }
+
+    /**
+     * This method enables the producer and consumer to execute synchronously on the
+     * same thread and is the current main thread, because this method does not set
+     * the scheduling Thread pool for consumers and producers
+     *
+     * @param able                   Method Run Function , must no be {@literal null}
+     * @param retryTimes             retry count default to {@code 1}
+     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}
+     * @param exceptionClasses       Specify retry exception collection . If null, all exceptions will be caught
+     * @param <T>                    Specify Generics
      * @param clazz                  Return value conversion clazz object ,
      *                               The default is the type of value returned by the method
      * @return Specify conversion type object
      */
-    public static <T> T runRetry2While(Supplier<T> able,
-                                       Class<? extends Throwable>[] exceptionClasses,
-                                       long exceptionRetryRestMill,
-                                       boolean trampoline,
-                                       Executor executor,
-                                       Class<T> clazz) {
-        return runWhile(able, exceptionClasses, 2, exceptionRetryRestMill, trampoline, executor, clazz);
+    public static <T> T runWhileTrampoline(Supplier<T> able,
+                                           Class<? extends Throwable>[] exceptionClasses,
+                                           int retryTimes,
+                                           long exceptionRetryRestMill,
+                                           Class<T> clazz) {
+        return runWhile(able, exceptionClasses, retryTimes, exceptionRetryRestMill,
+                null, null, clazz);
     }
 
-
     /**
-     * {@link #runWhile(Supplier, Class[], int, long, boolean, Executor, Class)} no type clazz .
+     * This method is provided to the producer to schedule the Thread pool.
+     * <p>
+     * No matter whether it is null or not, consumers follow the producer's Thread pool to consume
      * <pre>
-     *     {@code String s =
-     *     SpectatorUtils.runNoTypeClazzWhile(new Supplier<String>() {
-     *                                  public String get() {
-     *                                        System.out.println("1111");
-     *                                        return String.valueOf(1 / 0);}},
-     *                                  new Class[]{NullPointerException.class
-     *                                  ,ArithmeticException.class},2, 1000L, true, null);}
+     *     {@code
+     *     System.out.println(Thread.currentThread().getName());
+     *         Disposable disposable = Flowable.create(new FlowableOnSubscribe<String>() {
+     *                     public void subscribe(@NonNull FlowableEmitter<String> emitter) throws Throwable {
+     *                         System.out.println(Thread.currentThread().getName());
+     *                         emitter.onNext("String.valueOf(a)");
+     *                         emitter.onComplete();
+     *                     }
+     *                 }, BackpressureStrategy.DROP)
+     *                 .retry(3)
+     *                 .subscribeOn(Schedulers.from(CustomThreadPool.getExecutor()))
+     *                 .observeOn(Schedulers.trampoline())
+     *                 .subscribe(new Consumer<String>() {
+     *                     public void accept(String s) throws Throwable {
+     *                         System.out.println(Thread.currentThread().getName());
+     *                     }
+     *                 });
+     *         System.out.println("--------");}
      * </pre>
      *
      * @param able                   Method Run Function , must no be {@literal null}
      * @param retryTimes             retry count default to {@code 1}
      * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}
-     * @param exceptionClasses       Specify retry exception collection
+     * @param exceptionClasses       Specify retry exception collection. If null, all exceptions will be caught
      * @param <T>                    Specify Generics
-     * @param trampoline             Whether to run on the main thread
-     * @param executor               Switch Thread pool required by self thread default to {@link ForkJoinPool}
+     * @param subscribeExecutor      The Thread pool that is scheduled by the producer's production data.
+     *                               If it is null, the current thread is scheduled by default
+     * @param clazz                  Return value conversion clazz object ,
+     *                               The default is the type of value returned by the method
      * @return Specify conversion type object
      */
-    public static <T> T runNoTypeClazzWhile(Supplier<T> able,
-                                            Class<? extends Throwable>[] exceptionClasses,
-                                            int retryTimes,
-                                            long exceptionRetryRestMill,
-                                            boolean trampoline,
-                                            Executor executor) {
-        return runWhile(able, exceptionClasses, retryTimes, exceptionRetryRestMill, trampoline, executor, null);
+    public static <T> T runWhileProducerDispatch(Supplier<T> able,
+                                                 Class<? extends Throwable>[] exceptionClasses,
+                                                 int retryTimes,
+                                                 long exceptionRetryRestMill,
+                                                 Executor subscribeExecutor,
+                                                 Class<T> clazz) {
+        return runWhile(able, exceptionClasses, retryTimes, exceptionRetryRestMill, subscribeExecutor,
+                null, clazz);
+    }
+
+    /**
+     * This method provides the consumer with a Thread pool for scheduling.
+     * <p>
+     * If it is null, it will consume along with the producer thread.
+     * <p>
+     * Otherwise, it will use the provided Thread pool for scheduling
+     * <pre>
+     *   {@code
+     *   System.out.println(Thread.currentThread().getName());
+     *         Disposable disposable = Flowable.create(new FlowableOnSubscribe<String>() {
+     *                     public void subscribe(@NonNull FlowableEmitter<String> emitter) throws Throwable {
+     *                         System.out.println(Thread.currentThread().getName());
+     *                         emitter.onNext("String.valueOf(a)");
+     *                         emitter.onComplete();
+     *                     }
+     *                 }, BackpressureStrategy.DROP)
+     *                 .retry(3)
+     *                 .subscribeOn(Schedulers.trampoline())
+     *                 .observeOn(Schedulers.from(CustomThreadPool.getExecutor()))
+     *                 .subscribe(new Consumer<String>() {
+     *                     public void accept(String s) throws Throwable {
+     *                         System.out.println(Thread.currentThread().getName());
+     *                     }
+     *                 });
+     *         System.out.println("--------");}
+     * </pre>
+     *
+     * @param able                   Method Run Function , must no be {@literal null}
+     * @param retryTimes             retry count default to {@code 1}
+     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}
+     * @param exceptionClasses       Specify retry exception collection . If null, all exceptions will be caught
+     * @param <T>                    Specify Generics
+     * @param observeExecutor        The Thread pool that the consumer consumes and schedules. If it is null,
+     *                               the Thread pool that the producer schedules will be used by default
+     * @param clazz                  Return value conversion clazz object ,
+     *                               The default is the type of value returned by the method
+     * @return Specify conversion type object
+     */
+    public static <T> T runWhileConsumerDispatch(Supplier<T> able,
+                                                 Class<? extends Throwable>[] exceptionClasses,
+                                                 int retryTimes,
+                                                 long exceptionRetryRestMill,
+                                                 Executor observeExecutor,
+                                                 Class<T> clazz) {
+        return runWhile(able, exceptionClasses, retryTimes, exceptionRetryRestMill, null,
+                observeExecutor, clazz);
     }
 
     /**
@@ -172,12 +185,14 @@ public abstract class SpectatorUtils {
      * and ultimately returning the desired generics
      *
      * @param able                   Method Run Function , must no be {@literal null}
-     * @param retryTimes             retry count default to {@code 1}
+     * @param retryTimes             Retry count default to {@code 1}
      * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}
-     * @param exceptionClasses       Specify retry exception collection
-     * @param trampoline             Whether to run on the main thread
+     * @param exceptionClasses       Specify retry exception collection . If null, all exceptions will be caught
      * @param <T>                    Specify Generics
-     * @param executor               Switch Thread pool required by self thread default to {@link ForkJoinPool}
+     * @param subscribeExecutor      The Thread pool that is scheduled by the producer's production data.
+     *                               If it is null, the current thread is scheduled by default
+     * @param observeExecutor        The Thread pool that the consumer consumes and schedules. If it is null,
+     *                               the Thread pool that the producer schedules will be used by default
      * @param clazz                  Return value conversion clazz object ,
      *                               The default is the type of value returned by the method
      * @return Specify conversion type object
@@ -187,8 +202,8 @@ public abstract class SpectatorUtils {
                                  Class<? extends Throwable>[] exceptionClasses,
                                  int retryTimes,
                                  long exceptionRetryRestMill,
-                                 boolean trampoline,
-                                 Executor executor,
+                                 Executor subscribeExecutor,
+                                 Executor observeExecutor,
                                  Class<T> clazz) {
         //must of able and clazz
         if (able == null) {
@@ -200,9 +215,9 @@ public abstract class SpectatorUtils {
                     v.onNext(able.get());
                     v.onComplete();
                 }, BackpressureStrategy.LATEST)
-                .observeOn(getSchedulers(trampoline, executor))
-                .retry(retryTimes, (e) -> specifyAnException(exceptionClasses,
-                        exceptionRetryRestMill, e.getClass()));
+                .subscribeOn(getSchedulers(subscribeExecutor == null, subscribeExecutor))
+                .observeOn(getSchedulers(observeExecutor == null, observeExecutor))
+                .retry(retryTimes, (e) -> specifyAnException(exceptionClasses, exceptionRetryRestMill, e.getClass()));
         T t;
         if (clazz != null) {
             t = flowable.ofType(clazz).blockingSingle();
@@ -272,50 +287,5 @@ public abstract class SpectatorUtils {
             }
         }
         return scheduler;
-    }
-
-    /**
-     * Pre add subscription relationships to static favorites, to be processed when confirmed
-     *
-     * @param disposable {@link Disposable}
-     */
-    public static void addDisposable(Disposable disposable) {
-        if (disposable != null) {
-            dis.add(disposable);
-        }
-    }
-
-    /**
-     * Clear the subscription relationship, free the occupied memory, and avoid Memory leak
-     */
-    protected static void clearDisposable() {
-        if (dis.isEmpty()) {
-            return;
-        }
-        Console.info("start clean up disposable");
-        //To prevent scheduled tasks from starting and clearing subscriptions that have not been completed,
-        // add the currently completed subscriptions to a new list for execution first
-        List<Disposable> solveDisposables = new CopyOnWriteArrayList<>(dis);
-        solveDisposables.forEach(Disposable::dispose);
-        //Delete completed
-        dis.removeAll(solveDisposables);
-    }
-
-    /**
-     * Startup clear Disposable Executor
-     */
-    private static void start(){
-        //startup ScheduledExecutor
-        service.scheduleAtFixedRate(SpectatorUtils::clearDisposable,
-                SystemUtils.getPropertyWithConvert(start_init_delay, Integer::parseInt, 2),
-                SystemUtils.getPropertyWithConvert(start_period, Integer::parseInt, 2),
-                SystemUtils.getPropertyWithConvert(timeunit, TimeUnit::valueOf, TimeUnit.MINUTES));
-    }
-
-    /**
-     * loading of this class
-     */
-    public static void preload() {
-        //no op
     }
 }

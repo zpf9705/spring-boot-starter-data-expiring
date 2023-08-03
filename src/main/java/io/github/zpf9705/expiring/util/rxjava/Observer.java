@@ -36,13 +36,69 @@ public interface Observer<T> {
     BackpressureStrategy strategy();
 
     /**
-     * Select the appropriate Thread pool {@link Executor} for the run method
-     * If null, run in the main thread
+     * Select the appropriate Thread pool {@link Executor} for production scheduling of producers
+     * If null, run in the main thread  , Please understand rxjava3 before use
+     * <p>
+     * The producer's Thread pool is scheduled asynchronously. The consumer consumes on the producer's thread
+     * and prints first----
+     * <pre>
+     *     {@code System.out.println(Thread.currentThread().getName());
+     *         Disposable subscribe = Flowable.create(new FlowableOnSubscribe<String>() {
+     *                     public void subscribe(@NonNull FlowableEmitter<String> emitter) throws Throwable {
+     *                         System.out.println(Thread.currentThread().getName());
+     *                         emitter.onNext("123");
+     *                         emitter.onComplete();
+     *                     }
+     *                 }, BackpressureStrategy.DROP)
+     *                 .subscribeOn(Schedulers.from(CustomThreadPool.getExecutor()))
+     *                 .observeOn(Schedulers.trampoline())
+     *                 .subscribe(new Consumer<String>() {
+     *                     public void accept(String s) throws Throwable {
+     *                         System.out.println(Thread.currentThread().getName());
+     *                     }
+     *                 }, e -> {
+     *                     System.out.println(e.getMessage());
+     *                 });
+     *         System.out.println("----");}
+     * </pre>
      *
-     * @return no be {@literal null}
+     * @return can be {@literal null}
      */
     @CanNull
-    default Executor getExecutor() {
+    default Executor subscribeExecutor() {
+        return null;
+    }
+
+    /**
+     * Select the appropriate Thread pool {@link Executor} for Consumer consumption scheduling
+     * If null, run in Producer's scheduling thread , Please understand rxjava3 before use
+     * <p>
+     * The producer produces on the main thread, and the consumer Thread pool schedules consumption and prints----
+     * <pre>
+     *     {@code System.out.println(Thread.currentThread().getName());
+     *         Disposable subscribe = Flowable.create(new FlowableOnSubscribe<String>() {
+     *                     public void subscribe(@NonNull FlowableEmitter<String> emitter) throws Throwable {
+     *                         System.out.println(Thread.currentThread().getName());
+     *                         emitter.onNext("123");
+     *                         emitter.onComplete();
+     *                     }
+     *                 }, BackpressureStrategy.DROP)
+     *                 .subscribeOn(Schedulers.trampoline())
+     *                 .observeOn(Schedulers.from(CustomThreadPool.getExecutor()))
+     *                 .subscribe(new Consumer<String>() {
+     *                     public void accept(String s) throws Throwable {
+     *                         System.out.println(Thread.currentThread().getName());
+     *                     }
+     *                 }, e -> {
+     *                     System.out.println(e.getMessage());
+     *                 });
+     *         System.out.println("----");}
+     * </pre>
+     *
+     * @return can be {@literal null}
+     */
+    @CanNull
+    default Executor observeExecutor() {
         return null;
     }
 
@@ -102,10 +158,23 @@ public interface Observer<T> {
                     click.onNext(checkValue(run, check, simpleMsgHandler));
                     click.onComplete();
                 }, strategy())
-                //new thread to run
+
+                /*
+                 * The producer calls the thread pool. If the consumer does not have it, the running
+                 * function will be executed asynchronously. The producer thread has been consumed by
+                 * the consumer; If the producer has no Thread pool call and the consumer has one, the
+                 * running function will use the current thread, and the consumer will execute the Thread
+                 * pool asynchronous thread; If neither of them has Thread pool scheduling, the current
+                 * thread will be used; If both are available, Thread pool asynchronous operation
+                 * is adopted respectively
+                 */
+
+                //The producer currently supports a schedule, so a
+                .subscribeOn(SpectatorUtils.getSchedulers(
+                        subscribeExecutor() == null, subscribeExecutor()))
+                //The consumer currently supports a thread scheduling option
                 .observeOn(SpectatorUtils.getSchedulers(
-                        //thread executor is null prove current thread run
-                        getExecutor() == null, getExecutor()))
+                        observeExecutor() == null, observeExecutor()))
                 //retry times no need assign ex
                 .retry(getRetryTimes(), this::retryWhen)
                 //change type
