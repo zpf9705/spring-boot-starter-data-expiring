@@ -1,8 +1,6 @@
 package io.github.zpf9705.expiring.help.expiremap;
 
 import io.github.zpf9705.expiring.core.annotation.NotNull;
-import io.github.zpf9705.expiring.core.persistence.ExpirePersistenceProcessor;
-import io.github.zpf9705.expiring.core.persistence.PersistenceExec;
 import io.github.zpf9705.expiring.core.proxy.JdkProxy;
 import io.github.zpf9705.expiring.help.ExpireHelper;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;

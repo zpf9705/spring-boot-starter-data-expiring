@@ -5,7 +5,8 @@ import io.github.zpf9705.expiring.core.PersistenceException;
 import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
-import io.github.zpf9705.expiring.help.ReloadCarry;
+import io.github.zpf9705.expiring.help.Center;
+import io.github.zpf9705.expiring.help.RecordActivationCenter;
 import io.github.zpf9705.expiring.util.*;
 
 import java.io.*;
@@ -83,10 +84,12 @@ import java.util.stream.Collectors;
  *  5、At final , on the analysis of unexpired value for recovery operations
  *  Mainly the {@link ExpireSimpleGlobePersistence} implementation class according to
  *  provide the name of the factory to obtain corresponding overloading interface classes
+ * <p>
+ *  The following help center helps to implement overloading and deletion in persistent caching
  *  <ul>
- *      <li>{@link ReloadCarry}</li>
- *      <li>{@link ReloadCarry#reload(Object, Object, Long, TimeUnit)}</li>
- *      <li>{@link ReloadCarry#getReloadCarry(String)}</li>
+ *      <li>{@link io.github.zpf9705.expiring.help.ReloadCenter}</li>
+ *      <li>{@link io.github.zpf9705.expiring.help.HelpCenter}</li>
+ *      <li>{@link Center}</li>
  *  </ul>
  *
  * @author zpf
@@ -803,12 +806,10 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         //check entry
         checkEntry(entry);
         //reload
-        ReloadCarry reloadCarry = ReloadCarry.getReloadCarry(configuration.getChooseClient());
-        AssertUtils.Persistence.notNull(reloadCarry,
-                "[" + configuration.getChooseClient() + "] no found ReloadCarry");
-        reloadCarry.reload(entry.getKey(), entry.getValue(),
-                condition(currentTimeMillis, persistence.getExpire(), entry.getTimeUnit()),
-                entry.getTimeUnit());
+        RecordActivationCenter.getSingletonCenter()
+                .reload(entry.getKey(), entry.getValue(),
+                        condition(currentTimeMillis, persistence.getExpire(), entry.getTimeUnit()),
+                        entry.getTimeUnit());
     }
 
     /**

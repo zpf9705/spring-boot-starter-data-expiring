@@ -8,6 +8,8 @@ package io.github.zpf9705.expiring.core;
  */
 public class OperationsException extends ExpiringException {
 
+    private static final long serialVersionUID = 436538798242554622L;
+
     private static final String OPERATIONS_EXCEPTION_PREFIX = "Operations exception : ";
 
     public OperationsException() {

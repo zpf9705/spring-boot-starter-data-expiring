@@ -4,7 +4,8 @@ import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.core.persistence.ExpireBytesPersistenceSolver;
 import io.github.zpf9705.expiring.core.persistence.PersistenceSolver;
-import io.github.zpf9705.expiring.help.HelpCenter;
+import io.github.zpf9705.expiring.help.RecordActivationCenter;
+import io.github.zpf9705.expiring.listener.MessageExpiryCapable;
 import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.ServiceLoadUtils;
 import net.jodah.expiringmap.ExpirationListener;
@@ -25,19 +26,31 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 3.0.0
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
-public final class ExpireMapCenter implements HelpCenter<ExpireMapCenter> {
+public final class ExpireMapCenter extends RecordActivationCenter<ExpireMapCenter, byte[], byte[]> {
+
+    private static final long serialVersionUID = -7878806306402600655L;
 
     /**
      * Singleton for {@link ExpireMapCenter}
      */
     private static volatile ExpireMapCenter expireMapCenter;
 
+    /**
+     * core for cache client {@link ExpiringMap}
+     */
     private ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton;
 
+    /**
+     * do not instance for no args construct
+     */
     private ExpireMapCenter() {
     }
 
+    /**
+     * instance for {@link ExpiringMap}
+     *
+     * @param solveDifferentialGenericSingleton not be {@literal null}
+     */
     private ExpireMapCenter(ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton) {
         this.solveDifferentialGenericSingleton = solveDifferentialGenericSingleton;
     }
@@ -53,6 +66,7 @@ public final class ExpireMapCenter implements HelpCenter<ExpireMapCenter> {
             synchronized (ExpireMapCenter.class) {
                 if (expireMapCenter == null) {
                     expireMapCenter = buildSingleton(configuration);
+                    setSingletonCenter(expireMapCenter);
                 }
             }
         }
@@ -80,34 +94,13 @@ public final class ExpireMapCenter implements HelpCenter<ExpireMapCenter> {
         return this.solveDifferentialGenericSingleton;
     }
 
-    @Override
-    public ExpireMapCenter getHelpCenter() {
-        return getExpireMapCenter();
-    }
-
-    /**
-     * Reload maybe persistence or Other need to recover.
-     *
-     * @param key      must no be {@literal null}
-     * @param value    must no be {@literal null}
-     * @param duration must no be {@literal null}
-     * @param unit     must no be {@literal null}
-     */
-    public void reload(@NotNull byte[] key, @NotNull byte[] value, @NotNull Long duration,
-                       @NotNull TimeUnit unit) {
-        if (this.solveDifferentialGenericSingleton == null) {
-            return;
-        }
-        this.solveDifferentialGenericSingleton.put(key, value, duration, unit);
-        this.getContain().putIfAbsent(key, value);
-    }
-
     /**
      * Build Singleton with {@code ExpireMapClientConfiguration}.
      *
      * @param configuration must no be {@literal null}
      * @return {@link net.jodah.expiringmap.ExpiringMap}
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private static ExpireMapCenter buildSingleton(@NotNull ExpireMapClientConfiguration configuration) {
         ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton = ExpiringMap.builder()
                 .maxSize(configuration.getMaxSize())
@@ -132,24 +125,31 @@ public final class ExpireMapCenter implements HelpCenter<ExpireMapCenter> {
         return new ExpireMapCenter(solveDifferentialGenericSingleton);
     }
 
-    /**
-     * Remove expired keys of auxiliary elements.
-     * <dl>
-     *     <dt>Contain</dt>
-     *     <dt>Persistence</dt>
-     * </dl>
-     *
-     * @param key   must not be {@literal null}
-     * @param value must not be {@literal null}
-     */
-    public void cleanSupportingElements(@NotNull byte[] key, @NotNull byte[] value) {
+    @Override
+    public ExpireMapCenter getHelpCenter() {
+        return getExpireMapCenter();
+    }
+
+    @Override
+    public void reload(@NotNull byte[] key, @NotNull byte[] value, @NotNull Long duration,
+                       @NotNull TimeUnit unit) {
+        if (this.solveDifferentialGenericSingleton == null) {
+            return;
+        }
+        this.solveDifferentialGenericSingleton.put(key, value, duration, unit);
+        this.getContain().putIfAbsent(key, value);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void cleanSupportingElements(@NotNull MessageExpiryCapable capable) {
         //Remove control information
-        this.getContain().remove(key, value);
+        this.getContain().remove(capable.getByteKey(), capable.getByteValue());
         //Remove persistent cache
         PersistenceSolver<byte[], byte[]> solver = ServiceLoadUtils.load(PersistenceSolver.class)
                 .getSpecifiedServiceBySubClass(ExpireBytesPersistenceSolver.class);
         if (solver != null) {
-            solver.removePersistence(key, value);
+            solver.removePersistence(capable.getByteKey(), capable.getByteValue());
         }
     }
 }
