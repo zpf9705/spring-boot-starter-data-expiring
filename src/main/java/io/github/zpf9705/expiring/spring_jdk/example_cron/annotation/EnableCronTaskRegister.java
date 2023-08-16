@@ -18,7 +18,7 @@ public @interface EnableCronTaskRegister {
     /**
      * Carrying the path where the {@link Cron} class is located
      *
-     * @return alias for {{@link #basePackages()}} If empty, the entire path will be scanned
+     * @return alias for {{@link #basePackages()}}
      */
     @AliasFor("basePackages")
     String[] value() default {"io", "com", "cn"};
@@ -26,7 +26,7 @@ public @interface EnableCronTaskRegister {
     /**
      * His value shifts to {@link #value()}, consistent with it
      *
-     * @return alias for {{@link #value()}} If empty, the entire path will be scanned
+     * @return alias for {{@link #value()}}
      */
     @AliasFor("value")
     String[] basePackages() default {"io", "com", "cn"};
