@@ -1,15 +1,3 @@
-//
-// Copyright: Hangzhou Boku Network Co., Ltd
-// ......
-// Copyright Maintenance Date: 2022-2023
-// ......
-// Direct author: Zhang Pengfei
-// ......
-// Author email: 929160069@qq.com
-// ......
-// Please indicate the source for reprinting use
-//
-
 package io.github.zpf9705.expiring.util.rxjava;
 
 import io.github.zpf9705.expiring.core.Console;
@@ -28,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Then this tool collects the subscription relationship {@link Disposable} and releases it regularly
  *
  * @author zpf
- * @since 1.0.0 - [2023-08-03 10:15]
+ * @since 3.1.4
  */
 public abstract class DisposableUtils {
 
