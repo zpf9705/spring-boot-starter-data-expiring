@@ -3,10 +3,12 @@ package io.github.zpf9705.expiring.spring_jdk.example_cron;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.cron.CronUtil;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.annotation.Cron;
+import io.github.zpf9705.expiring.util.CollectionUtils;
 import org.reflections.Reflections;
-import org.reflections.util.ConfigurationBuilder;
+import org.reflections.scanners.Scanners;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -36,10 +38,15 @@ class CronRegister {
 
     public static Set<Method> getScanMethodsWithAnnotation(String... scanPackage) {
         // get any class finder
-        Reflections reflections = new Reflections(
-                new ConfigurationBuilder().forPackages(scanPackage)
-        );
-        //load any method
-        return reflections.getMethodsAnnotatedWith(Cron.class);
+        Set<Method> methods = new HashSet<>();
+        for (String packageName : scanPackage) {
+            //load any method
+            Set<Method> method0s = new Reflections(packageName,
+                    Scanners.MethodsAnnotated).getMethodsAnnotatedWith(Cron.class);
+            if (CollectionUtils.simpleNotEmpty(method0s)) {
+                methods.addAll(method0s);
+            }
+        }
+        return methods;
     }
 }
