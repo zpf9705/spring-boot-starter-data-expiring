@@ -6,6 +6,15 @@ import org.springframework.core.annotation.AliasFor;
 import java.lang.annotation.*;
 
 /**
+ * The annotation identifier of the timed task registration switch can specify
+ * the path for scanning {@link Cron} and set the survival mode of the calling
+ * object {@link Mode}. This annotation will only take effect when it exists on
+ * the class header of the spring container object. Please pay attention to how to use it
+ * <p>
+ * @see CronTaskRegister
+ * @see io.github.zpf9705.expiring.spring_jdk.example_cron.AbstractCornRegister
+ * @see org.springframework.context.ApplicationContext
+ * @see org.springframework.core.env.Environment
  * @author zpf
  * @since 3.1.5
  */
