@@ -1,7 +1,5 @@
 package io.github.zpf9705.expiring.spring_jdk.example_cron.annotation;
 
-import org.springframework.core.annotation.AliasFor;
-
 import java.lang.annotation.*;
 
 /**
@@ -20,19 +18,10 @@ import java.lang.annotation.*;
 public @interface Cron {
 
     /**
-     * The turning direction of the expression value of CORN {@code value}
+     * CORN expression
      *
-     * @return corn express
+     * @return corn express , must no be {@literal null}
      */
-    @AliasFor("express")
-    String value();
-
-    /**
-     * The turning direction of the expression value of CORN {@code express}
-     *
-     * @return corn express
-     */
-    @AliasFor("value")
     String express();
 
     /**
