@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.spring_jdk.example_cron;
 
-import io.github.zpf9705.expiring.core.Console;
+import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 
 import java.lang.reflect.Method;
@@ -22,9 +22,12 @@ public class CronWithInstanceCallRegister extends AbstractCornRegister {
             Object instance;
             try {
                 instance = method.getDeclaringClass().newInstance();
-            } catch (Exception e) {
-                Console.info("Instance class [{}] error : [{}]", method.getDeclaringClass(), e.getMessage());
-                instance = null;
+            } catch (InstantiationException e) {
+                throw new OperationsException("Class name {" + method.getDeclaringClass().getName() + "} not " +
+                        "found empty parameter construct cannot be instantiated");
+            } catch (IllegalAccessException e) {
+                throw new OperationsException("Class name {" + method.getDeclaringClass().getName() + "} does " +
+                        "not have permission to use. Please check the permission modifier so that we can use this class");
             }
             CronRegister.register(instance, method);
         };

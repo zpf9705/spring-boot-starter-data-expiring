@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.spring_jdk.example_cron;
 
-import io.github.zpf9705.expiring.core.Console;
+import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -32,9 +32,9 @@ public class CronWithBeanCallRegister extends AbstractCornRegister implements Ap
             Object proxy;
             try {
                 proxy = applicationContext.getBean(method.getDeclaringClass());
-            } catch (Exception e) {
-                Console.info("Load [{}] bean error : [{}]", method.getDeclaringClass(), e.getMessage());
-                proxy = null;
+            } catch (BeansException e) {
+                throw new OperationsException("No beans corresponding to {" + method.getDeclaringClass() + "} " +
+                        "were found in the spring container");
             }
             CronRegister.register(proxy, method);
         };

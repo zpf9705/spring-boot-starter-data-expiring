@@ -83,6 +83,11 @@ public abstract class AbstractCornRegister implements InitializingBean, CommandL
         CronRegister.start(args);
     }
 
+    /**
+     * This method determines how the implementation configuration uses objects to run
+     *
+     * @return {@link Consumer}, must not be {@literal null}
+     */
     @NotNull
     public abstract Consumer<Method> registersConsumer();
 }
