@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 /**
  * The annotation identifier of the timed task registration switch can specify
  * the path for scanning {@link Cron} and set the survival mode of the calling
- * object {@link Mode}. This annotation will only take effect when it exists on
+ * object {@link Type}. This annotation will only take effect when it exists on
  * the class header of the spring container object. Please pay attention to how to use it
  * <p>
  * @see CronTaskRegister
@@ -44,7 +44,7 @@ public @interface EnableCronTaskRegister {
      * The survival mode of the calling object triggered by a timed task,
      * which defaults to the proxy object of the spring container
      *
-     * @return {@link Mode}
+     * @return {@link Type}
      */
-    Mode mode() default Mode.PROXY;
+    Type type() default Type.PROXY;
 }

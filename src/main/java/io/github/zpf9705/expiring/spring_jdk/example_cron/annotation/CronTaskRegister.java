@@ -16,7 +16,7 @@ import org.springframework.core.type.AnnotationMetadata;
  * <p>
  * Trigger based on timed task switch annotation {@link EnableCronTaskRegister}, scan the package
  * path provided by it, find the corresponding method with {@link Cron} annotation, and determine
- * whether the calling object uses spring proxy or each instance invocation method through {@link Mode} type
+ * whether the calling object uses spring proxy or each instance invocation method through {@link Type} type
  *
  * @author zpf
  * @since 3.1.5
@@ -37,11 +37,11 @@ public class CronTaskRegister implements ImportSelector {
         if (ArrayUtils.simpleIsEmpty(scanPackage)) {
             scanPackage = new String[]{ReflectionUtils.findSpringApplicationPackageName()};
         }
-        Mode mode = attributes.getEnum("mode");
+        Type type = attributes.getEnum("type");
         //Load different configuration classes based on the survival method of object calls
-        if (mode == Mode.PROXY) {
+        if (type == Type.PROXY) {
             return new String[]{CronWithBeanCallRegister.class.getName()};
-        } else if (mode == Mode.INSTANCE) {
+        } else if (type == Type.INSTANCE) {
             return new String[]{CronWithInstanceCallRegister.class.getName()};
         }
         return new String[0];

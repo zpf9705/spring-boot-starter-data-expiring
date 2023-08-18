@@ -6,7 +6,7 @@ package io.github.zpf9705.expiring.spring_jdk.example_cron.annotation;
  * @author zpf
  * @since 3.1.5
  */
-public enum Mode {
+public enum Type {
 
     /**
      * Calling methods in the form of spring proxy objects uses spring singleton objects,
