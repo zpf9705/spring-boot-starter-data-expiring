@@ -3,6 +3,7 @@ package io.github.zpf9705.expiring.spring_jdk.support;
 import cn.hutool.core.util.ArrayUtil;
 import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -60,14 +61,13 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
         //Obtain the annotation value for opening
         AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(getOpenClazz().getName()));
         if (attributes == null) {
-            Console.info("Provider" + getOpenClazz().getName() + "No found this Open annotation");
+            Console.info("Analysis" + getOpenClazz().getName() + "attribute encapsulation to AnnotationAttributes failed");
             return;
         }
         //Obtain Scan Path
         String[] basePackages = attributes.getStringArray(getPackagesSign());
         if (ArrayUtil.isEmpty(basePackages)) {
-            Console.info("Provider" + getOpenClazz().getName() + "No packages path provider here");
-            return;
+            basePackages = new String[]{ReflectionUtils.findSpringApplicationPackageName()};
         }
         //Obtain Path Scan Provider
         ClassPathScanningCandidateComponentProvider classPathScan = this.getClassPathScanUseAnnotationClass();
@@ -119,11 +119,11 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
     public ClassPathScanningCandidateComponentProvider getClassPathScanUseAnnotationClass() {
         ClassPathScanningCandidateComponentProvider classPathScan =
                 new ClassPathScanningCandidateComponentProvider(false, this.environment) {
-            @Override
-            protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
-                return beanDefinition.getMetadata().isIndependent() && !beanDefinition.getMetadata().isAnnotation();
-            }
-        };
+                    @Override
+                    protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
+                        return beanDefinition.getMetadata().isIndependent() && !beanDefinition.getMetadata().isAnnotation();
+                    }
+                };
         classPathScan.setResourceLoader(this.resourceLoader);
         //scan all class type
         classPathScan.setResourcePattern("**/*.class");

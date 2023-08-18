@@ -29,7 +29,7 @@ public @interface EnableSdkProxyRegister {
      * @return alias for {{@link #basePackages()}}
      */
     @AliasFor("basePackages")
-    String[] value() default {"io", "com", "cn"};
+    String[] value() default {};
 
     /**
      * His value shifts to {@link #value()}, consistent with it
@@ -37,5 +37,5 @@ public @interface EnableSdkProxyRegister {
      * @return alias for {{@link #value()}}
      */
     @AliasFor("value")
-    String[] basePackages() default {"io", "com", "cn"};
+    String[] basePackages() default {};
 }

@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.spring_jdk.example_cron;
 
-
 import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.annotation.Cron;
@@ -10,6 +9,7 @@ import io.github.zpf9705.expiring.util.CollectionUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * @author zpf
  * @since 3.1.5
  */
-public abstract class AbstractCornRegister implements InitializingBean, ApplicationRunner, EnvironmentAware {
+public abstract class AbstractCornRegister implements InitializingBean, CommandLineRunner, EnvironmentAware {
 
     private final List<String> profiles = new ArrayList<>();
 
@@ -52,7 +52,7 @@ public abstract class AbstractCornRegister implements InitializingBean, Applicat
             Console.info("No scanned package paths found");
             return;
         }
-        Set<Method> methods = CronRegister.getScanMethodsWithAnnotation(scanPackage);
+        List<Method> methods = CronRegister.getScanMethodsWithCron(scanPackage);
         if (CollectionUtils.simpleIsEmpty(methods)) {
             Console.info("No method for annotating @Cron was found");
             return;
@@ -74,12 +74,13 @@ public abstract class AbstractCornRegister implements InitializingBean, Applicat
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(String... args) throws Exception {
         if (CollectionUtils.simpleIsEmpty(this.methods)) {
             return;
         }
         this.methods.forEach(method -> registersConsumer().accept(method));
-        CronRegister.start(true, false);
+        //now default to support
+        CronRegister.start(args);
     }
 
     @NotNull

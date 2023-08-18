@@ -4,6 +4,8 @@ import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.CronWithBeanCallRegister;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.CronWithInstanceCallRegister;
+import io.github.zpf9705.expiring.util.ArrayUtils;
+import io.github.zpf9705.expiring.util.ReflectionUtils;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
@@ -28,12 +30,15 @@ public class CronTaskRegister implements ImportSelector {
         AnnotationAttributes attributes =
                 AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(EnableCronTaskRegister.class.getName()));
         if (attributes == null) {
-            throw new OperationsException("No found named" + EnableCronTaskRegister.class.getName() + "annotation " +
-                    "open in your project");
+            throw new OperationsException("Analysis named" + EnableCronTaskRegister.class.getName() + "annotation " +
+                    "to AnnotationAttributes failed");
         }
         scanPackage = attributes.getStringArray("basePackages");
-        //get call method with proxy obj or new obj
+        if (ArrayUtils.simpleIsEmpty(scanPackage)) {
+            scanPackage = new String[]{ReflectionUtils.findSpringApplicationPackageName()};
+        }
         Mode mode = attributes.getEnum("mode");
+        //Load different configuration classes based on the survival method of object calls
         if (mode == Mode.PROXY) {
             return new String[]{CronWithBeanCallRegister.class.getName()};
         } else if (mode == Mode.INSTANCE) {
