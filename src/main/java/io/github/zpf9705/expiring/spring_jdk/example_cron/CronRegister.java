@@ -65,25 +65,26 @@ class CronRegister {
      */
     public static void start(String... args) {
         if (ArrayUtils.simpleIsEmpty(args)) {
-            CronUtil.setMatchSecond(true);
-            CronUtil.start(false);
-        }
-        int config = 0;
-        String secondMatch = "true";
-        String daemon = "false";
-        for (String arg : args) {
-            if (config == 2) {
-                break;
+            //empty args direct to matchSecond and thread daemon
+            start(true, false);
+        } else {
+            int config = 0;
+            String secondMatch = "true";
+            String daemon = "false";
+            for (String arg : args) {
+                if (config == 2) {
+                    break;
+                }
+                if (arg.contains(second_match_key)) {
+                    secondMatch = arg.split(second_match_key)[1];
+                    config++;
+                } else if (arg.contains(thread_daemon_key)) {
+                    daemon = arg.split(thread_daemon_key)[1];
+                    config++;
+                }
             }
-            if (arg.contains(second_match_key)) {
-                secondMatch = arg.split(second_match_key)[1];
-                config++;
-            } else if (arg.contains(thread_daemon_key)) {
-                daemon = arg.split(thread_daemon_key)[1];
-                config++;
-            }
+            start(Boolean.parseBoolean(secondMatch), Boolean.parseBoolean(daemon));
         }
-        start(Boolean.parseBoolean(secondMatch), Boolean.parseBoolean(daemon));
     }
 
     public static void start(boolean isMatchSecond, boolean isDaemon) {
