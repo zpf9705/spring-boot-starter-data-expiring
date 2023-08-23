@@ -1,15 +1,18 @@
 package io.github.zpf9705.expiring.spring_jdk.example_cron;
 
 import io.github.zpf9705.expiring.core.Console;
+import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.annotation.Cron;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.annotation.CronTaskRegister;
 import io.github.zpf9705.expiring.util.ArrayUtils;
 import io.github.zpf9705.expiring.util.CollectionUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
@@ -17,8 +20,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -34,15 +35,20 @@ import java.util.stream.Collectors;
  * @author zpf
  * @since 3.1.5
  */
-public abstract class AbstractCornRegister implements InitializingBean, CommandLineRunner, EnvironmentAware {
+public abstract class AbstractCornRegister implements InitializingBean, EnvironmentAware, ApplicationContextAware {
 
     private final List<String> profiles = new ArrayList<>();
 
-    private Set<Method> methods;
+    private ApplicationContext applicationContext;
 
     @Override
     public void setEnvironment(@NotNull Environment environment) {
         profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
+    }
+
+    @Override
+    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -58,7 +64,7 @@ public abstract class AbstractCornRegister implements InitializingBean, CommandL
             return;
         }
         //Filter according to the inclusion of the environment
-        this.methods = methods.stream().filter(
+        List<Method> filterMethods = methods.stream().filter(
                 m -> {
                     Cron cron = m.getAnnotation(Cron.class);
                     if (ArrayUtils.simpleNotEmpty(cron.profiles())) {
@@ -67,27 +73,63 @@ public abstract class AbstractCornRegister implements InitializingBean, CommandL
                     //no profile args direct register
                     return true;
                 }
-        ).collect(Collectors.toSet());
+        ).collect(Collectors.toList());
+        //If no methods that can be registered are found, no exceptions will be thrown but a log prompt will be given
         if (CollectionUtils.simpleIsEmpty(methods)) {
             Console.info("There is no standardized method for registering scheduled tasks");
-        }
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        if (CollectionUtils.simpleIsEmpty(this.methods)) {
             return;
         }
-        this.methods.forEach(method -> registersConsumer().accept(method));
-        //now default to support
-        CronRegister.start(args);
+        register(filterMethods);
     }
 
     /**
-     * This method determines how the implementation configuration uses objects to run
+     * Timed custom registration abstract methods for method groups, implemented separately
+     * based on the object's survival mode {@link io.github.zpf9705.expiring.spring_jdk.example_cron.annotation.Type}
      *
-     * @return {@link Consumer}, must not be {@literal null}
+     * @param filterMethods Method for registering scheduled tasks for users
+     */
+    public abstract void register(@NotNull List<Method> filterMethods);
+
+    /**
+     * Get Spring Container Context
+     *
+     * @return {@link ApplicationContext}
      */
     @NotNull
-    public abstract Consumer<Method> registersConsumer();
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    /**
+     * Obtain the startup parameters passed by the main method of the Java program
+     *
+     * @return maybe is {@literal null}
+     */
+    @CanNull
+    public String[] getMainStartupArgs() {
+        ApplicationArguments arguments;
+        try {
+            arguments = getApplicationContext().getBean(ApplicationArguments.class);
+        } catch (Exception e) {
+            return null;
+        }
+        return arguments.getSourceArgs();
+    }
+
+    /**
+     * Register a single scheduled task
+     *
+     * @param obj    calling Object
+     * @param method calling method
+     */
+    public void singleRegister(Object obj, Method method) {
+        CronRegister.register(obj, method);
+    }
+
+    /**
+     * @see CronRegister#start(String...)
+     */
+    public void start() {
+        CronRegister.start(getMainStartupArgs());
+    }
 }

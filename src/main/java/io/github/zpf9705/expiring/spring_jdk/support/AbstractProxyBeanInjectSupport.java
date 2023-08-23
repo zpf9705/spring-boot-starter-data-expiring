@@ -1,7 +1,6 @@
 package io.github.zpf9705.expiring.spring_jdk.support;
 
 import cn.hutool.core.util.ArrayUtil;
-import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -59,10 +58,14 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
     @Override
     public void registerBeanDefinitions(AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry) {
         //Obtain the annotation value for opening
-        AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(getOpenClazz().getName()));
+        AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(getOpenClazz()
+                .getName()));
+        //AssertUtils to Analysis
         if (attributes == null) {
-            Console.info("Analysis" + getOpenClazz().getName() + "attribute encapsulation to AnnotationAttributes failed");
-            return;
+            throw new SupportException(
+                    "Analysis " + getOpenClazz().getName() + " attribute encapsulation to " +
+                            "org.springframework.core.annotation.AnnotationAttributes failed"
+            );
         }
         //Obtain Scan Path
         String[] basePackages = attributes.getStringArray(getPackagesSign());

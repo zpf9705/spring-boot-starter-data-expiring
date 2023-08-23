@@ -1,9 +1,11 @@
 package io.github.zpf9705.expiring.util;
 
-import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +36,7 @@ public abstract class SerialUtils {
             oos.writeObject(object);
             oos.flush();
         } catch (Throwable e) {
-            throw new OperationsException("Failed to serialize object with ex msg" + e.getMessage());
+            throw new UtilsException("Failed to serialize object with ex msg" + e.getMessage());
         }
         return stream.toByteArray();
     }
@@ -53,7 +55,7 @@ public abstract class SerialUtils {
         try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
             return ois.readObject();
         } catch (Throwable e) {
-            throw new OperationsException("Failed to deserialize bytes with ex msg" + e.getMessage());
+            throw new UtilsException("Failed to deserialize bytes with ex msg" + e.getMessage());
         }
     }
 

@@ -1,10 +1,10 @@
 package io.github.zpf9705.expiring.spring_jdk.example_cron;
 
-import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.spring_jdk.support.SupportException;
 
 import java.lang.reflect.Method;
-import java.util.function.Consumer;
+import java.util.List;
 
 /**
  * Start the scheduled task of registration in the form of instantiation of each object,
@@ -16,20 +16,20 @@ import java.util.function.Consumer;
 public class CronWithInstanceCallRegister extends AbstractCornRegister {
 
     @Override
-    @NotNull
-    public Consumer<Method> registersConsumer() {
-        return (method) -> {
+    public void register(@NotNull List<Method> filterMethods) {
+        for (Method method : filterMethods) {
             Object instance;
             try {
                 instance = method.getDeclaringClass().newInstance();
             } catch (InstantiationException e) {
-                throw new OperationsException("Class name {" + method.getDeclaringClass().getName() + "} not " +
+                throw new SupportException("Class name {" + method.getDeclaringClass().getName() + "} not " +
                         "found empty parameter construct cannot be instantiated");
             } catch (IllegalAccessException e) {
-                throw new OperationsException("Class name {" + method.getDeclaringClass().getName() + "} does " +
+                throw new SupportException("Class name {" + method.getDeclaringClass().getName() + "} does " +
                         "not have permission to use. Please check the permission modifier so that we can use this class");
             }
-            CronRegister.register(instance, method);
-        };
+            singleRegister(instance, method);
+        }
+        start();
     }
 }

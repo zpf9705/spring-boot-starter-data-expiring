@@ -18,7 +18,7 @@ import java.lang.annotation.*;
 public @interface Cron {
 
     /**
-     * CORN expression
+     * Fill in a planned cron expression that represents the frequency of task execution
      *
      * @return corn express , must no be {@literal null}
      */

@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.util;
 
-import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
@@ -97,7 +96,7 @@ public final class HttpUtils {
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, StandardCharsets.UTF_8);
         } catch (Throwable e) {
-            throw new OperationsException(e.getMessage());
+            throw new UtilsException(e.getMessage());
         } finally {
             AbleUtils.close(response);
             AbleUtils.close(client);
@@ -151,7 +150,7 @@ public final class HttpUtils {
             }
             uri = uriBuilder.build();
         } catch (URISyntaxException e) {
-            throw new OperationsException(url + " no a valid url");
+            throw new UtilsException(url + " no a valid url");
         }
         return uri;
     }

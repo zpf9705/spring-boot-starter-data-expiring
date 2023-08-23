@@ -5,6 +5,7 @@ import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.PersistenceException;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.spring_jdk.support.SupportException;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -77,6 +78,37 @@ public abstract class AssertUtils {
         @NotNull
         private static PersistenceException newPersistenceException(@NotNull String message) {
             return new PersistenceException(message);
+        }
+    }
+
+    /**
+     * @see SupportException
+     */
+    public abstract static class Support {
+
+        public static void isTrue(boolean expression, @NotNull String message) {
+            AssertUtils.isTrue(expression, () -> newSupportException(message));
+        }
+
+        public static void notNull(@CanNull Object object, @NotNull String message) {
+            AssertUtils.notNull(object, () -> newSupportException(message));
+        }
+
+        public static void hasText(@CanNull String text, @NotNull String message) {
+            AssertUtils.hasText(text, () -> newSupportException(message));
+        }
+
+        public static void notEmpty(@CanNull Collection<?> collection, @NotNull String message) {
+            AssertUtils.notEmpty(collection, () -> newSupportException(message));
+        }
+
+        public static void notEmpty(@CanNull Object[] array, @NotNull String message) {
+            AssertUtils.notEmpty(array, () -> newSupportException(message));
+        }
+
+        @NotNull
+        private static SupportException newSupportException(@NotNull String message) {
+            return new SupportException(message);
         }
     }
 

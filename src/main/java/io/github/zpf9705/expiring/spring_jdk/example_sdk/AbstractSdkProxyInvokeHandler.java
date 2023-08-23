@@ -22,7 +22,7 @@ public abstract class AbstractSdkProxyInvokeHandler<T> extends AbstractJdkProxyS
         //This requires a single model parameter
         Object arg = args[0];
         //Determine if it is of type AbstractRequestParams
-        AssertUtils.Operation.isTrue((arg instanceof AbstractRequestParams),
+        AssertUtils.Support.isTrue((arg instanceof AbstractRequestParams),
                 "Sdk way [" + method.getName() + "]  args no qualified");
         //Execute call API
         return doSdk((Request<?>) arg, method.getName(), method.getReturnType());

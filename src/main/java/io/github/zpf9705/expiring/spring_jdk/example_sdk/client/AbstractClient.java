@@ -110,9 +110,9 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     public static <R extends Response> Client<R> getClient(Supplier<Client<R>> newClientSupplier,
                                                            Request<R> request,
                                                            String host) {
-        AssertUtils.Operation.hasText(host,
+        AssertUtils.Support.hasText(host,
                 "Api request host can not be null !");
-        AssertUtils.Operation.notNull(request,
+        AssertUtils.Support.notNull(request,
                 "Api request params can not be null !");
         setCurrentParam(request);
         String url = request.formatUrl(host);

@@ -1,9 +1,9 @@
 package io.github.zpf9705.expiring.spring_jdk.example_cron.annotation;
 
-import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.CronWithBeanCallRegister;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.CronWithInstanceCallRegister;
+import io.github.zpf9705.expiring.spring_jdk.support.SupportException;
 import io.github.zpf9705.expiring.util.ArrayUtils;
 import io.github.zpf9705.expiring.util.ReflectionUtils;
 import org.springframework.context.annotation.ImportSelector;
@@ -30,7 +30,7 @@ public class CronTaskRegister implements ImportSelector {
         AnnotationAttributes attributes =
                 AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(EnableCronTaskRegister.class.getName()));
         if (attributes == null) {
-            throw new OperationsException("Analysis named" + EnableCronTaskRegister.class.getName() + "annotation " +
+            throw new SupportException("Analysis named" + EnableCronTaskRegister.class.getName() + "annotation " +
                     "to AnnotationAttributes failed");
         }
         scanPackage = attributes.getStringArray("basePackages");

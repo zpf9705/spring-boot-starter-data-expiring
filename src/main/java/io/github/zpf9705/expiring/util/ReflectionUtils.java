@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.util;
 
-import io.github.zpf9705.expiring.core.OperationsException;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
@@ -29,11 +28,11 @@ public class ReflectionUtils {
                 .getTypesAnnotatedWith(SpringBootApplication.class);
         if (CollectionUtils.simpleIsEmpty(startupTypes)) {
             //No proof found, no startup project added
-            throw new OperationsException("No Spring startup class found");
+            throw new UtilsException("No Spring startup class found");
         } else {
             //Adding multiple startup class annotations is also not feasible and needs to be checked
             if (startupTypes.size() > 1) {
-                throw new OperationsException("Multiple Spring startup class annotations found, please check the project");
+                throw new UtilsException("Multiple Spring startup class annotations found, please check the project");
             } else {
                 //Extract the first one here as the startup package
                 startupClazz = new ArrayList<>(startupTypes).get(0);

@@ -71,8 +71,9 @@ public class SdkProxyBeanDefinitionRegister extends AbstractProxyBeanInjectSuppo
         if (StringUtils.simpleIsBlank(host)) {
             host = getEnvironment().getProperty(hostProperty);
         }
-        AssertUtils.Operation.hasText(host, "Provided by the configuration keys [" + hostProperty + "] ," +
-                "Didn't find the corresponding configuration items , Please check");
+        AssertUtils.Support.hasText(host,
+                "Provided by the configuration keys [" + hostProperty + "] , Didn't find the corresponding " +
+                        "configuration items , Please check");
         return host;
     }
 }

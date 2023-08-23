@@ -3,9 +3,12 @@ package io.github.zpf9705.expiring.spring_jdk.example_cron;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.cron.CronUtil;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.annotation.Cron;
+import io.github.zpf9705.expiring.spring_jdk.support.SupportException;
 import io.github.zpf9705.expiring.util.ArrayUtils;
 import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.ReflectionUtils;
+import io.github.zpf9705.expiring.util.UtilsException;
+import org.springframework.scheduling.support.CronExpression;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -31,6 +34,9 @@ class CronRegister {
             return;
         }
         Cron cron = method.getAnnotation(Cron.class);
+        if (!CronExpression.isValidExpression(cron.express())) {
+            throw new UtilsException("Provider " + cron.express() + "no a valid cron express");
+        }
         //Register scheduled tasks
         CronUtil.schedule(cron.express(), (Runnable) () -> ReflectUtil.invoke(targetObj, method,
                 (Object) cron.args()));
@@ -64,6 +70,10 @@ class CronRegister {
      * @param args Starting command passing in parameters
      */
     public static void start(String... args) {
+        if (CronUtil.getScheduler().isStarted()) {
+            throw new SupportException("The start switch of cn.hutool.cron.CronUtil has been turned on before," +
+                    " please check");
+        }
         if (ArrayUtils.simpleIsEmpty(args)) {
             //empty args direct to matchSecond and thread daemon
             start(true, false);
