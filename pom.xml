@@ -43,12 +43,29 @@
         <url>https://github.com/zpf9705/spring-boot-starter-data-expiring</url>
     </scm>
     <!--For the convenience of directly into spring here - parent depend on the version of the boot-->
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.6</version>
-        <relativePath/>
-    </parent>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.5.6</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <!--Need to rely on the version-->
     <properties>
         <java.version>1.8</java.version>
@@ -56,8 +73,9 @@
         <hutool-all.version>5.8.19</hutool-all.version>
         <fastJson.version>2.0.10.graal</fastJson.version>
         <druid.version>1.2.8</druid.version>
-        <reflections.version>0.10.2</reflections.version>
+        <reflections.version>0.9.11</reflections.version>
         <rxjava3.version>3.1.6</rxjava3.version>
+        <jsr305.version>3.0.2</jsr305.version>
     </properties>
     <!--Need to package dependency-->
     <dependencies>
@@ -65,10 +83,12 @@
             <groupId>net.jodah</groupId>
             <artifactId>expiringmap</artifactId>
             <version>${expiringmap.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -86,11 +106,19 @@
             <artifactId>fastjson</artifactId>
             <version>${fastJson.version}</version>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>${reflections.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.reactivex.rxjava3</groupId>

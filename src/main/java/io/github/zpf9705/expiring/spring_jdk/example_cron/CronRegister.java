@@ -5,17 +5,13 @@ import cn.hutool.cron.CronUtil;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.annotation.Cron;
 import io.github.zpf9705.expiring.spring_jdk.support.SupportException;
 import io.github.zpf9705.expiring.util.ArrayUtils;
-import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.ReflectionUtils;
 import io.github.zpf9705.expiring.util.UtilsException;
 import org.springframework.scheduling.support.CronExpression;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Timed task registrar, which relies on domestic Hutu {@link cn.hutool.Hutool} toolkit for implementation. Thank you very much
@@ -46,10 +42,7 @@ class CronRegister {
         if (ArrayUtils.simpleIsEmpty(scanPackage)) {
             return Collections.emptyList();
         }
-        return Arrays.stream(scanPackage).map(pk0 -> ReflectionUtils.findPackageMethodsWithAnnotation(pk0, Cron.class))
-                .filter(CollectionUtils::simpleNotEmpty)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+        return ReflectionUtils.findPackagesOfMethodWithAnnotation(Cron.class, scanPackage);
     }
 
     /**

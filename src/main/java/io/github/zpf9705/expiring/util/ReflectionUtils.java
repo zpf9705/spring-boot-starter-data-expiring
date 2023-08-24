@@ -1,7 +1,8 @@
 package io.github.zpf9705.expiring.util;
 
 import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
+import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ConfigurationBuilder;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -23,8 +24,9 @@ public class ReflectionUtils {
     public static String findSpringApplicationPackageName() {
         Class<?> startupClazz;
         //How to obtain the package path where the startup class is located without providing a scanning path
-        Set<Class<?>> startupTypes = new Reflections(ConfigurationBuilder.build()
-                .addScanners(Scanners.TypesAnnotated))
+        Set<Class<?>> startupTypes = new Reflections(
+                new ConfigurationBuilder()
+                        .addScanners(new TypeAnnotationsScanner()))
                 .getTypesAnnotatedWith(SpringBootApplication.class);
         if (CollectionUtils.simpleIsEmpty(startupTypes)) {
             //No proof found, no startup project added
@@ -41,13 +43,15 @@ public class ReflectionUtils {
         return startupClazz.getPackage().getName();
     }
 
-    public static List<Method> findPackageMethodsWithAnnotation(String packageName, Class<? extends Annotation> clazz) {
-        if (StringUtils.simpleIsBlank(packageName) || clazz == null) {
+    public static List<Method> findPackagesOfMethodWithAnnotation(Class<? extends Annotation> clazz,
+                                                                  String... packageName) {
+        if (ArrayUtils.simpleIsEmpty(packageName) || clazz == null) {
             return Collections.emptyList();
         }
         //Add a method scanner to scan the specified annotation method
-        Set<Method> method0s = new Reflections(packageName,
-                Scanners.MethodsAnnotated).getMethodsAnnotatedWith(clazz);
+        Set<Method> method0s = new Reflections(
+                new ConfigurationBuilder().forPackages(packageName)
+                        .addScanners(new MethodAnnotationsScanner())).getMethodsAnnotatedWith(clazz);
         if (CollectionUtils.simpleIsEmpty(method0s)) {
             return Collections.emptyList();
         }
