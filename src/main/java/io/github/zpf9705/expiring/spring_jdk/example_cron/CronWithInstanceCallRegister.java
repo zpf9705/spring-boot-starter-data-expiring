@@ -2,6 +2,7 @@ package io.github.zpf9705.expiring.spring_jdk.example_cron;
 
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.spring_jdk.support.SupportException;
+import org.springframework.context.annotation.Configuration;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  * @author zpf
  * @since 3.1.5
  */
+@Configuration(proxyBeanMethods = false)
 public class CronWithInstanceCallRegister extends AbstractCornRegister {
 
     @Override

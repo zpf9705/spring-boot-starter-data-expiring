@@ -4,6 +4,7 @@ import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.spring_jdk.support.SupportException;
 import io.github.zpf9705.expiring.util.rxjava.SpectatorUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 import java.lang.reflect.Method;
@@ -35,6 +36,7 @@ import java.util.function.Supplier;
  * @since 3.1.5
  */
 @Order
+@Configuration(proxyBeanMethods = false)
 public class CronWithBeanCallRegister extends AbstractCornRegister {
 
     private final Map<Class<?>, Object> proxyMap = new HashMap<>();
