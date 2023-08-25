@@ -30,6 +30,7 @@
             <email>929160069@qq.com</email>
             <roles>
                 <role>Project Manager</role>
+                <role>Architect</role>
             </roles>
             <timezone>+8</timezone>
         </developer>
@@ -42,34 +43,15 @@
         <url>https://github.com/zpf9705/spring-boot-starter-data-expiring</url>
     </scm>
     <!--For the convenience of directly into spring here - parent depend on the version of the boot-->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.5.6</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.version}</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.5.6</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
     <!--Need to rely on the version-->
     <properties>
         <java.version>1.8</java.version>
-        <maven.compiler.version>3.8.1</maven.compiler.version>
         <expiringmap.version>0.5.10</expiringmap.version>
         <hutool-all.version>5.8.19</hutool-all.version>
         <fastJson.version>2.0.10.graal</fastJson.version>
@@ -197,6 +179,14 @@
                             <useReleaseProfile>false</useReleaseProfile>
                             <releaseProfiles>ossrh</releaseProfiles>
                             <goals>deploy</goals>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>${java.version}</source>
+                            <target>${java.version}</target>
                         </configuration>
                     </plugin>
                     <plugin>
