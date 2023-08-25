@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.zpf9705</groupId>
     <artifactId>spring-boot-starter-data-expiring</artifactId>
-    <version>3.1.6-xpc-4</version>
+    <version>3.2.0</version>
     <!--less description-->
     <description>
         This component is based on expiring - map and encapsulation ,
@@ -28,10 +28,6 @@
             <id>spring-boot-starter-data-expiring</id>
             <name>张鹏飞</name>
             <email>929160069@qq.com</email>
-            <roles>
-                <role>Project Manager</role>
-                <role>Architect</role>
-            </roles>
             <timezone>+8</timezone>
         </developer>
     </developers>

@@ -6,10 +6,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * Persistent implementation way annotation
+ * Persistent cache processing markup annotations are targeted at methods that can generate changes to
+ * cache persistent files.
+ * <p>
+ * The parameters will define the class {@link PersistenceSolver} for cache processing,
+ * as well as some validation of related expected values (such as cache execution results)
  *
  * @author zpf
  * @since 3.0.0
@@ -45,7 +50,7 @@ public @interface PersistenceExec {
 
         NULL(null),
 
-        NOT_NULL(v -> v != null),
+        NOT_NULL(Objects::nonNull),
 
         LONG_NO_ZERO(v -> {
             if (!NOT_NULL.predicate.test(v) || !(v instanceof Long)) {
