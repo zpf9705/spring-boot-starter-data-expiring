@@ -19,7 +19,7 @@ import java.util.Set;
  * @author zpf
  * @since 3.1.5
  */
-public class ReflectionUtils {
+public abstract class ReflectionUtils {
 
     public static String findSpringApplicationPackageName() {
         Class<?> startupClazz;
