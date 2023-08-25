@@ -1,8 +1,8 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
 /**
- * Print version information and custom log information about {@code Spring-boot-starter-data-expiring},
- *  * and copy the method to {@code org.springframework.boot.SpringBootBanner}
+ * Print version information and custom log information about {@code Spring-boot-starter-data-expiring}.
+ * Copy the method to {@code org.springframework.boot.SpringBootBanner}
  *
  * @author zpf
  * @since 3.0.0
