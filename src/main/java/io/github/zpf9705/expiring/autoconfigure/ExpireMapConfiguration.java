@@ -5,7 +5,7 @@ import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapClientConfiguration;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapClientConfigurationCustomizer;
-import io.github.zpf9705.expiring.core.Console;
+import io.github.zpf9705.expiring.logger.Console;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapHelperFactory;
 import io.github.zpf9705.expiring.listener.ExpiringAsyncListener;
 import io.github.zpf9705.expiring.listener.ExpiringSyncListener;

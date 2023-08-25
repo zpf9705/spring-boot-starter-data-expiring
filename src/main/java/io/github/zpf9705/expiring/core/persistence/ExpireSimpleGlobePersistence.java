@@ -2,7 +2,7 @@ package io.github.zpf9705.expiring.core.persistence;
 
 import com.alibaba.fastjson.JSON;
 import io.github.zpf9705.expiring.core.PersistenceException;
-import io.github.zpf9705.expiring.core.Console;
+import io.github.zpf9705.expiring.logger.Console;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.help.Center;

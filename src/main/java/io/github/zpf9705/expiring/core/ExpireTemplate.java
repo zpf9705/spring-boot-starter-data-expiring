@@ -6,6 +6,7 @@ import io.github.zpf9705.expiring.core.serializer.ExpiringSerializer;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
 import io.github.zpf9705.expiring.help.ExpireHelper;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
+import io.github.zpf9705.expiring.logger.Console;
 import io.github.zpf9705.expiring.util.AssertUtils;
 
 import java.io.Serializable;

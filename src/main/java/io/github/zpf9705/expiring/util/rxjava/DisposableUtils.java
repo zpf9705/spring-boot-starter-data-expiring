@@ -1,6 +1,6 @@
 package io.github.zpf9705.expiring.util.rxjava;
 
-import io.github.zpf9705.expiring.core.Console;
+import io.github.zpf9705.expiring.logger.Console;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.SystemUtils;
 import io.reactivex.rxjava3.disposables.Disposable;

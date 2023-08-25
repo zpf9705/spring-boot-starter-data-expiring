@@ -1,8 +1,8 @@
 package io.github.zpf9705.expiring.spring_jdk.example_cron;
 
-import io.github.zpf9705.expiring.core.Console;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.logger.CronLogger;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.annotation.Cron;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.annotation.CronTaskRegister;
 import io.github.zpf9705.expiring.util.ArrayUtils;
@@ -55,12 +55,12 @@ public abstract class AbstractCornRegister implements InitializingBean, Environm
     public void afterPropertiesSet() {
         String[] scanPackage = CronTaskRegister.getScanPackage();
         if (ArrayUtils.simpleIsEmpty(scanPackage)) {
-            Console.info("No scanned package paths found");
+            CronLogger.info("No scanned package paths found");
             return;
         }
         List<Method> methods = CronRegister.getScanMethodsWithCron(scanPackage);
         if (CollectionUtils.simpleIsEmpty(methods)) {
-            Console.info("No method for annotating @Cron was found");
+            CronLogger.info("No method for annotating @Cron was found");
             return;
         }
         //Filter according to the inclusion of the environment
@@ -76,7 +76,7 @@ public abstract class AbstractCornRegister implements InitializingBean, Environm
         ).collect(Collectors.toList());
         //If no methods that can be registered are found, no exceptions will be thrown but a log prompt will be given
         if (CollectionUtils.simpleIsEmpty(methods)) {
-            Console.info("There is no standardized method for registering scheduled tasks");
+            CronLogger.info("There is no standardized method for registering scheduled tasks");
             return;
         }
         register(filterMethods);

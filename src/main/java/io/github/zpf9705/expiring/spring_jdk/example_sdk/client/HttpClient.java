@@ -3,7 +3,7 @@ package io.github.zpf9705.expiring.spring_jdk.example_sdk.client;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.http.ContentType;
 import com.alibaba.fastjson.JSON;
-import io.github.zpf9705.expiring.core.Console;
+import io.github.zpf9705.expiring.logger.SdkLogger;
 import io.github.zpf9705.expiring.spring_jdk.example_sdk.SdkException;
 import io.github.zpf9705.expiring.util.AbleUtils;
 import io.github.zpf9705.expiring.util.CollectionUtils;
@@ -78,14 +78,14 @@ public class HttpClient<R extends Response> extends AbstractClient<R> {
             response = this.JsonToConvertResponse(request, responseStr);
 
         } catch (SdkException e) {
-            Console.error("Client request fail, apiName={}, error=[{}]",
+            SdkLogger.error("Client request fail, apiName={}, error=[{}]",
                     request.matchApi().name(), ExceptionUtil.stacktraceToOneLineString(e));
             throwable = e;
             errorMsg = ExceptionUtil.stacktraceToOneLineString(throwable);
             String jsonData = JSON.toJSONString(DefaultResponse.buildResponse(e.getCode(), e.getMsg()));
             response = JSON.parseObject(jsonData, request.getResponseCls());
         } catch (Exception e) {
-            Console.error("Client request fail, apiName={}, error=[{}]",
+            SdkLogger.error("Client request fail, apiName={}, error=[{}]",
                     request.matchApi().name(), ExceptionUtil.stacktraceToOneLineString(e));
             throwable = e;
             errorMsg = ExceptionUtil.stacktraceToOneLineString(throwable);
@@ -98,11 +98,11 @@ public class HttpClient<R extends Response> extends AbstractClient<R> {
             //logger console
             if (throwable == null) {
                 String msgFormat = "Request end, name={}, request={}, response={}, time={}ms";
-                Console.info(msgFormat, request.matchApi().name(), body, responseStr,
+                SdkLogger.info(msgFormat, request.matchApi().name(), body, responseStr,
                         totalTimeMillis);
             } else {
                 String msgFormat = "Request fail, name={}, request={}, response={}, error={}, time={}ms";
-                Console.info(msgFormat, request.matchApi().name(), body, responseStr,
+                SdkLogger.info(msgFormat, request.matchApi().name(), body, responseStr,
                         errorMsg, totalTimeMillis);
             }
         }

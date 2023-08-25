@@ -1,7 +1,6 @@
-package io.github.zpf9705.expiring.core;
+package io.github.zpf9705.expiring.logger;
 
-import io.github.zpf9705.expiring.util.StringUtils;
-import org.slf4j.Logger;
+
 import org.slf4j.LoggerFactory;
 
 /**
@@ -12,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Console {
 
-    private static Logger logger = LoggerFactory.getLogger(Console.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Console.class);
 
     /**
      * Log a message at the INFO level according to the specified format
@@ -134,55 +133,60 @@ public abstract class Console {
         logger.error(msg, e);
     }
 
+    public static class DefaultConsole implements Logger {
 
-    /**
-     * Print warn or debug information
-     *
-     * @param target logger target
-     * @param ex     exception for it
-     * @param format format statement
-     * @since 2.1.2-complete
-     */
-    @Deprecated
-    public static void exceptionOfDebugOrWare(String target, Throwable ex, String format) {
-        if (StringUtils.simpleIsBlank(target) || ex == null) {
-            return;
+        public static DefaultConsole me(){
+            return new DefaultConsole();
         }
-        boolean print = false;
-        if (logger.isDebugEnabled()) {
-            debug(format, target, ex.getMessage());
-            print = true;
-        } else if (logger.isWarnEnabled()) {
-            warn(format, target, ex.getMessage());
-            print = true;
-        }
-        //final no debug or warn enable print info logger
-        if (!print) {
-            info(format, target, ex.getMessage());
-        }
-    }
 
-    @Deprecated
-    public static Class<?> getThisClassGlobeLock() {
-        return Console.class;
-    }
+        @Override
+        public void info(String format, Object... arguments) {
+            Console.info(format, arguments);
+        }
 
-    /**
-     * Access to the log print
-     *
-     * @return logger for slf4j
-     * @since 2.1.2-complete
-     */
-    @Deprecated
-    public static Logger getLogger() {
-        if (logger != null) {
-            return logger;
+        @Override
+        public void info(String msg, Throwable e) {
+            Console.info(msg, e);
         }
-        synchronized (getThisClassGlobeLock()) {
-            if (logger == null) {
-                logger = LoggerFactory.getLogger(Console.class);
-            }
+
+        @Override
+        public void warn(String format, Object... arguments) {
+            Console.warn(format, arguments);
         }
-        return logger;
+
+        @Override
+        public void warn(String msg, Throwable e) {
+            Console.warn(msg, e);
+        }
+
+        @Override
+        public void trace(String format, Object... arguments) {
+            Console.trace(format, arguments);
+        }
+
+        @Override
+        public void trace(String msg, Throwable e) {
+            Console.trace(msg, e);
+        }
+
+        @Override
+        public void debug(String format, Object... arguments) {
+            Console.debug(format, arguments);
+        }
+
+        @Override
+        public void debug(String msg, Throwable e) {
+            Console.debug(msg, e);
+        }
+
+        @Override
+        public void error(String format, Object... arguments) {
+            Console.error(format, arguments);
+        }
+
+        @Override
+        public void error(String msg, Throwable e) {
+            Console.error(msg, e);
+        }
     }
 }

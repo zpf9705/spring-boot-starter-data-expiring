@@ -2,7 +2,7 @@ package io.github.zpf9705.expiring.spring_jdk.example_cron;
 
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.cron.CronUtil;
-import io.github.zpf9705.expiring.core.Console;
+import io.github.zpf9705.expiring.logger.CronLogger;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.annotation.Cron;
 import io.github.zpf9705.expiring.spring_jdk.support.SupportException;
 import io.github.zpf9705.expiring.util.ArrayUtils;
@@ -97,6 +97,6 @@ class CronRegister {
         //Configurable to set up daemon threads
         CronUtil.start(isDaemon);
         //register info log
-        Console.info("Cron register success : success num : {}", CronUtil.getScheduler().size());
+        CronLogger.info("Cron register success : success num : {}", CronUtil.getScheduler().size());
     }
 }
