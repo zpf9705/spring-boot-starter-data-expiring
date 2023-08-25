@@ -63,16 +63,15 @@
     <!--Need to package dependency-->
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>net.jodah</groupId>
             <artifactId>expiringmap</artifactId>
             <version>${expiringmap.version}</version>
             <scope>compile</scope>
-            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
