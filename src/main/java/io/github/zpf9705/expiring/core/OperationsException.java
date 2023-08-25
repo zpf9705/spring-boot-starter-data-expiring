@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.core;
 
 /**
- * Cache operations abnormal
+ * Cache operations exception
  *
  * @author zpf
  * @since 2.1.1-complete

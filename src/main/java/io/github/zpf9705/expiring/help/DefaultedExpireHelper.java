@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Default Expire Helper for interface
- *
  * @author zpf
  * @since 3.0.0
  */
@@ -93,7 +91,7 @@ public interface DefaultedExpireHelper extends ExpireHelper {
     }
 
     @Override
-    default List<byte[]> getSimilarKeys(byte[] rawKey){
+    default List<byte[]> getSimilarKeys(byte[] rawKey) {
         return stringCommands().getSimilarKeys(rawKey);
     }
 

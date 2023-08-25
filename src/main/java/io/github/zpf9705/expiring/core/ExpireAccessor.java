@@ -6,8 +6,10 @@ import io.github.zpf9705.expiring.util.AssertUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * Cache expiration project simulation Helper accessors ,
- * its performance in the form of a Helper factory
+ * The cache factory access method operation class is extracted from the encapsulation method of {@code Spring-redis}.
+ * <p>
+ * After the template initialization is completed, obtaining the operation object of the cache
+ * factory and assigning it to the template pattern is the focus of cache operation implementation.
  *
  * @author zpf
  * @since 3.0.0

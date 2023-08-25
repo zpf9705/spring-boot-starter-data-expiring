@@ -4,11 +4,7 @@ import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerialize
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
 
 /**
- * String-focused extension of Expire Template
- * <pre>
- *     {@code
- *      ExpireTemplate<String, String> = new StringExpireTemplate()}
- * </pre>
+ * Both key and value range operations are limited to {@link String} types.
  *
  * @author zpf
  * @since 1.1.0

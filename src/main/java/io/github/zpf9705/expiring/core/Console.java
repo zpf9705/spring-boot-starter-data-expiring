@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Use date records for this item
+ * System log input class, using {@link org.slf4j.Logger}
  *
  * @author zpf
  * @since 1.1.0

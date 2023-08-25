@@ -1,23 +1,18 @@
 package io.github.zpf9705.expiring.core.persistence;
 
 import io.github.zpf9705.expiring.core.Console;
+import io.github.zpf9705.expiring.core.ExpiryInvocationTrace;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
-import io.github.zpf9705.expiring.core.proxy.JdkProxyInvocationTrace;
 import io.github.zpf9705.expiring.util.ServiceLoadUtils;
 
 /**
- * Cache operation follow-up persistent class content method of unified processing method
- * <ul>
- *     <li>{@link io.github.zpf9705.expiring.core.proxy.JdkProxyInvocationHandler}</li>
- *     <li>{@link JdkProxyInvocationTrace}</li>
- *     <li>{@link PersistenceExec}</li>
- * </ul>
+ * Proxy object operation side method execution for persistent cache files.
  *
  * @author zpf
  * @since 3.0.0
  */
 @SuppressWarnings("rawtypes")
-public class ExpirePersistenceProcessor<H> extends JdkProxyInvocationTrace<H, PersistenceExec> {
+public class ExpirePersistenceProcessor<H> extends ExpiryInvocationTrace<H, PersistenceExec> {
 
     private static final long serialVersionUID = -2346911415600201852L;
 
@@ -27,7 +22,7 @@ public class ExpirePersistenceProcessor<H> extends JdkProxyInvocationTrace<H, Pe
 
     @Override
     @NotNull
-    public Class<PersistenceExec> getProxyAnnotation() {
+    public Class<PersistenceExec> getAppointAnnotationClazz() {
         return PersistenceExec.class;
     }
 

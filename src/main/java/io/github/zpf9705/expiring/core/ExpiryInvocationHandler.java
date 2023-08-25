@@ -1,4 +1,4 @@
-package io.github.zpf9705.expiring.core.proxy;
+package io.github.zpf9705.expiring.core;
 
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
@@ -9,17 +9,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
- * The JDK agent united actuators {@link InvocationHandler#invoke(Object, Method, Object[])}
+ * The proxy class of {@code Expiry} handles abstract classes, and the unified processing of abstract
+ * parameters diverges from the center. The premise is that the implementation is based on annotation
+ * information, which is combined with actual parameters to handle such a logic.
  *
  * @author zpf
  * @since 3.0.0
  */
-public abstract class JdkProxyInvocationHandler<T, A extends Annotation> implements
-        ProxyAnnotationAware<A>,
-        InvocationHandler,
-        Serializable {
-
-    private static final long serialVersionUID = 12312323L;
+public abstract class ExpiryInvocationHandler<T, A extends Annotation> implements InvocationHandler, Serializable {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -28,21 +25,20 @@ public abstract class JdkProxyInvocationHandler<T, A extends Annotation> impleme
         //exec proxy method
         Object invokeResult = method.invoke(target, args);
         //get this proxyExec annotation
-        A proxyExec = method.getAnnotation(getProxyAnnotation());
+        A proxyExec = method.getAnnotation(getAppointAnnotationClazz());
         if (proxyExec != null) {
             invokeSubsequent(invokeResult, proxyExec, args);
         }
         return invokeResult;
     }
 
-    @Override
     @NotNull
-    public abstract Class<A> getProxyAnnotation();
+    public abstract Class<A> getAppointAnnotationClazz();
 
     /**
-     * Get target object
+     * Get Execution Object
      *
-     * @return target object
+     * @return Not be {@literal null}
      */
     @NotNull
     public abstract T getTarget();

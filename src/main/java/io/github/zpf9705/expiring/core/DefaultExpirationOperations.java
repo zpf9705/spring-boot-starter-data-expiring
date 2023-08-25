@@ -3,7 +3,7 @@ package io.github.zpf9705.expiring.core;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Default implementation of {@link ExpirationOperations}.
+ * The default value operations implementation class for {@link ExpirationOperations}
  *
  * @author zpf
  * @since 3.0.0

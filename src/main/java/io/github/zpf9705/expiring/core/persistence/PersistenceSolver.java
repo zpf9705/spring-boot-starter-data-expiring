@@ -7,7 +7,9 @@ import io.github.zpf9705.expiring.core.annotation.NotNull;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Rear cache persistent action processing interface
+ * Caching persistent file method operation interface. According to the definition of persistent methods,
+ * operations such as adding, modifying, deleting, and cleaning the current persistent file can be performed.
+ * Please refer to the implementation class for details.
  *
  * @author zpf
  * @since 3.0.0

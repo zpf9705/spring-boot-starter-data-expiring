@@ -4,8 +4,7 @@ import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.help.ExpireHelper;
 
 /**
- * Callback interface for Redis 'low level' code.
- * To be used with {@link ExpireTemplate} execution methods
+ * Callback interface for Redis 'low level' code. To be used with {@link ExpireTemplate} execution methods
  *
  * @author zpf
  * @since 3.0.0

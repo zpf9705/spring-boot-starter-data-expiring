@@ -6,7 +6,8 @@ import javax.annotation.meta.When;
 import java.lang.annotation.*;
 
 /**
- * Can be null to this annotation
+ * A null value validation annotation is annotated to represent the existence of nullable values.
+ * {@literal Applied to standards compliant with JSR350.}
  *
  * @author zpf
  * @since 3.0.0

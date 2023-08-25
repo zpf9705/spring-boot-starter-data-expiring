@@ -5,7 +5,8 @@ import javax.annotation.meta.TypeQualifierNickname;
 import java.lang.annotation.*;
 
 /**
- * Not be null to this annotation
+ * A null value validation annotation is annotated to indicate that null values are not allowed.
+ * {@literal Applied to standards compliant with JSR350.}
  *
  * @author zpf
  * @since 3.0.0
