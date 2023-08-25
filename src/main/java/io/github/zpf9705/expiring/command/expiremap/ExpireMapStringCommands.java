@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Normal operation instruction
+ * About the key {@code String} operating instructions
  *
  * @author zpf
  * @since 3.0.0

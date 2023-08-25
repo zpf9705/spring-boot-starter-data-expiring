@@ -4,11 +4,15 @@ import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.persistence.PersistenceExec;
 import io.github.zpf9705.expiring.core.persistence.PersistenceExecTypeEnum;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Key-specific commands supported by Expire.
+ * Some operation methods for key value domains include deletion, lookup, inclusion, and other key value operations.
+ * <p>
+ * Some involve cache persistence operations, which are uniformly processed in the proxy method
+ * {@link io.github.zpf9705.expiring.core.ExpiryInvocationTrace#invokeSubsequent(Object, Annotation, Object[])}
  *
  * @author zpf
  * @since 3.0.0
