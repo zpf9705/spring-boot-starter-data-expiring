@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Default implementation of {@link  ExpireMapClientConfiguration}.
+ * Default implementation for {@link ExpireMapClientConfiguration}
  *
  * @author zpf
  * @since 3.0.0

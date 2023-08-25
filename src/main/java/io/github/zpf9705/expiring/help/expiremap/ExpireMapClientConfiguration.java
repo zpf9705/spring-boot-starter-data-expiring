@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Here is about {@link net.jodah.expiringmap.ExpiringMap} client configuration interface,
- * provides the function of the configuration and obtain
- * Providing optional elements allows a more specific configuration of the client
+ * Here is about {@link net.jodah.expiringmap.ExpiringMap} client configuration interface.
+ * <p>
+ * Provides the function of the configuration and obtain.
+ * <p>
+ * Providing optional elements allows a more specific configuration of the client.
  *
  * @author zpf
  * @since 3.0.0
@@ -21,31 +23,43 @@ import java.util.concurrent.TimeUnit;
 public interface ExpireMapClientConfiguration {
 
     /**
+     * Obtain the maximum number of additions for {@link net.jodah.expiringmap.ExpiringMap}
+     *
      * @return {@literal Integer} map max save size
      */
     Integer getMaxSize();
 
     /**
+     * Obtain the default cache time for {@link net.jodah.expiringmap.ExpiringMap}
+     *
      * @return {@literal Long} default expire time
      */
     Long getDefaultExpireTime();
 
     /**
+     * Obtain the default cache time unit of {@link #getDefaultExpireTime()}
+     *
      * @return {@literal TimeUnit} default expire time unit
      */
     TimeUnit getDefaultExpireTimeUnit();
 
     /**
+     * For specific explanations, please refer to {@link ExpirationPolicy}
+     *
      * @return {@literal ExpirationPolicy} default ExpirationPolicy
      */
     ExpirationPolicy getExpirationPolicy();
 
     /**
+     * Get a collection of synchronization listeners
+     *
      * @return {@literal ExpirationPolicy} Cluster expired to monitor interface of sync
      */
     List<ExpirationListener> getSyncExpirationListeners();
 
     /**
+     * Get asynchronous listener collection
+     *
      * @return {@literal ExpirationPolicy} Cluster expired to monitor interface of async
      */
     List<ExpirationListener> getASyncExpirationListeners();
@@ -60,7 +74,7 @@ public interface ExpireMapClientConfiguration {
     }
 
     /**
-     * Create a default new {@link ExpireMapClientConfigurationBuilder} to build {@link ExpireMapClientConfiguration} to be used with
+     * Create a default new {@link ExpireMapClientConfigurationBuilder} to build {@link ExpireMapClientConfiguration}
      * <dl>
      *     <dt>max_size</dt>
      *     <dd>20*50</dd>
@@ -79,7 +93,7 @@ public interface ExpireMapClientConfiguration {
     }
 
     /**
-     * build for {@link ExpireMapClientConfiguration}
+     * Simple Construction Class of {@link ExpireMapClientConfiguration}
      */
     class ExpireMapClientConfigurationBuilder {
 

@@ -1,9 +1,9 @@
 package io.github.zpf9705.expiring.help.expiremap;
 
 import io.github.zpf9705.expiring.core.annotation.NotNull;
-import io.github.zpf9705.expiring.core.proxy.JdkProxy;
 import io.github.zpf9705.expiring.help.ExpireHelper;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
+import io.github.zpf9705.expiring.util.JdkProxyUtils;
 
 /**
  * ExpireMap Connection factory creating for {@code ExpireHelperFactory}
@@ -26,7 +26,7 @@ public class ExpireMapHelperFactory implements ExpireHelperFactory {
     }
 
     /**
-     * Setting a Expire Map connection
+     * Setting an Expire Map connection
      *
      * @param clientConfiguration {@link ExpireMapClientConfiguration}
      * @return return a {@link ExpireMapHelper}
@@ -38,6 +38,6 @@ public class ExpireMapHelperFactory implements ExpireHelperFactory {
         ExpireMapPersistenceProcessor processor = ExpireMapPersistenceProcessor.buildProcessor(
                 new ExpireMapRealHelper(() -> expireMapCenter)
         );
-        return JdkProxy.createProxy(processor);
+        return JdkProxyUtils.createProxy(processor);
     }
 }

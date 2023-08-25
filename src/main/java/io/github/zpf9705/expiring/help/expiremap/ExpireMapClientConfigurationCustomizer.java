@@ -4,8 +4,7 @@ package io.github.zpf9705.expiring.help.expiremap;
 /**
  * Callback interface that can be implemented by beans wishing to customize the
  * {@link ExpireMapClientConfiguration} via a {@link ExpireMapClientConfiguration.ExpireMapClientConfigurationBuilder
- * LettuceClientConfiguration.LettuceClientConfigurationBuilder} whilst retaining default
- * auto-configuration.
+ * LettuceClientConfiguration.LettuceClientConfigurationBuilder} whilst retaining default autoconfiguration.
  *
  * @author zpf
  * @since 3.0.0

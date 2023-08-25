@@ -4,7 +4,6 @@ import io.github.zpf9705.expiring.command.ExpireKeyCommands;
 import io.github.zpf9705.expiring.command.ExpireStringCommands;
 import io.github.zpf9705.expiring.command.expiremap.ExpireMapKeyCommands;
 import io.github.zpf9705.expiring.command.expiremap.ExpireMapStringCommands;
-import io.github.zpf9705.expiring.core.OperationsException;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.help.AbstractExpireHelper;
 import io.github.zpf9705.expiring.help.HelpCenter;
@@ -272,10 +271,5 @@ public class ExpireMapRealHelper extends AbstractExpireHelper<ExpireMapCenter> i
         if (key == null) return false;
         getHelpCenter().getExpiringMap().resetExpiration(key);
         return true;
-    }
-
-    @Override
-    public void restoreByteType(byte[] key, byte[] value) {
-        throw new OperationsException("Now no support");
     }
 }

@@ -14,14 +14,15 @@ import net.jodah.expiringmap.ExpiringMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Expire Map Configuration Center
- * According to the configuration to create a singleton {@code ExpiringMap}
- * At the same time providing a cache recovery heavy load
- * <dl>
- *     <dt>configuration</dt>
- *     <dt>Singleton</dt>
- *     <dt>reload</dt>
- * </dl>
+ * Cache center based on {@link ExpiringMap}.
+ * <p>
+ * This class will help implement the method of using {@link ExpireMapClientConfiguration}to configure .
+ * <p>
+ * Singleton objects of {@link ExpiringMap} and placing them in {@link RecordActivationCenter},
+ * as well as rewriting and caching information read through file recovery.
+ * <p>
+ * Once this class is encapsulated, it is not allowed to instantiate empty constructs.
+ * It must be done through the above method and always maintain a unique operand.
  *
  * @author zpf
  * @since 3.0.0
@@ -36,18 +37,18 @@ public final class ExpireMapCenter extends RecordActivationCenter<ExpireMapCente
     private static volatile ExpireMapCenter expireMapCenter;
 
     /**
-     * core for cache client {@link ExpiringMap}
+     * Core for cache client {@link ExpiringMap}
      */
     private ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton;
 
     /**
-     * do not instance for no args construct
+     * Do not instance for no args construct
      */
     private ExpireMapCenter() {
     }
 
     /**
-     * instance for {@link ExpiringMap}
+     * Instance for {@link ExpiringMap}
      *
      * @param solveDifferentialGenericSingleton not be {@literal null}
      */
@@ -98,7 +99,7 @@ public final class ExpireMapCenter extends RecordActivationCenter<ExpireMapCente
      * Build Singleton with {@code ExpireMapClientConfiguration}.
      *
      * @param configuration must no be {@literal null}
-     * @return {@link net.jodah.expiringmap.ExpiringMap}
+     * @return {@link ExpireMapCenter}
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static ExpireMapCenter buildSingleton(@NotNull ExpireMapClientConfiguration configuration) {

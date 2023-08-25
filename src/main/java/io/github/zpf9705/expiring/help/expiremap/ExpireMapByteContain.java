@@ -7,9 +7,13 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Serialization in the key do not match the value ，the original value of the preserved
- * Serialize {@link Arrays#equals(Object[], Object[])} method by using the value passed
- * in comparison with the cache serializable value to find the original value
+ * Serialization in the key do not match the value ，the original value of the preserved.
+ * <p>
+ * Serialize {@link Arrays#equals(Object[], Object[])} method by using the value passed.
+ * <p>
+ * In comparison with the cache serializable value to find the original value
+ * <p>
+ * During the comparison, thread safety operations were ensured, so {@link ConcurrentHashMap} was used
  *
  * @author zpf
  * @since 3.0.0

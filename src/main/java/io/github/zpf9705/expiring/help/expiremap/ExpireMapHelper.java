@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The expiry Helper broker interface map main to Convenient the
- * JDK dynamic proxy approach to the operation of the persistent object
+ * The expiry Helper broker interface map main to Convenient the JDK dynamic proxy approach to the operation
+ * of the persistent object.
  *
  * @author zpf
  * @since 3.0.0
