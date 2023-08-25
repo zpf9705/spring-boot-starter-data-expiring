@@ -8,7 +8,15 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Template pattern specification interface operation
+ * The direct method entry of the {@link ExpireTemplate} operation template, all additions, deletions,
+ * modifications, and queries related to caching, and the definition of methods should be aggregated
+ * to this interface and implemented one by one in {@link ExpireTemplate}. Moreover, from the class
+ * operation interface, such as {@link ValueOperations}, it needs to be accessible through this interface.
+ * <p>
+ * This can be seen as a summary of the overall API, which is the standardization of the template class.
+ * <p>
+ * In the future, the interface can be inherited by the addition of cache components and method extensions,
+ * Alternatively, add and implement on top of this interface.
  *
  * @author zpf
  * @since 1.1.0
@@ -83,14 +91,16 @@ public interface ExpireOperations<K, V> {
     ExpiringSerializer<V> getValueSerializer();
 
     /**
-     * get a ValueOperations
+     * The implementation of {@link ValueOperations} is all based on {@link ExpireTemplate},
+     * so a {@link ValueOperations} can be obtained through this standard interface.
      *
      * @return {@link ValueOperations}
      */
     ValueOperations<K, V> opsForValue();
 
     /**
-     * get a ExpirationOperations
+     * The implementation of {@link ExpirationOperations} is all based on {@link ExpireTemplate},
+     * so a {@link ExpirationOperations} can be obtained through this standard interface.
      *
      * @return {@link ValueOperations}
      */
