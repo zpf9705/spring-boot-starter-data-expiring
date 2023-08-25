@@ -1,7 +1,8 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
 /**
- * Start up banner for {@link net.jodah.expiringmap.ExpiringMap}
+ * Print version information and custom log information about {@link net.jodah.expiringmap.ExpiringMap},
+ * and copy the method to {@code org.springframework.boot.SpringBootBanner}
  *
  * @author zpf
  * @since 3.0.0

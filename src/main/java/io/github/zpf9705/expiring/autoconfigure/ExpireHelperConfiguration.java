@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
 /**
- * Base Expire helper configuration.
+ * On the Public Configuration Selection Class of {@code ExpireHelper}
  *
  * @author zpf
  * @since 3.0.0

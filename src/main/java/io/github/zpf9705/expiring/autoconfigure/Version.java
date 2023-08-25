@@ -12,7 +12,8 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
 /**
- * Access to source expire version information
+ * Version information acquisition tool class, currently without version comparison,
+ * only adding corresponding version display when printing component logs
  *
  * @author zpf
  * @since 2.2.2

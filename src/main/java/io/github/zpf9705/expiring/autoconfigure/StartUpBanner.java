@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
 /**
- * Using expire startup banner getting
+ * Component log printing characters and version number acquisition interface
  *
  * @author zpf
  * @since 3.0.0
@@ -9,16 +9,16 @@ package io.github.zpf9705.expiring.autoconfigure;
 public interface StartUpBanner {
 
     /**
-     * Get using banner
+     * Method for obtaining component log concatenated string
      *
-     * @return using banner 3D
+     * @return Using print banner
      */
     String getBanner();
 
     /**
-     * Get using left sign
+     * Method of obtaining component version number
      *
-     * @return using banner sign
+     * @return Using print version
      */
     String getLeftSign();
 }

@@ -55,7 +55,7 @@ import java.util.List;
 @ConditionalOnClass({ExpireOperations.class})
 @EnableConfigurationProperties({ExpireProperties.class})
 @Import(ExpireMapConfiguration.class)
-public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, EnvironmentAware, PersistenceCapable {
+public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, EnvironmentAware {
 
     private final ExpireProperties expireProperties;
 
@@ -159,7 +159,6 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
     }
 
     @Bean("auto::persistenceRegain")
-    @Override
     @ConditionalOnProperty(prefix = "spring.data.expiry", name = "open-persistence", havingValue = "true")
     @ConditionalOnBean(ExpireTemplate.class)
     public String persistenceRegain(@Value("${spring.data.expiry.persistence-path:default}") String path) {

@@ -31,34 +31,36 @@ import java.util.*;
 import java.util.function.Predicate;
 
 /**
- * Expire connection configuration using expireMap
- * {@link net.jodah.expiringmap.ExpiringMap}
- * ------ english introduce -------
- * Max Size: the maximum length of the map, add the 1001 th entry, can lead to the first expired
+ * One of the optional caches for this component {@link net.jodah.expiringmap.ExpiringMap}
+ * <p>
+ * The following is an explanation of important parameters :
+ * {@link ExpireProperties#getExpiringMap()}
+ * <p>
+ * {@code Max Size } : the maximum length of the map, add the 1001 th entry, can lead to the first expired
  * immediately (even if not to expiration time).
- * Expiration: expiration time and expired unit, set the expiration time, is permanent.
+ * <p>
+ * {@code Expiration }: expiration time and expired unit, set the expiration time, is permanent.
  * The use of expiration Policy: expiration policies.
- * CREATED: when each update element, the countdown reset date.
- * ACCESSED: in every visit elements, the countdown reset date.
- * Variable Expiration: allows you to update the Expiration time value, if not set variable Expiration.
+ * <p>
+ * {@code CREATED}: when each update element, the countdown reset date.
+ * <p>
+ * {@code ACCESSED }: in every visit elements, the countdown reset date.
+ * <p>
+ * {@code Variable Expiration }: allows you to update the Expiration time value, if not set variable Expiration.
  * Are not allowed to change the expiration time, once the executive change the expiration time
  * will throw an Unsupported Operation Exception.
- * Expiration Listener: synchronous expired reminders
- * Async Expiration Listener: asynchronous expired reminders
- * Entry Loader: lazy loading, if the key does not exist when calling the get method to create
+ * <p>
+ * {@code Expiration Listener }: Synchronous listener , Need to implement {@link ExpirationListener}
+ * and annotate {@link ExpiringSyncListener} to achieve synchronous expiration notification
+ * <p>
+ * {@code Async Expiration Listener } : Asynchronous listener , Need to implement {@link ExpirationListener}
+ * and annotate {@link ExpiringAsyncListener} to achieve synchronous expiration notification
+ * <p>
+ * {@code Entry Loader } : lazy loading, if the key does not exist when calling the get method to create
  * the default value
- * ----------------------
- * ------ 中文 解析 -------
- * maxSize:map的最大长度,添加第1001个entry时,会导致第1个马上过期(即使没到过期时间)
- * expiration:过期时间和过期单位,设置过期时间,则永久有效.
- * expirationPolicy:过期策略的使用
- * CREATED：  在每次更新元素时，过期倒计时清零
- * ACCESSED： 在每次访问元素时，过期倒计时清零
- * variableExpiration:允许更新过期时间值,如果不设置variableExpiration
- * 不允许更改过期时间,一旦执行更改过期时间的操作则会抛出UnsupportedOperationException异常
- * expirationListener:同步过期提醒
- * asyncExpirationListener:异步过期提醒
- * entryLoader:懒加载,调用get方法时若key不存在创建默认value
+ * <p>
+ * Provide a configuration for you to load relevant build configurations related to {@link ExpiringMap},
+ * and select this cache configuration to load and use in the main assembly class by default
  *
  * @author zpf
  * @since 3.0.0

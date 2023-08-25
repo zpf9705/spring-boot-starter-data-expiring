@@ -1,6 +1,7 @@
 package io.github.zpf9705.expiring.autoconfigure;
 
 import io.github.zpf9705.expiring.core.persistence.Configuration;
+import io.github.zpf9705.expiring.core.persistence.ExpireByteGlobePersistence;
 import io.github.zpf9705.expiring.core.persistence.PersistenceRenewFactory;
 import io.github.zpf9705.expiring.util.SystemUtils;
 import net.jodah.expiringmap.ExpirationPolicy;
@@ -31,7 +32,7 @@ public class ExpireProperties {
     /**
      * Persistence Renew factory class
      */
-    private Class<? extends PersistenceRenewFactory> persistenceFactoryClass;
+    private Class<? extends PersistenceRenewFactory> persistenceFactoryClass = ExpireByteGlobePersistence.class;
 
     /**
      * Attention : If you offer the persistent path ,

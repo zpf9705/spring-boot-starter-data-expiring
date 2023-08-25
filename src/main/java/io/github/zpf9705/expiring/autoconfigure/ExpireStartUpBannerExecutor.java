@@ -8,24 +8,24 @@ import org.springframework.core.env.Environment;
 import java.io.PrintStream;
 
 /**
- * Logo printing practitioner
+ * Default Banner Executor which writes the special banner.
  *
  * @author zpf
  * @since 2.2.2
  */
-public abstract class ExpireStartUpBannerExecutor {
+class ExpireStartUpBannerExecutor {
 
     private static final int STRAP_LINE_SIZE = 42;
 
     /**
      * Print the banner to the specified print stream.
      *
-     * @param environment spring environment
-     * @param banner      startup banner for using
-     * @param sourceClass using source class
-     * @param printStream print type
+     * @param environment Spring environment
+     * @param banner      Startup banner for using
+     * @param sourceClass Using source class
+     * @param printStream Print type
      */
-    public static void printBanner(@SuppressWarnings("unused") Environment environment,
+    public static void printBanner(Environment environment,
                                    StartUpBanner banner, Class<?> sourceClass,
                                    PrintStream printStream) {
         printStream.println(banner.getBanner());
