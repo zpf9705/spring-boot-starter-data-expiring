@@ -1,4 +1,4 @@
-package io.github.zpf9705.expiring.core.proxy;
+package io.github.zpf9705.expiring.core;
 
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.AssertUtils;
@@ -6,12 +6,14 @@ import io.github.zpf9705.expiring.util.AssertUtils;
 import java.lang.annotation.Annotation;
 
 /**
- * Interfaces for Jdk Proxy Invocation Trace
+ * The Expiry proxy method executes the real object acquisition processing class,
+ * and when the proxy object is called, the real parameters will be transmitted through
+ * the class {@link ExpiryInvocationHandler} for real processing here.
  *
  * @author zpf
  * @since 3.0.0
  */
-public class JdkProxyInvocationTrace<T, A extends Annotation> extends JdkProxyInvocationHandler<T, A> {
+public class ExpiryInvocationTrace<T, A extends Annotation> extends ExpiryInvocationHandler<T, A> {
 
     private static final long serialVersionUID = 1220499099081639297L;
 
@@ -19,14 +21,14 @@ public class JdkProxyInvocationTrace<T, A extends Annotation> extends JdkProxyIn
 
     private final Class<A> annotationClass;
 
-    public JdkProxyInvocationTrace(T target, Class<A> annotationClass) {
+    public ExpiryInvocationTrace(T target, Class<A> annotationClass) {
         this.target = target;
         this.annotationClass = annotationClass;
     }
 
     @Override
     @NotNull
-    public Class<A> getProxyAnnotation() {
+    public Class<A> getAppointAnnotationClazz() {
         return this.annotationClass;
     }
 
