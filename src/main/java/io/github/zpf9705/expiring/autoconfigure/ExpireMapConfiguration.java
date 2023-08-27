@@ -5,16 +5,15 @@ import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapClientConfiguration;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapClientConfigurationCustomizer;
-import io.github.zpf9705.expiring.logger.Console;
 import io.github.zpf9705.expiring.help.expiremap.ExpireMapHelperFactory;
 import io.github.zpf9705.expiring.listener.ExpiringAsyncListener;
 import io.github.zpf9705.expiring.listener.ExpiringSyncListener;
+import io.github.zpf9705.expiring.logger.Console;
 import io.github.zpf9705.expiring.util.ArrayUtils;
 import io.github.zpf9705.expiring.util.CollectionUtils;
+import io.github.zpf9705.expiring.util.ScanUtils;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
-import org.reflections.Reflections;
-import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -178,12 +177,8 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
             return Collections.emptyMap();
         }
         //reflection find packages
-        Reflections reflections = new Reflections(
-                new ConfigurationBuilder().forPackages(listeningPackages)
-        );
-        //reflection find ExpiringLoadListener impl
-        Set<Class<? extends ExpirationListener>> subTypesOf =
-                reflections.getSubTypesOf(ExpirationListener.class);
+        Set<Class<ExpirationListener>> subTypesOf =
+                ScanUtils.getSubTypesOf(ExpirationListener.class, listeningPackages);
         if (CollectionUtils.simpleIsEmpty(subTypesOf)) {
             Console.info(
                     "No provider implementation ExpiringLoadListener class ," +

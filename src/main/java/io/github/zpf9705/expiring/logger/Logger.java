@@ -123,7 +123,7 @@ public interface Logger {
             logger = Console.DefaultConsole.me();
         } else {
             try {
-                return clazz.newInstance();
+                logger = clazz.newInstance();
             } catch (Exception e) {
                 throw new UtilsException("Provider " + clazz.getName() + " Empty construct instantiation error : " +
                         e.getMessage());

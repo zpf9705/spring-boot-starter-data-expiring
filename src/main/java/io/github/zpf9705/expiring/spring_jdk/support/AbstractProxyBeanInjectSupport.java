@@ -2,7 +2,7 @@ package io.github.zpf9705.expiring.spring_jdk.support;
 
 import cn.hutool.core.util.ArrayUtil;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
-import io.github.zpf9705.expiring.util.ReflectionUtils;
+import io.github.zpf9705.expiring.util.ScanUtils;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -70,7 +70,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
         //Obtain Scan Path
         String[] basePackages = attributes.getStringArray(getPackagesSign());
         if (ArrayUtil.isEmpty(basePackages)) {
-            basePackages = new String[]{ReflectionUtils.findSpringApplicationPackageName()};
+            basePackages = ScanUtils.findSpringApplicationPackageName();
         }
         //Obtain Path Scan Provider
         ClassPathScanningCandidateComponentProvider classPathScan = this.getClassPathScanUseAnnotationClass();

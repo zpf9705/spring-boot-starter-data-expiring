@@ -5,7 +5,8 @@ import io.github.zpf9705.expiring.spring_jdk.example_cron.CronWithBeanCallRegist
 import io.github.zpf9705.expiring.spring_jdk.example_cron.CronWithInstanceCallRegister;
 import io.github.zpf9705.expiring.spring_jdk.support.SupportException;
 import io.github.zpf9705.expiring.util.ArrayUtils;
-import io.github.zpf9705.expiring.util.ReflectionUtils;
+import io.github.zpf9705.expiring.util.ScanUtils;
+import org.springframework.context.annotation.DeferredImportSelector;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
@@ -21,7 +22,7 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author zpf
  * @since 3.1.5
  */
-public class CronTaskRegister implements ImportSelector {
+public class CronTaskRegister implements DeferredImportSelector {
 
     @Override
     @NotNull
@@ -35,7 +36,7 @@ public class CronTaskRegister implements ImportSelector {
         }
         scanPackage = attributes.getStringArray("basePackages");
         if (ArrayUtils.simpleIsEmpty(scanPackage)) {
-            scanPackage = new String[]{ReflectionUtils.findSpringApplicationPackageName()};
+            scanPackage = ScanUtils.findSpringApplicationPackageName();
         }
         Type type = attributes.getEnum("type");
         //Load different configuration classes based on the survival method of object calls

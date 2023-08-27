@@ -34,7 +34,6 @@ import java.util.function.Supplier;
  * @author zpf
  * @since 3.1.5
  */
-@Order
 public class CronWithBeanCallRegister extends AbstractCornRegister {
 
     private final Map<Class<?>, Object> proxyMap = new HashMap<>();

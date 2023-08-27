@@ -9,7 +9,7 @@ package io.github.zpf9705.expiring.logger;
  */
 public abstract class CronLogger {
 
-    private static Logger logger;
+    private static Logger logger = Console.DefaultConsole.me();
 
     public static void loadClass(Class<? extends Logger> clazz) {
         logger = Logger.load(clazz);

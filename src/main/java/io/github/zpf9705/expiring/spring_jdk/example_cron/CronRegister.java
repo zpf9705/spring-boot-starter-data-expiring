@@ -6,11 +6,12 @@ import io.github.zpf9705.expiring.logger.CronLogger;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.annotation.Cron;
 import io.github.zpf9705.expiring.spring_jdk.support.SupportException;
 import io.github.zpf9705.expiring.util.ArrayUtils;
-import io.github.zpf9705.expiring.util.ReflectionUtils;
+import io.github.zpf9705.expiring.util.ScanUtils;
 import io.github.zpf9705.expiring.util.UtilsException;
 import org.springframework.scheduling.support.CronExpression;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,7 +44,7 @@ class CronRegister {
         if (ArrayUtils.simpleIsEmpty(scanPackage)) {
             return Collections.emptyList();
         }
-        return ReflectionUtils.findPackagesOfMethodWithAnnotation(Cron.class, scanPackage);
+        return new ArrayList<>(ScanUtils.getMethodsAnnotatedWith(Cron.class, scanPackage));
     }
 
     /**
