@@ -6,11 +6,14 @@ import org.springframework.core.annotation.AliasFor;
 import java.lang.annotation.*;
 
 /**
- * The annotation identifier of the timed task registration switch can specify
- * the path for scanning {@link Cron} and set the survival mode of the calling
- * object {@link Type}. This annotation will only take effect when it exists on
- * the class header of the spring container object. Please pay attention to how to use it
+ * The annotation identifier of the timed task registration switch can specify the path for scanning {@link Cron}
+ * and set the survival mode of the calling object {@link Type}.
  * <p>
+ * This annotation will only take effect when it exists on the class header of the spring container object.
+ * <p>
+ * Please pay attention to how to use it
+ * <p>
+ *
  * @see CronTaskRegister
  * @see io.github.zpf9705.expiring.spring_jdk.example_cron.AbstractCornRegister
  * @see org.springframework.context.ApplicationContext
@@ -26,6 +29,8 @@ public @interface EnableCronTaskRegister {
 
     /**
      * Carrying the path where the {@link Cron} class is located
+     * <p>
+     * If it is null, the default is to use springboot to start the package path where the main class is located
      *
      * @return alias for {{@link #basePackages()}}
      */
@@ -34,6 +39,8 @@ public @interface EnableCronTaskRegister {
 
     /**
      * His value shifts to {@link #value()}, consistent with it
+     * <p>
+     * If it is null, the default is to use springboot to start the package path where the main class is located
      *
      * @return alias for {{@link #value()}}
      */

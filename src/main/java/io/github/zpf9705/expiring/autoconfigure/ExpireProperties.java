@@ -6,6 +6,7 @@ import io.github.zpf9705.expiring.core.persistence.PersistenceRenewFactory;
 import io.github.zpf9705.expiring.logger.CronLogger;
 import io.github.zpf9705.expiring.logger.Logger;
 import io.github.zpf9705.expiring.logger.SdkLogger;
+import io.github.zpf9705.expiring.util.ScanUtils;
 import io.github.zpf9705.expiring.util.SystemUtils;
 import net.jodah.expiringmap.ExpirationPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -183,8 +184,10 @@ public class ExpireProperties {
 
         /**
          * Set a {@code listening packages} for map
+         * <p>
+         * If it is null, the default is to use springboot to start the package path where the main class is located
          */
-        private String[] listeningPackages = {"com", "io", "cn", "org", "top"};
+        private String[] listeningPackages = ScanUtils.findSpringApplicationPackageName();
 
         public Integer getMaxSize() {
             return maxSize;
