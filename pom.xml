@@ -51,7 +51,6 @@
         <expiringmap.version>0.5.10</expiringmap.version>
         <hutool-all.version>5.8.19</hutool-all.version>
         <fastJson.version>2.0.10.graal</fastJson.version>
-        <druid.version>1.2.8</druid.version>
         <rxjava3.version>3.1.6</rxjava3.version>
         <jsr305.version>3.0.2</jsr305.version>
     </properties>
