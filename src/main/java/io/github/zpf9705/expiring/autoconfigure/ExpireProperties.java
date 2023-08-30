@@ -214,7 +214,7 @@ public class ExpireProperties {
         }
     }
 
-    private static class Extend {
+    public static class Extend {
 
         /**
          * Provide a custom input logger for the SDK encapsulation component provided for this project

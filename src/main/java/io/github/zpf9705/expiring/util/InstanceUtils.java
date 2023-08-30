@@ -6,7 +6,7 @@ import io.github.zpf9705.expiring.core.annotation.NotNull;
 import java.lang.reflect.Constructor;
 
 /**
- * Object power tools
+ * The simple construction of classes based on class objects is pear blossom
  *
  * @author zpf
  * @since 3.0.0

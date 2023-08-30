@@ -2,6 +2,7 @@ package io.github.zpf9705.expiring.util;
 
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.logger.Console;
+import org.springframework.boot.SpringApplication;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,10 +33,25 @@ public abstract class ScanUtils {
 
     private static String[] defaultPackage;
 
+    /**
+     * Take the package path information where the springboot main class is located.
+     *
+     * @return According to {@code  org.springframework.boot.SpringApplication#primarySources},
+     * there can be multiple main class paths and must not be {@literal  null}.
+     */
     public static String[] findSpringApplicationPackageName() {
         return defaultPackage;
     }
 
+    /**
+     * Obtain the spring boot startup main class information in
+     * {@link io.github.zpf9705.expiring.spring_jdk.support.SourceEnvironmentPostProcessor}.
+     * Before initializing the spring boot container, please refer to
+     * {@link io.github.zpf9705.expiring.spring_jdk.support.SourceEnvironmentPostProcessor} and learn about
+     * {@link org.springframework.boot.env.EnvironmentPostProcessor}
+     *
+     * @param source {@link SpringApplication#getAllSources()}
+     */
     public static void applicationSource(@NotNull Set<Object> source) {
         if (source.isEmpty()) {
             throw new UtilsException("No detection of the existence of the startup main class");
@@ -49,8 +65,16 @@ public abstract class ScanUtils {
         }).filter(Objects::nonNull).toArray(String[]::new);
     }
 
+    /**
+     * Take the subclasses of the specified class, including inheritance and implementation
+     *
+     * @param clazz        The specified parent class object , must not be {@literal null}.
+     * @param packageNames Scan package path , must not be {@literal null}.
+     * @param <T>          Parent class generics
+     * @return Set of subclass class object
+     */
     public static <T> Set<Class<T>> getSubTypesOf(Class<T> clazz, String... packageNames) {
-        Objects.requireNonNull(clazz, "clazz no be null");
+        Objects.requireNonNull(clazz, "parent clazz no be null");
         Objects.requireNonNull(packageNames, "scan packageNames no be null");
         Set<Class<T>> finder = new HashSet<>();
         for (String packageName : packageNames) {
@@ -78,6 +102,14 @@ public abstract class ScanUtils {
         return finder;
     }
 
+    /**
+     * Gets the class object of the class annotated with the specified annotation.
+     *
+     * @param clazz        Class object destined for annotation , must not be {@literal null}.
+     * @param packageNames Scan package path , must not be {@literal null}.
+     * @param <T>          Annotate the generic of the specified annotation class
+     * @return Set of wearing class objects with specified annotations
+     */
     public static <T> Set<Class<T>> getTypesAnnotatedWith(Class<? extends Annotation> clazz,
                                                           String... packageNames) {
         Objects.requireNonNull(clazz, "clazz no be null");
@@ -95,6 +127,14 @@ public abstract class ScanUtils {
         return finder;
     }
 
+    /**
+     * Method for Obtaining Annotations Designated by Annotations.
+     *
+     * @param clazz        Class object destined for annotation , must not be {@literal null}.
+     * @param packageNames Scan package path , must not be {@literal null}.
+     * @param <T>          Annotate the generic of the specified annotation class
+     * @return Set of method of specifying annotations
+     */
     public static <T> Set<Method> getMethodsAnnotatedWith(Class<? extends Annotation> clazz,
                                                           String... packageNames) {
         Objects.requireNonNull(clazz, "clazz no be null");
@@ -106,20 +146,44 @@ public abstract class ScanUtils {
                 //First obtain the class object,
                 // and then obtain the corresponding annotation method from the class object
                 Set<Method> mes = scan.stream().map(cla -> {
-                            Method[] methods = cla.getMethods();
-                            if (ArrayUtils.simpleIsEmpty(methods)) {
-                                return null;
-                            }
-                            return Arrays.stream(methods)
-                                    .filter(me -> me.getAnnotation(clazz) != null).collect(Collectors.toSet());
-                        }).filter(Objects::nonNull).flatMap(Collection::stream)
-                        .collect(Collectors.toSet());
+                    Method[] methods = cla.getMethods();
+                    if (ArrayUtils.simpleIsEmpty(methods)) {
+                        return null;
+                    }
+                    return Arrays.stream(methods)
+                            //Filter methods that contain specified annotations
+                            .filter(me -> me.getAnnotation(clazz) != null).collect(Collectors.toSet());
+                }).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toSet());
                 finder.addAll(mes);
             }
         }
         return finder;
     }
 
+    /**
+     * Scan the Java classes of objects based on the file type and specified path.
+     * <p>
+     * There are two scanning methods, {@code file} and {@code jar}, respectively.
+     * The {@code jar} method solves the problem of not being able to find corresponding classes
+     * after typing jar packages in certain aspects.
+     * <p>
+     * It is only a simple way to obtain class objects, without initializing classes or launching static method modules.
+     * However, it is necessary to ensure that the scanned classes can obtain class objects, otherwise exception
+     * information will be thrown.
+     * <p>
+     * Therefore, before using it, it is still necessary to pay attention to the package structure.
+     * <p>
+     * It is recommended to have a detailed package path to avoid loading a large number of classes,
+     * which may lead to longer loading time.
+     * <p>
+     * It can also be combined with filters {@link Predicate}, Filter the loaded classes in a timely manner to
+     * obtain the most suitable class objects.
+     *
+     * @param packageName Specify package path
+     * @param filter      Class object filtering
+     * @param <T>         Class Object Generics
+     * @return Filter non duplicate set sets
+     */
     @SuppressWarnings("all")
     public static <T> Set<Class<T>> scan(String packageName, Predicate<Class<T>> filter) {
         // The set of the first class class
@@ -186,7 +250,8 @@ public abstract class ScanUtils {
                                         try {
                                             // Add to classes, but pass filter testing
                                             // Add directly without a filter to enter
-                                            Class<T> clazz = (Class<T>) Class.forName(name0);
+                                            // Only obtaining class objects without triggering initialization
+                                            Class<T> clazz = (Class<T>) Class.forName(name0, false, classLoader);
                                             if (filter != null) {
                                                 if (filter.test(clazz)) {
                                                     classes.add(clazz);
