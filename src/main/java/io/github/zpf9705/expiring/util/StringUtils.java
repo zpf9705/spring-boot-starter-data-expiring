@@ -1,14 +1,14 @@
 package io.github.zpf9705.expiring.util;
 
 /**
- * A simple string calibration tool
+ * A simple string calibration tool.
  *
  * @author zpf
  * @since 3.0.0
  */
 public abstract class StringUtils {
 
-    static final String EMPTY = "";
+    private static final String EMPTY = "";
 
     /**
      * Is blank for {@code String}

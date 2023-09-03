@@ -9,7 +9,7 @@ package io.github.zpf9705.expiring.logger;
  */
 public abstract class SdkLogger {
 
-    private static Logger logger = Console.DefaultConsole.me();
+    private static Logger logger = Console.DefaultConsole.self();
 
     public static void loadClass(Class<? extends Logger> clazz) {
         logger = Logger.load(clazz);

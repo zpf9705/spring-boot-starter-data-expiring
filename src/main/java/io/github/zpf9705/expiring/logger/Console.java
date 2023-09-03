@@ -135,8 +135,13 @@ public abstract class Console {
 
     public static class DefaultConsole implements Logger {
 
-        public static DefaultConsole me(){
-            return new DefaultConsole();
+        private static final Logger only = new DefaultConsole();
+
+        private DefaultConsole() {
+        }
+
+        public static Logger self() {
+            return only;
         }
 
         @Override

@@ -120,7 +120,7 @@ public interface Logger {
     static Logger load(Class<? extends Logger> clazz) {
         Logger logger;
         if (clazz == null) {
-            logger = Console.DefaultConsole.me();
+            logger = Console.DefaultConsole.self();
         } else {
             try {
                 logger = clazz.newInstance();

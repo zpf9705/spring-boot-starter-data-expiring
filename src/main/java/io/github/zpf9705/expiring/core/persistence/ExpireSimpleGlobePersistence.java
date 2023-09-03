@@ -394,7 +394,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      */
     public static <G extends ExpireSimpleGlobePersistence, K, V> G convert(@NotNull ExpireSimpleGlobePersistence<K, V>
                                                                                    expireGlobePersistence,
-                                                                           //can have no value and default value be this class
+                                                                           //can have no value and
+                                                                           // default value be this class
                                                                            @CanNull Class<G> globePersistenceClass) {
         try {
             if (globePersistenceClass == null) return (G) expireGlobePersistence;

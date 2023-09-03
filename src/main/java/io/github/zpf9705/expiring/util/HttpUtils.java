@@ -31,10 +31,10 @@ public final class HttpUtils {
     /**
      * Get request
      *
-     * @param url     request url
+     * @param url     Request url
      * @param headers Header information
      * @param params  Get Splice Request Parameters
-     * @return Return JSON data
+     * @return The {@code String} type of the return value
      */
     public static String get(String url, Map<String, String> headers, Map<String, Object> params) {
         return doRequest(new HttpGet(getURIByUrlAndParams(url, params)), headers, null);
@@ -43,10 +43,10 @@ public final class HttpUtils {
     /**
      * Post Request
      *
-     * @param url     request url
-     * @param json    JSON parameters
+     * @param url     Request url
+     * @param json    JSON data input parameter
      * @param headers Header information
-     * @return Return JSON data
+     * @return The {@code String} type of the return value
      */
     public static String post(String url, Map<String, String> headers, String json) {
         return doRequest(new HttpPost(url), headers, json);
@@ -57,8 +57,8 @@ public final class HttpUtils {
      *
      * @param url     request url
      * @param headers Header information
-     * @param json    JSON parameters
-     * @return Return JSON data
+     * @param json    JSON data input parameter
+     * @return The {@code String} type of the return value
      */
     public static String put(String url, Map<String, String> headers, String json) {
         return doRequest(new HttpPut(url), headers, json);
@@ -69,19 +69,19 @@ public final class HttpUtils {
      *
      * @param url     request url
      * @param headers Header information
-     * @return Return JSON data
+     * @return The {@code String} type of the return value
      */
     public static String delete(String url, Map<String, String> headers) {
         return doRequest(new HttpDelete(url), headers, null);
     }
 
     /**
-     * Http Request Method
+     * The HTTP request sending method includes the entire lifecycle of HTTP requests.
      *
-     * @param requestBase HTTP Public Request Class {@link HttpRequestBase}
-     * @param headers     Header information
-     * @param json        JSON parameters
-     * @return Return JSON data
+     * @param requestBase HTTP Public Request Class {@link HttpRequestBase}.
+     * @param headers     Header information map.
+     * @param json        JSON data input parameter
+     * @return The {@code String} type of the return value
      */
     public static String doRequest(@NotNull HttpRequestBase requestBase,
                                    Map<String, String> headers,
@@ -105,9 +105,9 @@ public final class HttpUtils {
     }
 
     /**
-     * Set JSON input parameters
+     * Set {@link HttpEntity}.
      *
-     * @param json        JSON parameters
+     * @param json        JSON data input parameter
      * @param requestBase HTTP Public Request Class {@link HttpRequestBase}
      */
     private static void setEntity(String json, @NotNull HttpRequestBase requestBase) {
@@ -119,10 +119,10 @@ public final class HttpUtils {
     }
 
     /**
-     * Add header information
+     * Add this request body information body.
      *
-     * @param headers     Header information
-     * @param requestBase HTTP Public Request Class {@link HttpRequestBase}
+     * @param headers     Header information map.
+     * @param requestBase HTTP Public Request Class {@link HttpRequestBase}.
      */
     private static void addHeaders(Map<String, String> headers, @NotNull HttpRequestBase requestBase) {
         if (!CollectionUtils.simpleIsEmpty(headers)) {
@@ -133,7 +133,7 @@ public final class HttpUtils {
     }
 
     /**
-     * Splice Get Request Address
+     * Splice Get Request Address.
      *
      * @param url    Request URL address
      * @param params ? Rear splicing parameters

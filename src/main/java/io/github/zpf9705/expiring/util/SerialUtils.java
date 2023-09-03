@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * A static tool for serialization and deserialization
+ * Provide tools related to object serialization, deserialization, and group deserialization.
  *
  * @author zpf
  * @since 3.0.0
