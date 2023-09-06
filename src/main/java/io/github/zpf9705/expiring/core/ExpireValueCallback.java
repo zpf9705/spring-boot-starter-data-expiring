@@ -15,9 +15,9 @@ public interface ExpireValueCallback<T> {
      * Gets called by {@link ExpireTemplate} with an active Expire connection. Does not need to care about activating or
      * closing the Helper or handling exceptions.
      *
-     * @param connection Expire Helper
+     * @param helper Expire Helper
      * @return a result object or {@code null} if none
      */
     @CanNull
-    T doInExpire(ExpireHelper connection);
+    T doInExpire(ExpireHelper helper);
 }

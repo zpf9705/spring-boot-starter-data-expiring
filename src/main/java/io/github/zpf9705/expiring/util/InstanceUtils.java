@@ -1,6 +1,5 @@
 package io.github.zpf9705.expiring.util;
 
-import io.github.zpf9705.expiring.core.ExpiringException;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 
 import java.lang.reflect.Constructor;
@@ -39,7 +38,7 @@ public abstract class InstanceUtils {
             result = constructor.newInstance(args);
         } catch (Throwable e) {
             //Unified throw the biggest anomaly
-            throw new ExpiringException(e.getMessage());
+            throw new UtilsException(e.getMessage());
         }
         return result;
     }
@@ -59,7 +58,7 @@ public abstract class InstanceUtils {
             constructor = clazz.getConstructor(paramClass);
         } catch (Throwable e) {
             //Unified throw the biggest anomaly
-            throw new ExpiringException(e.getMessage());
+            throw new UtilsException(e.getMessage());
         }
         return constructor;
     }
