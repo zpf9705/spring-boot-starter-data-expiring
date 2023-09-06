@@ -6,11 +6,15 @@ import io.github.zpf9705.expiring.core.serializer.ExpiringSerializer;
 import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerializer;
 import io.github.zpf9705.expiring.help.ExpireHelper;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
-import io.github.zpf9705.expiring.logger.Console;
 import io.github.zpf9705.expiring.util.AssertUtils;
+import io.github.zpf9705.expiring.util.rxjava.Spectator;
+import io.github.zpf9705.expiring.util.rxjava.SpectatorUtils;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -96,12 +100,10 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
      * @param factory          help factory
      * @param composeException Whether to merge exception
      * @param <T>              Return paradigm
-     * @return return value be changed
+     * @return Return value be changed
      */
     public <T> T execute(ExpireValueCallback<T> action, ExpireHelperFactory factory, boolean composeException) {
-
         AssertUtils.Operation.notNull(factory, "ExpireConnectionFactory no be null");
-
         return execute(action, factory.getHelper(), composeException);
     }
 
@@ -113,24 +115,30 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
      * @param action           Expiry do action
      * @param helper           Expiry helper
      * @param composeException Whether to merge exception
-     * @param <T>              return paradigm
-     * @return return value be changed
+     * @param <T>              Return paradigm
+     * @return Return value be changed
      */
     public <T> T execute(ExpireValueCallback<T> action, ExpireHelper helper, boolean composeException) {
         /*
          * The callback encapsulation
          */
-        Supplier<T> supplierRunner = () -> action.doInExpire(helper);
+        Supplier<T> able = () -> action.doInExpire(helper);
         //expiry apis runtime exception need throw
+        @SuppressWarnings("unchecked")
+        Class<Exception>[] classes = new Class[]{Exception.class};
         T value;
         try {
-            value = supplierRunner.get();
-        } catch (Throwable e) {
-            Console.error("Expiry abnormal operating the callback error [{}]", e.getMessage());
+            value = SpectatorUtils.runWhileTrampolineNoConvert(able,
+                    classes,
+                    Spectator.retry_times,
+                    500);
+        } catch (Exception e) {
             if (composeException) {
-                //Deviate from the custom exception exception thrown
-                if (!(e instanceof ExpiringException)) {
+                //Deviate from the custom exception thrown
+                if (e instanceof ExpiringException) {
                     throw new OperationsException(e);
+                } else {
+                    throw new RuntimeException(e);
                 }
             }
             value = null;
