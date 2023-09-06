@@ -59,7 +59,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
     public Boolean setIfAbsent(K key, V value) {
         byte[] rawKey = this.rawKey(key);
         byte[] rawValue = this.rawValue(value);
-        return this.execute((connection) -> connection.setNX(rawKey, rawValue), true);
+        return this.execute((helper) -> helper.setNX(rawKey, rawValue), true);
     }
 
     /*
@@ -71,7 +71,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
 
         byte[] rawKey = this.rawKey(key);
         byte[] rawValue = this.rawValue(value);
-        return this.execute((connection) -> connection.setEX(rawKey, rawValue, duration, unit), true);
+        return this.execute((helper) -> helper.setEX(rawKey, rawValue, duration, unit), true);
     }
 
     /*
@@ -93,7 +93,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
     public List<K> getSimilarKeys(K key) {
 
         byte[] rawKey = this.rawKey(key);
-        List<byte[]> execute = this.execute((connection) -> connection.getSimilarKeys(rawKey), true);
+        List<byte[]> execute = this.execute((helper) -> helper.getSimilarKeys(rawKey), true);
         return (List<K>) SerialUtils.deserializeAny(execute);
     }
 
