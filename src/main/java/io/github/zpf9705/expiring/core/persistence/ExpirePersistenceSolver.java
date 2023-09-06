@@ -26,7 +26,6 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
                             ExpireSimpleGlobePersistence.class,
                             ExpireSimpleGlobePersistence.Persistence.class,
                             Entry.of(key, value, duration, timeUnit));
-            AssertUtils.Persistence.isTrue(!put.persistenceExist(), "persistence already exist ");
             put.serial();
         }, "putPersistence");
     }
@@ -61,8 +60,9 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
     @Override
     public void removePersistence(@NotNull K key, @NotNull V value) {
         run(() -> {
-            ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.ofGet(key, value, null);
-            AssertUtils.Persistence.isTrue(remove.persistenceExist(), "persistence no exist");
+            ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.ofGet(key, value,
+                    null);
+            AssertUtils.Persistence.isTrue(remove.persistenceExist(), "Persistence no exist");
             remove.removePersistence();
         }, "removePersistence");
     }
@@ -71,9 +71,7 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
     public void removePersistenceWithKey(@NotNull K key) {
         run(() -> {
             ExpireSimpleGlobePersistence<K, V> remove = ExpireSimpleGlobePersistence.ofGet(key);
-            if (!remove.persistenceExist()) {
-                return;
-            }
+            AssertUtils.Persistence.isTrue(remove.persistenceExist(), "Persistence no exist");
             remove.removePersistence();
         }, "removePersistenceWithKey");
     }
@@ -81,7 +79,6 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
     @Override
     public void removeSimilarKeyPersistence(@NotNull K key) {
         run(() -> {
-            AssertUtils.Persistence.notNull(key, "key no be null");
             List<ExpireSimpleGlobePersistence<K, V>> similar = ExpireSimpleGlobePersistence.ofGetSimilar(key);
             AssertUtils.Persistence.notEmpty(similar, "No found key [" + key + "] similar persistence");
             similar.forEach(s -> {
@@ -89,11 +86,6 @@ public class ExpirePersistenceSolver<K, V> implements PersistenceSolver<K, V> {
                     s.removePersistence();
                 }
             });
-        }, "removePersistence");
-    }
-
-    @Override
-    public void removeAllPersistence() {
-        delAll();
+        }, "removeSimilarKeyPersistence");
     }
 }

@@ -22,7 +22,7 @@ public final class ServiceLoadUtils<T> {
 
     private final ServiceLoader<T> load;
 
-    public ServiceLoadUtils(ServiceLoader<T> load) {
+    private ServiceLoadUtils(ServiceLoader<T> load) {
         this.load = load;
     }
 

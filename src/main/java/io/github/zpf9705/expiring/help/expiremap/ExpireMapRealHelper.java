@@ -224,7 +224,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper<ExpireMapCenter> i
     public Long getExpirationWithUnit(byte[] key, TimeUnit unit) {
         Long expiration = this.getExpirationWithKey(key);
         if (expiration == null) return null;
-        return TimeUnit.MICROSECONDS.convert(expiration, unit);
+        return TimeUnit.MILLISECONDS.convert(expiration, unit);
     }
 
     /*
@@ -246,7 +246,7 @@ public class ExpireMapRealHelper extends AbstractExpireHelper<ExpireMapCenter> i
     public Long getExpectedExpirationWithUnit(byte[] key, TimeUnit unit) {
         Long expectedExpiration = this.getExpectedExpirationWithKey(key);
         if (expectedExpiration == null) return null;
-        return TimeUnit.MICROSECONDS.convert(expectedExpiration, unit);
+        return TimeUnit.MILLISECONDS.convert(expectedExpiration, unit);
     }
 
     /*

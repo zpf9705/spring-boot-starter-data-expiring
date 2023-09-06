@@ -10,6 +10,8 @@ import io.github.zpf9705.expiring.core.annotation.CanNull;
  */
 public abstract class ArrayUtils {
 
+    public static final String[] emptyArray = new String[0];
+
     /**
      * Is Empty for {@code Array}
      *
@@ -41,5 +43,28 @@ public abstract class ArrayUtils {
      */
     public static <T> boolean isArray(T t) {
         return t != null && t.getClass().isArray();
+    }
+
+    /**
+     * Convert the string converted through the array {@link #toString()} method to the original array,
+     * but not the same array object.
+     *
+     * @param toString Array string after toString
+     * @return Convert Array
+     */
+    public static String[] toStringArrayToConvertArray(String toString) {
+        if (StringUtils.simpleIsBlank(toString)) {
+            return emptyArray;
+        }
+        if (!(toString.startsWith("[") && toString.endsWith("]"))) {
+            throw new UtilsException("Non compliant array: the conversion string does not contain " +
+                    "'[' at the beginning or ']' at the end");
+        }
+        toString = toString.replace("[", "").replace("]", "");
+        String[] split = toString.split(",");
+        if (split.length == 0) {
+            throw new UtilsException("Non compliant array: does not contain commas");
+        }
+        return split;
     }
 }

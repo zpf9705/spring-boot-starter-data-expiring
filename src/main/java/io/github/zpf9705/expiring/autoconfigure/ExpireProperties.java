@@ -12,6 +12,7 @@ import net.jodah.expiringmap.ExpirationPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -46,6 +47,12 @@ public class ExpireProperties {
      * @since 1.1.4
      */
     private String persistencePath = SystemUtils.getCurrentProjectPath() + "/expire/";
+
+    /**
+     * Monitor the path information of cache recovery and implement the class collection
+     * path of {@link io.github.zpf9705.expiring.core.persistence.ListeningRecovery}
+     */
+    private String[] listeningRecoverySubPath = ScanUtils.findSpringApplicationPackageName();
 
     /**
      * No persistence time the most value (that is less than all of this time are not given persistent)
@@ -128,6 +135,14 @@ public class ExpireProperties {
 
     public void setNoPersistenceOfExpireTimeUnit(TimeUnit noPersistenceOfExpireTimeUnit) {
         this.noPersistenceOfExpireTimeUnit = noPersistenceOfExpireTimeUnit;
+    }
+
+    public String[] getListeningRecoverySubPath() {
+        return listeningRecoverySubPath;
+    }
+
+    public void setListeningRecoverySubPath(String[] listeningRecoverySubPath) {
+        this.listeningRecoverySubPath = listeningRecoverySubPath;
     }
 
     public Long getDefaultExpireTime() {
@@ -260,6 +275,7 @@ public class ExpireProperties {
         SystemUtils.setProperty(Configuration.noPersistenceOfExpireTime, this.noPersistenceOfExpireTime);
         SystemUtils.setProperty(Configuration.noPersistenceOfExpireTimeUnit, this.noPersistenceOfExpireTimeUnit);
         SystemUtils.setProperty(Configuration.chooseClient, this.client.name());
+        SystemUtils.setProperty(Configuration.listeningRecoverySubPath, Arrays.toString(this.listeningRecoverySubPath));
         SdkLogger.loadClass(this.extend.sdkLogger);
         CronLogger.loadClass(this.extend.cronLogger);
     }

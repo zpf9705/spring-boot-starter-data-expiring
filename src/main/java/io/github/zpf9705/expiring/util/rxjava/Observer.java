@@ -3,6 +3,7 @@ package io.github.zpf9705.expiring.util.rxjava;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.StringUtils;
+import io.github.zpf9705.expiring.util.UtilsException;
 import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
 
@@ -220,7 +221,7 @@ public interface Observer<T> {
         }
         //if have msg , so throw it with retry
         if (StringUtils.simpleNotBlank(esg)) {
-            throw new IllegalArgumentException(esg);
+            throw new UtilsException(esg);
         }
         return t;
     }

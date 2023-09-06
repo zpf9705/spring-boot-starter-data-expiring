@@ -1,5 +1,6 @@
 package io.github.zpf9705.expiring.core.persistence;
 
+import io.github.zpf9705.expiring.util.ArrayUtils;
 import io.github.zpf9705.expiring.util.SystemUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,7 @@ public final class Configuration {
     public static final String defaultExpireTime = "csp.expiry.defaultExpireTime";
     public static final String defaultExpireTimeUnit = "csp.expiry.defaultExpireTimeUnit";
     public static final String chooseClient = "csp.expiry.chooseClient";
+    public static final String listeningRecoverySubPath = "csp.expiry.listening.recovery.path";
     static final long defaultNoPersistenceExpireTimeExample = 10L;
     static final long defaultExpireTimeExample = 20L;
     static boolean defaultCompareWithExpirePersistence = false;
@@ -137,6 +139,16 @@ public final class Configuration {
      */
     public String getChooseClient() {
         return SystemUtils.getPropertyWithConvert(chooseClient, Function.identity(), null);
+    }
+
+    /**
+     * Get listening recovery path with finding sub for {@link ListeningRecovery}
+     *
+     * @return choose client
+     */
+    public String[] getListeningRecoverySubPath() {
+        return SystemUtils.getPropertyWithConvert(listeningRecoverySubPath, ArrayUtils::toStringArrayToConvertArray,
+                null);
     }
 
     /**

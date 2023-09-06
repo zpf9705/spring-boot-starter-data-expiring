@@ -1,19 +1,19 @@
 package io.github.zpf9705.expiring.core.persistence;
 
+import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.JSON;
 import io.github.zpf9705.expiring.core.PersistenceException;
-import io.github.zpf9705.expiring.logger.Console;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.help.Center;
 import io.github.zpf9705.expiring.help.RecordActivationCenter;
+import io.github.zpf9705.expiring.logger.Console;
 import io.github.zpf9705.expiring.util.*;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -584,7 +584,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         //write
         writeLock.lock();
         try {
-            writeSingleFileLine(this.persistence.toString());
+            this.writeSingleFileLine(this.persistence.toString());
         } finally {
             writeLock.unlock();
         }
@@ -594,7 +594,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     public boolean persistenceExist() {
         readLock.lock();
         try {
-            return existCurrentWritePath();
+            return this.existCurrentWritePath();
         } finally {
             readLock.unlock();
         }
@@ -740,13 +740,14 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         }
         //Loop back
         List<File> finalFiles = files;
-        CompletableFuture.runAsync(() -> finalFiles.forEach(v -> {
+        //Start a new thread for file recovery operations
+        new Thread(() -> finalFiles.forEach(v -> {
             try {
-                this.deserializeWithFile(v);
+                deserializeWithFile(v);
             } catch (Throwable e) {
                 Console.warn("Restore cache file {}  error : {}", v.getName(), e.getMessage());
             }
-        }));
+        }), "Expiry-Record-Cache-Thread").start();
     }
 
     @Override
@@ -775,7 +776,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
             AbleUtils.close(in, read);
         }
         //Perform follow-up supplement
-        this.deserializeWithString(buffer);
+        deserializeWithString(buffer);
     }
 
     @Override
@@ -806,11 +807,30 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         Entry<K, V> entry = persistence.getEntry();
         //check entry
         checkEntry(entry);
+        //Calculate remaining time units
+        Long condition = condition(currentTimeMillis, persistence.getExpire(), entry.getTimeUnit());
         //reload
-        RecordActivationCenter.getSingletonCenter()
-                .reload(entry.getKey(), entry.getValue(),
-                        condition(currentTimeMillis, persistence.getExpire(), entry.getTimeUnit()),
-                        entry.getTimeUnit());
+        RecordActivationCenter.getSingletonCenter().reload(entry.getKey(),
+                entry.getValue(),
+                condition,
+                entry.getTimeUnit());
+        //Callback for restoring cached keys and values
+        Set<Class<ListeningRecovery>> subTypesOf =
+                ScanUtils.getSubTypesOf(ListeningRecovery.class, configuration.getListeningRecoverySubPath());
+        if (CollectionUtils.simpleNotEmpty(subTypesOf)) {
+            subTypesOf.forEach(clazz -> {
+                ListeningRecovery recovery;
+                try {
+                    recovery = ReflectUtil.newInstance(clazz);
+                    recovery.recovery(
+                            SerialUtils.deserialize((byte[]) entry.getKey()),
+                            SerialUtils.deserialize((byte[]) entry.getValue()));
+                    recovery.expired(condition, entry.getTimeUnit());
+                } catch (Exception e) {
+                    Console.info("Cache recovery callback exception , throw an error : {}", e.getMessage());
+                }
+            });
+        }
     }
 
     /**
@@ -845,10 +865,10 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     /**
-     * Calculate the expiration time with {@code plus}
+     * Calculate the expiration time with {@code plus}.
      *
-     * @param duration must not be {@literal null}
-     * @param timeUnit must not be {@literal null}
+     * @param duration can be {@literal null}
+     * @param timeUnit can be {@literal null}
      * @return result
      */
     private static Long plusCurrent(@CanNull Long duration, @CanNull TimeUnit timeUnit) {

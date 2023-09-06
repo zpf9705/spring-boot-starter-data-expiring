@@ -75,7 +75,9 @@ public interface PersistenceSolver<K, V> {
     /**
      * Remove all the cache files
      */
-    void removeAllPersistence();
+    default void removeAllPersistence() {
+        run(ExpireSimpleGlobePersistence.INSTANCE::removeAllPersistence, "removeAllPersistence");
+    }
 
     /**
      * Run the method and capture the exception
@@ -86,14 +88,6 @@ public interface PersistenceSolver<K, V> {
     default void run(@NotNull Runnable runnable, @NotNull String method) {
         MethodRunnableCapable capable = PersistenceRunner.getCapable();
         capable.run(runnable,
-                esg -> Console.warn("Run the cache Persistence method [{}] An exception occurs [{}]",
-                        method, esg));
-    }
-
-    /**
-     * @see PersistenceSolver#removeAllPersistence()
-     */
-    default void delAll() {
-        run(ExpireSimpleGlobePersistence.INSTANCE::removeAllPersistence, "removeAllPersistence");
+                esg -> Console.warn("Run the cache Persistence method [{}] An exception occurs [{}]", method, esg));
     }
 }

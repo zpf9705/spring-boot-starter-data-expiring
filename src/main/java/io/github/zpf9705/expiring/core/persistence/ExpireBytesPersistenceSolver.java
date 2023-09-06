@@ -3,6 +3,7 @@ package io.github.zpf9705.expiring.core.persistence;
 import io.github.zpf9705.expiring.core.annotation.CanNull;
 import io.github.zpf9705.expiring.core.annotation.NotNull;
 import io.github.zpf9705.expiring.util.AssertUtils;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +25,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
             ExpireByteGlobePersistence put =
                     ExpireByteGlobePersistence
                             .ofSetBytes(Entry.of(key, value, duration, timeUnit));
-            AssertUtils.Persistence.isTrue(!put.persistenceExist(), "persistence already exist ");
+            //If repeated direct coverage
             put.serial();
         }, "ExpireBytesPersistenceSolver::putPersistence");
     }
@@ -61,7 +62,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
     public void removePersistence(@NotNull byte[] key, @NotNull byte[] value) {
         run(() -> {
             ExpireByteGlobePersistence remove = ExpireByteGlobePersistence.ofGetBytes(key, value);
-            AssertUtils.Persistence.isTrue(remove.persistenceExist(), "persistence no exist, no repeat del");
+            AssertUtils.Persistence.isTrue(remove.persistenceExist(), "Persistence no exist, no repeat del");
             remove.removePersistence();
         }, "ExpireBytesPersistenceSolver::removePersistence");
     }
@@ -70,9 +71,7 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
     public void removePersistenceWithKey(@NotNull byte[] key) {
         run(() -> {
             ExpireByteGlobePersistence remove = ExpireByteGlobePersistence.ofGetBytes(key);
-            if (!remove.persistenceExist()) {
-                return;
-            }
+            AssertUtils.Persistence.isTrue(remove.persistenceExist(), "Persistence no exist, no repeat del");
             remove.removePersistence();
         }, "ExpireBytesPersistenceSolver::removePersistenceWithKey");
     }
@@ -90,10 +89,5 @@ public class ExpireBytesPersistenceSolver implements PersistenceSolver<byte[], b
                 }
             });
         }, "ExpireBytesPersistenceSolver::removePersistence");
-    }
-
-    @Override
-    public void removeAllPersistence() {
-        delAll();
     }
 }
