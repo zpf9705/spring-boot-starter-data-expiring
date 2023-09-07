@@ -6,6 +6,7 @@ import io.github.zpf9705.expiring.logger.CronLogger;
 import io.github.zpf9705.expiring.spring_jdk.example_cron.annotation.Cron;
 import io.github.zpf9705.expiring.spring_jdk.support.SupportException;
 import io.github.zpf9705.expiring.util.ArrayUtils;
+import io.github.zpf9705.expiring.util.CollectionUtils;
 import io.github.zpf9705.expiring.util.ScanUtils;
 import io.github.zpf9705.expiring.util.UtilsException;
 import org.springframework.scheduling.support.CronExpression;
@@ -14,18 +15,56 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Timed task registrar, which relies on domestic Hutu {@link cn.hutool.Hutool} toolkit for implementation. Thank you very much
+ * Timed task registrar, which relies on domestic Hutu {@link cn.hutool.Hutool} toolkit for implementation.
+ * <p>
+ * Thank you very much.
  *
  * @author zpf
  * @since 3.1.5
  */
-class CronRegister {
+public final class CronRegister {
 
     static final String second_match_key = "cron.match.second=";
 
     static final String thread_daemon_key = "cron.thread.daemon=";
+
+    private CronRegister() {
+    }
+
+    public static void register(String express, Runnable runnable) {
+        if (express == null || runnable == null) {
+            return;
+        }
+        if (!CronExpression.isValidExpression(express)) {
+            throw new UtilsException("Provider " + express + "no a valid cron express");
+        }
+        //Register scheduled tasks
+        CronUtil.schedule(express, runnable);
+    }
+
+    public static void addListenerWithPackages(String[] scanPackage) {
+        if (ArrayUtils.simpleIsEmpty(scanPackage)) {
+            return;
+        }
+        Set<Class<CronListener>> classes = ScanUtils.getSubTypesOf(CronListener.class, scanPackage);
+        if (CollectionUtils.simpleIsEmpty(classes)) {
+            return;
+        }
+        classes.forEach(c -> addListener(ReflectUtil.newInstance(c)));
+    }
+
+    public static void addListener(CronListener... cronListeners) {
+        if (ArrayUtils.simpleIsEmpty(cronListeners)) {
+            return;
+        }
+        for (CronListener cronListener : cronListeners) {
+            //Register scheduled tasks Listener
+            CronUtil.getScheduler().addListener(cronListener);
+        }
+    }
 
     public static void register(Object targetObj, Method method) {
         if (targetObj == null || method == null) {
@@ -99,5 +138,12 @@ class CronRegister {
         CronUtil.start(isDaemon);
         //register info log
         CronLogger.info("Cron register success : success num : {}", CronUtil.getScheduler().size());
+    }
+
+    public static void defaultStart() {
+        //Second matching support
+        CronUtil.setMatchSecond(true);
+        //Configurable to set up daemon threads
+        CronUtil.start();
     }
 }

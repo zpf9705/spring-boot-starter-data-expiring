@@ -4,6 +4,7 @@ import io.github.zpf9705.expiring.core.annotation.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Cache persistence methods of operation indicators, decided to take what kind of way to run
@@ -14,6 +15,8 @@ import java.util.function.Consumer;
 public abstract class PersistenceRunner implements MethodRunnableCapable {
 
     private static final boolean async;
+
+    private static final Predicate<Throwable> EXCEPTION_PREDICATE = (e) -> e instanceof OnOpenPersistenceException;
 
     private static volatile MethodRunnableCapable capable;
 
@@ -58,9 +61,8 @@ public abstract class PersistenceRunner implements MethodRunnableCapable {
             try {
                 runnable.run();
             } catch (Throwable e) {
-                errorLoggerConsumer.accept(e.getMessage());
+                if (!EXCEPTION_PREDICATE.test(e)) errorLoggerConsumer.accept(e.getMessage());
             }
-
         }
     }
 
@@ -72,7 +74,8 @@ public abstract class PersistenceRunner implements MethodRunnableCapable {
         @Override
         public void run(@NotNull Runnable runnable, @NotNull Consumer<String> errorLoggerConsumer) {
             CompletableFuture.runAsync(runnable)
-                    .whenComplete((s, e) -> errorLoggerConsumer.accept(e.getMessage()));
+                    .whenComplete((s, e) -> {
+                        if (!EXCEPTION_PREDICATE.test(e)) errorLoggerConsumer.accept(e.getMessage());});
         }
     }
 }

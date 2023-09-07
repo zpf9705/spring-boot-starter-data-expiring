@@ -2,7 +2,7 @@ package io.github.zpf9705.expiring.core;
 
 
 /**
- * Cache persistent exception
+ * Cache persistent exception.
  *
  * @author zpf
  * @since 1.1.0

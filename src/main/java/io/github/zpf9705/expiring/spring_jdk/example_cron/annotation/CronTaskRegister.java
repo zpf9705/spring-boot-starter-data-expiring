@@ -38,6 +38,7 @@ public class CronTaskRegister implements DeferredImportSelector {
         if (ArrayUtils.simpleIsEmpty(scanPackage)) {
             scanPackage = ScanUtils.findSpringApplicationPackageName();
         }
+        noMethodDefaultStart = attributes.getBoolean("noMethodDefaultStart");
         Type type = attributes.getEnum("type");
         //Load different configuration classes based on the survival method of object calls
         if (type == Type.PROXY) {
@@ -50,7 +51,13 @@ public class CronTaskRegister implements DeferredImportSelector {
 
     private static String[] scanPackage;
 
+    private static boolean noMethodDefaultStart;
+
     public static String[] getScanPackage() {
         return scanPackage;
+    }
+
+    public static boolean isNoMethodDefaultStart() {
+        return noMethodDefaultStart;
     }
 }

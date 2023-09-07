@@ -167,7 +167,6 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     public ExpireSimpleGlobePersistence() {
-        Console.info("Create a new object for ExpireSimpleGlobePersistence , but need initialization");
     }
 
     public ExpireSimpleGlobePersistence(Persistence<K, V> persistence, String writePath) {
@@ -465,7 +464,9 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * Check whether the open the persistent cache
      */
     static void checkOpenPersistence() {
-        AssertUtils.Persistence.isTrue(OPEN_PERSISTENCE, "No open expiring persistence");
+        if (!OPEN_PERSISTENCE) {
+            throw new OnOpenPersistenceException();
+        }
     }
 
     /**

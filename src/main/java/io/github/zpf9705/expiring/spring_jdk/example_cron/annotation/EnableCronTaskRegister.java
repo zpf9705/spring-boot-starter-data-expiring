@@ -14,11 +14,11 @@ import java.lang.annotation.*;
  * Please pay attention to how to use it
  * <p>
  *
+ * @author zpf
  * @see CronTaskRegister
  * @see io.github.zpf9705.expiring.spring_jdk.example_cron.AbstractCornRegister
  * @see org.springframework.context.ApplicationContext
  * @see org.springframework.core.env.Environment
- * @author zpf
  * @since 3.1.5
  */
 @Target({ElementType.TYPE})
@@ -54,4 +54,14 @@ public @interface EnableCronTaskRegister {
      * @return {@link Type}
      */
     Type type() default Type.PROXY;
+
+    /**
+     * Choose whether to start the timed thread pool even if no registration method is found.
+     * <p>
+     * But I won't actively add listeners for {@link io.github.zpf9705.expiring.spring_jdk.example_cron.CronListener},
+     * unless a timing method with {@link Cron} annotation is added.
+     *
+     * @return if {@code true} , defaults to enabled
+     */
+    boolean noMethodDefaultStart() default false;
 }

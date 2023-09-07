@@ -55,12 +55,20 @@ public abstract class AbstractCornRegister implements InitializingBean, Environm
     public void afterPropertiesSet() {
         String[] scanPackage = CronTaskRegister.getScanPackage();
         if (ArrayUtils.simpleIsEmpty(scanPackage)) {
-            CronLogger.info("No scanned package paths found");
+            if (CronTaskRegister.isNoMethodDefaultStart()) {
+                CronRegister.defaultStart();
+            } else {
+                CronLogger.info("No scanned package paths found");
+            }
             return;
         }
         List<Method> methods = CronRegister.getScanMethodsWithCron(scanPackage);
         if (CollectionUtils.simpleIsEmpty(methods)) {
-            CronLogger.info("No method for annotating @Cron was found");
+            if (CronTaskRegister.isNoMethodDefaultStart()) {
+                CronRegister.defaultStart();
+            } else {
+                CronLogger.info("No method for annotating @Cron was found");
+            }
             return;
         }
         //Filter according to the inclusion of the environment
@@ -79,6 +87,8 @@ public abstract class AbstractCornRegister implements InitializingBean, Environm
             CronLogger.info("There is no standardized method for registering scheduled tasks");
             return;
         }
+        //Only when there is a timing method will the listener be automatically registered.
+        CronRegister.addListenerWithPackages(scanPackage);
         register(filterMethods);
     }
 
