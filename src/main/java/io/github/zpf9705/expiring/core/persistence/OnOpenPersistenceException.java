@@ -7,7 +7,7 @@ import io.github.zpf9705.expiring.core.ExpiringException;
  * No open cache persistent exception.
  *
  * @author zpf
- * @since 3.5.2
+ * @since 3.2.2
  */
 public class OnOpenPersistenceException extends ExpiringException {
 
