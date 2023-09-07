@@ -83,7 +83,7 @@ public abstract class AbstractCornRegister implements InitializingBean, Environm
                 }
         ).collect(Collectors.toList());
         //If no methods that can be registered are found, no exceptions will be thrown but a log prompt will be given
-        if (CollectionUtils.simpleIsEmpty(methods)) {
+        if (CollectionUtils.simpleIsEmpty(filterMethods)) {
             CronLogger.info("There is no standardized method for registering scheduled tasks");
             return;
         }

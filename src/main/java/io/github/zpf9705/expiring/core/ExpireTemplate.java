@@ -7,8 +7,6 @@ import io.github.zpf9705.expiring.core.serializer.GenericStringExpiringSerialize
 import io.github.zpf9705.expiring.help.ExpireHelper;
 import io.github.zpf9705.expiring.help.ExpireHelperFactory;
 import io.github.zpf9705.expiring.util.AssertUtils;
-import io.github.zpf9705.expiring.util.rxjava.Spectator;
-import io.github.zpf9705.expiring.util.rxjava.SpectatorUtils;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -123,15 +121,9 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
          * The callback encapsulation
          */
         Supplier<T> able = () -> action.doInExpire(helper);
-        //expiry apis runtime exception need throw
-        @SuppressWarnings("unchecked")
-        Class<Exception>[] classes = new Class[]{Exception.class};
         T value;
         try {
-            value = SpectatorUtils.runWhileTrampolineNoConvert(able,
-                    classes,
-                    Spectator.retry_times,
-                    500);
+            value = able.get();
         } catch (Exception e) {
             if (composeException) {
                 //Deviate from the custom exception thrown
