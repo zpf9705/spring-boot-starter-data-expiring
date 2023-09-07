@@ -62,6 +62,7 @@ public @interface EnableCronTaskRegister {
      * unless a timing method with {@link Cron} annotation is added.
      *
      * @return if {@code true} , defaults to enabled
+     * @since 3.2.2
      */
     boolean noMethodDefaultStart() default false;
 }
