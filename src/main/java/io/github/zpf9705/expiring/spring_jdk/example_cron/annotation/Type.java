@@ -1,7 +1,7 @@
 package io.github.zpf9705.expiring.spring_jdk.example_cron.annotation;
 
 /**
- * How to register the existence of timed task method running objects
+ * How to register the existence of timed task method running objects.
  *
  * @author zpf
  * @since 3.1.5

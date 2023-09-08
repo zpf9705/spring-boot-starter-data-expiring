@@ -28,9 +28,13 @@ import java.lang.annotation.*;
 public @interface EnableCronTaskRegister {
 
     /**
-     * Carrying the path where the {@link Cron} class is located
+     * Carrying the path where the {@link Cron} class is located.
      * <p>
-     * If it is null, the default is to use springboot to start the package path where the main class is located
+     * At the same time, task listeners can also be added to implement
+     * {@link io.github.zpf9705.expiring.spring_jdk.example_cron.CronListener} or
+     * {@link io.github.zpf9705.expiring.spring_jdk.example_cron.AbstractExceptionCronListener}
+     * <p>
+     * If it is null, the default is to use springboot to start the package path where the main class is located.
      *
      * @return alias for {{@link #basePackages()}}
      */
@@ -38,9 +42,13 @@ public @interface EnableCronTaskRegister {
     String[] value() default {};
 
     /**
-     * His value shifts to {@link #value()}, consistent with it
+     * His value shifts to {@link #value()}, consistent with it.
      * <p>
-     * If it is null, the default is to use springboot to start the package path where the main class is located
+     * At the same time, task listeners can also be added to implement
+     * {@link io.github.zpf9705.expiring.spring_jdk.example_cron.CronListener} or
+     * {@link io.github.zpf9705.expiring.spring_jdk.example_cron.AbstractExceptionCronListener}
+     * <p>
+     * If it is null, the default is to use springboot to start the package path where the main class is located.
      *
      * @return alias for {{@link #value()}}
      */

@@ -10,6 +10,7 @@ import java.lang.annotation.*;
  * can implement the interface class with automatic injection annotation {@link Sdk} and automatically create
  * the implementation class,it mainly relies on {@link SdkProxyBeanDefinitionRegister}
  * <p>
+ *
  * @see io.github.zpf9705.expiring.spring_jdk.support.AbstractProxyBeanInjectSupport
  * @see org.springframework.context.annotation.ImportBeanDefinitionRegistrar
  * @see org.springframework.context.ApplicationContext
@@ -24,7 +25,9 @@ import java.lang.annotation.*;
 public @interface EnableSdkProxyRegister {
 
     /**
-     * Carrying the path where the {@link Sdk} class is located
+     * Carrying the path where the {@link Sdk} class is located.
+     * <p>
+     * If it is null, the default is to use springboot to start the package path where the main class is located.
      *
      * @return alias for {{@link #basePackages()}}
      */
@@ -32,7 +35,9 @@ public @interface EnableSdkProxyRegister {
     String[] value() default {};
 
     /**
-     * His value shifts to {@link #value()}, consistent with it
+     * His value shifts to {@link #value()}, consistent with it.
+     * <p>
+     * If it is null, the default is to use springboot to start the package path where the main class is located.
      *
      * @return alias for {{@link #value()}}
      */

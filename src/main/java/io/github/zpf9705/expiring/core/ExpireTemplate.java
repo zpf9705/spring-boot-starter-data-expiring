@@ -92,7 +92,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     }
 
     /**
-     * Execute the plan had to adjust parameter calibration
+     * Execute the plan had to adjust parameter calibration.
      *
      * @param action           Expiry do action
      * @param factory          help factory
@@ -107,8 +107,8 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
     /**
      * Unified execute callback scheme, using try catch and handle exception to perform process monitoring,
-     * once found to have abnormal situation a timely manner according to the number of times for a retry, if still
-     * cannot successfully after retries,will prompt is given
+     * once found to have abnormal situation a timely manner according to the number of times for a retry,
+     * if still cannot successfully after retries,will prompt is given.
      *
      * @param action           Expiry do action
      * @param helper           Expiry helper

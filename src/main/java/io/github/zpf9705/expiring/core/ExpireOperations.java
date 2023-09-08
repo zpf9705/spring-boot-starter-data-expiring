@@ -27,7 +27,7 @@ public interface ExpireOperations<K, V> {
      * Expire Execute unified call solutions with {@link ExpireValueCallback}
      * Used here connection factory used for uniform distribution
      *
-     * @param action           expiry do action must not be {@literal null}.
+     * @param action           Expiry do action must not be {@literal null}.
      * @param composeException {@literal true} Whether to merge exception
      * @param <T>              return paradigm
      * @return return value be changed
