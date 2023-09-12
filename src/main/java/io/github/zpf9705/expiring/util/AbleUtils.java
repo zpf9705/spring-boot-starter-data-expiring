@@ -25,9 +25,11 @@ public abstract class AbleUtils {
             return;
         }
         for (Closeable closeable : closeables) {
-            try {
-                closeable.close();
-            } catch (IOException ignored) {
+            if (closeable != null) {
+                try {
+                    closeable.close();
+                } catch (IOException ignored) {
+                }
             }
         }
     }
@@ -42,9 +44,11 @@ public abstract class AbleUtils {
             return;
         }
         for (AutoCloseable closeable : closeables) {
-            try {
-                closeable.close();
-            } catch (Exception ignored) {
+            if (closeable != null) {
+                try {
+                    closeable.close();
+                } catch (Exception ignored) {
+                }
             }
         }
     }
