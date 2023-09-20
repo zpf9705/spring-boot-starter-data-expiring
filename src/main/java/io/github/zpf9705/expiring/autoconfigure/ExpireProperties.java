@@ -3,7 +3,6 @@ package io.github.zpf9705.expiring.autoconfigure;
 import io.github.zpf9705.expiring.core.persistence.Configuration;
 import io.github.zpf9705.expiring.core.persistence.ExpireByteGlobePersistence;
 import io.github.zpf9705.expiring.core.persistence.PersistenceRenewFactory;
-import io.github.zpf9705.expiring.util.ScanUtils;
 import io.github.zpf9705.expiring.util.SystemUtils;
 import net.jodah.expiringmap.ExpirationPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -49,7 +48,7 @@ public class ExpireProperties {
      * Monitor the path information of cache recovery and implement the class collection
      * path of {@link io.github.zpf9705.expiring.core.persistence.ListeningRecovery}
      */
-    private String[] listeningRecoverySubPath = ScanUtils.findSpringApplicationPackageName();
+    private String[] listeningRecoverySubPath = ApplicationUtils.findSpringApplicationPackageName();
 
     /**
      * No persistence time the most value (that is less than all of this time are not given persistent)
@@ -186,7 +185,7 @@ public class ExpireProperties {
          * <p>
          * If it is null, the default is to use springboot to start the package path where the main class is located
          */
-        private String[] listeningPackages = ScanUtils.findSpringApplicationPackageName();
+        private String[] listeningPackages = ApplicationUtils.findSpringApplicationPackageName();
 
         public Integer getMaxSize() {
             return maxSize;

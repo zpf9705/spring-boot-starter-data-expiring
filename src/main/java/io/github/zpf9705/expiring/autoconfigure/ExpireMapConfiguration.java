@@ -11,7 +11,7 @@ import io.github.zpf9705.expiring.listener.ExpiringSyncListener;
 import io.github.zpf9705.expiring.logger.Console;
 import io.github.zpf9705.expiring.util.ArrayUtils;
 import io.github.zpf9705.expiring.util.CollectionUtils;
-import io.github.zpf9705.expiring.util.ScanUtils;
+import io.github.zpf9705.expiring.util.ScannerUtils;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.beans.factory.ObjectProvider;
@@ -178,7 +178,7 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
         }
         //reflection find packages
         Set<Class<ExpirationListener>> subTypesOf =
-                ScanUtils.getSubTypesOf(ExpirationListener.class, listeningPackages);
+                ScannerUtils.getSubTypesOf(ExpirationListener.class, listeningPackages);
         if (CollectionUtils.simpleIsEmpty(subTypesOf)) {
             Console.info(
                     "No provider implementation ExpiringLoadListener class ," +

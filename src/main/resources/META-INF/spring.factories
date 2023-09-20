@@ -4,4 +4,4 @@ io.github.zpf9705.expiring.autoconfigure.ExpireAutoConfiguration
 
 # Preparation before initialization
 org.springframework.boot.env.EnvironmentPostProcessor=\
-io.github.zpf9705.expiring.spring_jdk.support.SourceEnvironmentPostProcessor
+io.github.zpf9705.expiring.autoconfigure.SourceEnvironmentPostProcessor

@@ -817,7 +817,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
                 entry.getTimeUnit());
         //Callback for restoring cached keys and values
         Set<Class<ListeningRecovery>> subTypesOf =
-                ScanUtils.getSubTypesOf(ListeningRecovery.class, configuration.getListeningRecoverySubPath());
+                ScannerUtils.getSubTypesOf(ListeningRecovery.class, configuration.getListeningRecoverySubPath());
         if (CollectionUtils.simpleNotEmpty(subTypesOf)) {
             subTypesOf.forEach(clazz -> {
                 ListeningRecovery recovery;

@@ -1,8 +1,7 @@
 package io.github.zpf9705.expiring.util;
 
-import io.github.zpf9705.expiring.core.annotation.NotNull;
+import io.github.zpf9705.expiring.autoconfigure.ApplicationUtils;
 import io.github.zpf9705.expiring.logger.Console;
-import org.springframework.boot.SpringApplication;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,52 +16,22 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
+
 /**
- * Regarding un packaged and packaged scans of
+ * Regarding un packaged and packaged scans of,
  * <ul>
  *     <li>inheritance class objects{@link #getSubTypesOf(Class, String...)}</li>
  *     <li>annotation class objects{@link #getTypesAnnotatedWith(Class, String...)}</li>
  *     <li>method annotation objects{@link #getMethodsAnnotatedWith(Class, String...)}</li>
  * </ul>
- * etc., extensions can be made according to {@link #scan(String, Predicate)}
+ * etc., extensions can be made according to {@link #scan(String, Predicate)}.
  *
  * @author zpf
- * @since 3.1.5
+ * @since 3.3.0
  */
-public abstract class ScanUtils {
+public final class ScannerUtils {
 
-    private static String[] defaultPackage;
-
-    /**
-     * Take the package path information where the springboot main class is located.
-     *
-     * @return According to {@code  org.springframework.boot.SpringApplication#primarySources},
-     * there can be multiple main class paths and must not be {@literal  null}.
-     */
-    public static String[] findSpringApplicationPackageName() {
-        return defaultPackage;
-    }
-
-    /**
-     * Obtain the spring boot startup main class information in
-     * {@link io.github.zpf9705.expiring.spring_jdk.support.SourceEnvironmentPostProcessor}.
-     * Before initializing the spring boot container, please refer to
-     * {@link io.github.zpf9705.expiring.spring_jdk.support.SourceEnvironmentPostProcessor} and learn about
-     * {@link org.springframework.boot.env.EnvironmentPostProcessor}
-     *
-     * @param source {@link SpringApplication#getAllSources()}
-     */
-    public static void applicationSource(@NotNull Set<Object> source) {
-        if (source.isEmpty()) {
-            throw new UtilsException("No detection of the existence of the startup main class");
-        }
-        defaultPackage = source.stream().map(o -> {
-            if (o instanceof Class<?>) {
-                return ((Class<?>) o).getName().split(
-                        "\\." + ((Class<?>) o).getSimpleName())[0];
-            }
-            return null;
-        }).filter(Objects::nonNull).toArray(String[]::new);
+    private ScannerUtils() {
     }
 
     /**
@@ -197,7 +166,7 @@ public abstract class ScanUtils {
         try {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             if (classLoader == null) {
-                classLoader = ScanUtils.class.getClassLoader();
+                classLoader = ApplicationUtils.class.getClassLoader();
             }
             dirs = classLoader.getResources(packageDirName);
             // Loop and iterate on
