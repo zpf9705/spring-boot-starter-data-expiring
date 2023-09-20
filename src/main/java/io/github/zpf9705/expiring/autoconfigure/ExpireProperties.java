@@ -3,9 +3,6 @@ package io.github.zpf9705.expiring.autoconfigure;
 import io.github.zpf9705.expiring.core.persistence.Configuration;
 import io.github.zpf9705.expiring.core.persistence.ExpireByteGlobePersistence;
 import io.github.zpf9705.expiring.core.persistence.PersistenceRenewFactory;
-import io.github.zpf9705.expiring.logger.CronLogger;
-import io.github.zpf9705.expiring.logger.Logger;
-import io.github.zpf9705.expiring.logger.SdkLogger;
 import io.github.zpf9705.expiring.util.ScanUtils;
 import io.github.zpf9705.expiring.util.SystemUtils;
 import net.jodah.expiringmap.ExpirationPolicy;
@@ -83,11 +80,6 @@ public class ExpireProperties {
      * Expiry implement for {@link net.jodah.expiringmap.ExpiringMap}
      */
     private ExpiringMap expiringMap = new ExpiringMap();
-
-    /**
-     * Expansion configuration
-     */
-    private Extend extend = new Extend();
 
     public Boolean getOpenPersistence() {
         return openPersistence;
@@ -177,14 +169,6 @@ public class ExpireProperties {
         this.expiringMap = expiringMap;
     }
 
-    public Extend getExtend() {
-        return extend;
-    }
-
-    public void setExtend(Extend extend) {
-        this.extend = extend;
-    }
-
     public static class ExpiringMap {
 
         /**
@@ -229,35 +213,6 @@ public class ExpireProperties {
         }
     }
 
-    public static class Extend {
-
-        /**
-         * Provide a custom input logger for the SDK encapsulation component provided for this project
-         */
-        private Class<? extends Logger> sdkLogger;
-
-        /**
-         * Provide a custom input logger for the cron encapsulation component provided for this project
-         */
-        private Class<? extends Logger> cronLogger;
-
-        public Class<? extends Logger> getSdkLogger() {
-            return sdkLogger;
-        }
-
-        public void setSdkLogger(Class<? extends Logger> sdkLogger) {
-            this.sdkLogger = sdkLogger;
-        }
-
-        public Class<? extends Logger> getCronLogger() {
-            return cronLogger;
-        }
-
-        public void setCronLogger(Class<? extends Logger> cronLogger) {
-            this.cronLogger = cronLogger;
-        }
-    }
-
     /**
      * Cache Client
      */
@@ -276,7 +231,5 @@ public class ExpireProperties {
         SystemUtils.setProperty(Configuration.noPersistenceOfExpireTimeUnit, this.noPersistenceOfExpireTimeUnit);
         SystemUtils.setProperty(Configuration.chooseClient, this.client.name());
         SystemUtils.setProperty(Configuration.listeningRecoverySubPath, Arrays.toString(this.listeningRecoverySubPath));
-        SdkLogger.loadClass(this.extend.sdkLogger);
-        CronLogger.loadClass(this.extend.cronLogger);
     }
 }
